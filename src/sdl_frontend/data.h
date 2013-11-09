@@ -4,12 +4,14 @@
 
 #include "image_manager.h"
 #include "appearance.h"
+#include "font_manager.h"
 
 
 typedef struct Data
 {
 	ImageManager images;
 	AppearanceManager appearances;
+	FontManager fonts;
 }
 Data;
 

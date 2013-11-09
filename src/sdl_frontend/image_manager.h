@@ -25,6 +25,8 @@ typedef struct ImageManager
 }
 ImageManager;
 
+/* TODO: preload all images */
+
 void ImageManager_init(ImageManager *im,
 					   char *directory,
 					   SDL_PixelFormat *format);

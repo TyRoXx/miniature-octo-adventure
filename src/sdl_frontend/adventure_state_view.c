@@ -216,6 +216,11 @@ static void AdventureStateView_update(GameStateView *view)
 	AvatarController_update(&adv_view->avatar_controller);
 }
 
+static void draw_user_interface()
+{
+
+}
+
 static void AdventureStateView_draw(GameStateView *view)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
@@ -257,6 +262,8 @@ static void AdventureStateView_draw(GameStateView *view)
 		2,
 		3
 		);
+
+	draw_user_interface();
 }
 
 static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const *event)

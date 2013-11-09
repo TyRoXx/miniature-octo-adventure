@@ -43,56 +43,44 @@ static Bool init_appearances(
 	return result;
 }
 
-static Bool load_font(char const *data_dir)
-{
-	char * const font_file_name = join_paths(data_dir, "fonts/SourceSansPro-Regular.ttf");
-	TTF_Font *font;
-	Bool success;
-	if (!font_file_name)
-	{
-		return False;
-	}
-	font = TTF_OpenFont(font_file_name, 16);
-	if (font)
-	{
-		success = True;
-		TTF_CloseFont(font);
-	}
-	else
-	{
-		success = False;
-	}
-	free(font_file_name);
-	return success;
-}
-
 Bool Data_init(Data *d,
 			   char const *directory,
 			   SDL_PixelFormat *format)
 {
 	char *image_directory = join_paths(directory, "sprites");
+	Bool success;
 	if (!image_directory)
 	{
 		return False;
 	}
 
 	ImageManager_init(&d->images, image_directory, format);
-
-	if (!init_appearances(&d->appearances, directory, &d->images))
+	if (init_appearances(&d->appearances, directory, &d->images))
 	{
-		ImageManager_free(&d->images);
-		return False;
+		char * const font_directory = join_paths(directory, "fonts");
+		if (font_directory)
+		{
+			FontManager_init(&d->fonts);
+			if (FontManager_load(&d->fonts, font_directory))
+			{
+				success = True;
+			}
+			else
+			{
+				FontManager_free(&d->fonts);
+				success = False;
+			}
+			free(font_directory);
+			return success;
+		}
 	}
-
-	if (!load_font(directory))
-	{
-		return False;
-	}
-	return True;
+	ImageManager_free(&d->images);
+	return False;
 }
 
 void Data_free(Data *d)
 {
+	FontManager_free(&d->fonts);
 	AppearanceManager_free(&d->appearances);
 	ImageManager_free(&d->images);
 }
