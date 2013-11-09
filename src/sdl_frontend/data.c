@@ -1,6 +1,7 @@
 #include "data.h"
 #include "path.h"
 #include <assert.h>
+#include <SDL_ttf.h>
 
 
 static Bool init_appearances(
@@ -42,6 +43,29 @@ static Bool init_appearances(
 	return result;
 }
 
+static Bool load_font(char const *data_dir)
+{
+	char * const font_file_name = join_paths(data_dir, "fonts/SourceSansPro-Regular.ttf");
+	TTF_Font *font;
+	Bool success;
+	if (!font_file_name)
+	{
+		return False;
+	}
+	font = TTF_OpenFont(font_file_name, 16);
+	if (font)
+	{
+		success = True;
+		TTF_CloseFont(font);
+	}
+	else
+	{
+		success = False;
+	}
+	free(font_file_name);
+	return success;
+}
+
 Bool Data_init(Data *d,
 			   char const *directory,
 			   SDL_PixelFormat *format)
@@ -60,6 +84,10 @@ Bool Data_init(Data *d,
 		return False;
 	}
 
+	if (!load_font(directory))
+	{
+		return False;
+	}
 	return True;
 }
 
