@@ -132,10 +132,10 @@ static void draw_tile_layers(
 	int visible_end_idx   = (int)(camera->position.x + (float)Width  / (float)tile_width / 2.0f + 1.0f);
 	int visible_end_idy   = (int)(camera->position.y + (float)Height / (float)tile_width / 2.0f + 1.0f);
 
-	visible_begin_idx = max_ptrdiff_t(visible_begin_idx, 0);
-	visible_begin_idy = max_ptrdiff_t(visible_begin_idy, 0);
-	visible_end_idx   = min_ptrdiff_t(visible_end_idx,   (ptrdiff_t)tiles->width);
-	visible_end_idy   = min_ptrdiff_t(visible_end_idy,   (ptrdiff_t)tiles->height);
+	visible_begin_idx = max_int(visible_begin_idx, 0);
+	visible_begin_idy = max_int(visible_begin_idy, 0);
+	visible_end_idx   = min_int(visible_end_idx,   (int)tiles->width);
+	visible_end_idy   = min_int(visible_end_idy,   (int)tiles->height);
 
 	for (y = visible_begin_idy; y < visible_end_idy; ++y)
 	{

@@ -6,7 +6,7 @@
 static void add_direction_vector(
 	Vector2i *dest,
 	Direction dir,
-	ptrdiff_t amount)
+	int amount)
 {
 	assert(dest);
 	switch (dir)

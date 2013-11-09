@@ -53,7 +53,7 @@ void Appearance_free(Appearance *appearance)
 }
 
 
-unsigned const tile_size = 32;
+static unsigned const tile_size = 32;
 
 static Bool init_animation(
 		Animation *anim,
@@ -104,7 +104,7 @@ static Bool init_layout(AppearanceLayout *layout,
 			break;
 		}
 
-		offset.y += (ptrdiff_t)(DIR_COUNT * tile_size);
+		offset.y += (int)(DIR_COUNT * tile_size);
 	}
 
 	if (!result)

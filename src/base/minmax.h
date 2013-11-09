@@ -15,8 +15,12 @@ type_ min_ ## type_(type_ left, type_ right) \
 }
 
 
-static DEFINE_MIN_FUNCTION(ptrdiff_t)
-static DEFINE_MAX_FUNCTION(ptrdiff_t)
+#define DEFINE_STATIC_MIN_MAX(type_) \
+static __attribute__((unused)) DEFINE_MIN_FUNCTION(type_) \
+static __attribute__((unused)) DEFINE_MAX_FUNCTION(type_)
+
+DEFINE_STATIC_MIN_MAX(int)
+DEFINE_STATIC_MIN_MAX(ptrdiff_t)
 
 
 #endif

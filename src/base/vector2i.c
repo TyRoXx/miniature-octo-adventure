@@ -1,7 +1,7 @@
 #include "vector2i.h"
 
 
-Vector2i Vector2i_new(ptrdiff_t x, ptrdiff_t y)
+Vector2i Vector2i_new(int x, int y)
 {
 	Vector2i result;
 	result.x = x;
@@ -21,7 +21,7 @@ void Vector2i_sub(Vector2i *dest, Vector2i const *source)
 	dest->y -= source->y;
 }
 
-void Vector2i_scale(Vector2i *dest, ptrdiff_t scalar)
+void Vector2i_scale(Vector2i *dest, int scalar)
 {
 	dest->x *= scalar;
 	dest->y *= scalar;
