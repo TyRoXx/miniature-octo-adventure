@@ -1,8 +1,13 @@
-miniature-octo-adventure
-========================
+miniature octo adventure (MOA)
+==============================
 
-how to build
-============
+MOA is a small 2D RPG for learning C and SDL.
+
+Caution: Programmer art inside!
+
+
+how to build and run
+====================
 
 for Unix-like
 -------------
@@ -13,6 +18,9 @@ You need to have installed:
 - SDL 1.2
 - SDL_TTF 2
 - Jansson 2.4+
+It might work with older versions of the dependencies.
+
+The game is written in C89 with GNU extensions, so any Clang or non-ancient GCC should work.
 
 On Ubuntu you can install the dependencies like this:
 ```sh
@@ -28,6 +36,10 @@ make
 
 If the build was successful, there should be an executable *game* in *game/* now.
 
+When running the *game* the *data/* directory has to be available in the current directory.
+You can either run the program from the root of this repository or create a symlink to *data/* in
+the *game/* directory.
+
 for Nintendo DS
 ---------------
 
@@ -41,3 +53,9 @@ make
 ```
 
 There should be a *nds_main.nds* file in the current directory. You can run this executable using an NDS or an emulator, for example Desmume.
+
+
+for Windows
+-----------
+
+Windows is not officially supported yet, but it might work on that with minor modifications.
