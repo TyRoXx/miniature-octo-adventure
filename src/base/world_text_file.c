@@ -104,6 +104,7 @@ static Bool load_world_from_text_v1(struct World *world, struct TileKind const *
 			position.vector.y = y;
 			if (Entity_init(&entity, position, app, world))
 			{
+				entity.direction = (Direction)(direction % DIR_COUNT);
 				Mover_init(&mover, 10, entity);
 
 				if (Vector_push_back(&world->movers, &mover, sizeof(mover)))
