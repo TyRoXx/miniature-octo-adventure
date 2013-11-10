@@ -21,7 +21,7 @@ char *Vector_release(Vector *v)
 
 Bool Vector_push_back(Vector *v, void const *element, size_t size)
 {
-	if (!Vector_reserve(v, v->capacity + size))
+	if (!Vector_reserve(v, v->size + size))
 	{
 		return 0;
 	}
