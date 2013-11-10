@@ -30,10 +30,12 @@ float Vector2f_length_sq(Vector2f const *v)
 	return square(v->x) + square(v->y);
 }
 
+#ifndef ARM9
 float Vector2f_length(Vector2f const *v)
 {
 	return (float)sqrt(Vector2f_length_sq(v));
 }
+#endif
 
 
 Vector2f const Vector2f_zero = {0, 0};

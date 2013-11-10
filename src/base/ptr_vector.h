@@ -21,6 +21,7 @@ void *PtrVector_get(PtrVector const *v, size_t index);
 void PtrVector_set(PtrVector *v, size_t index, void *element);
 void **PtrVector_begin(PtrVector const *v);
 void **PtrVector_end(PtrVector const *v);
+void PtrVector_for_each(PtrVector const *v, void (*on_element)(void *, void *), void *user);
 
 
 #endif

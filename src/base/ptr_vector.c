@@ -48,3 +48,14 @@ void **PtrVector_end(PtrVector const *v)
 {
 	return PtrVector_begin(v) + PtrVector_size(v);
 }
+
+void PtrVector_for_each(PtrVector const *v, void (*on_element)(void *, void *), void *user)
+{
+	size_t i, c;
+	for (i = 0, c = PtrVector_size(v); i < c; ++i)
+	{
+		on_element(PtrVector_get(v, i), user);
+		/* the callback should not change the size of the vector */
+		assert(c == PtrVector_size(v));
+	}
+}
