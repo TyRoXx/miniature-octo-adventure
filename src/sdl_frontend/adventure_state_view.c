@@ -234,7 +234,7 @@ static void draw_user_interface(
 	text_color.g = (time / 7) % 256;
 	text_color.b = (time / 27) % 256;
 	assert(font);
-	rendered_text = TTF_RenderText_Blended(font, "Test", text_color);
+	rendered_text = TTF_RenderUTF8_Blended(font, "Test 123 öß", text_color);
 	assert(rendered_text);
 	SDL_GetClipRect(rendered_text, &text_size);
 	SDL_BlitSurface(rendered_text, NULL, screen, &text_size);
