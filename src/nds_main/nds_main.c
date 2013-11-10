@@ -77,7 +77,7 @@ int main(void)
 {
 	size_t i;
 	SpriteRenderer sprite_renderer;
-	SpritePlacement sprites[18];
+	SpritePlacement sprites[48];
 	SpriteRenderer_init(&sprite_renderer);
 
 	videoSetMode(MODE_0_2D);
