@@ -31,30 +31,6 @@ Bool World_add_mover(World *w, Mover mover)
 	return Vector_push_back(&w->movers, &mover, sizeof(mover));
 }
 
-static Bool is_mover_on_position(void *element, void *user)
-{
-	Mover const * const mover = element;
-	Vector2i const * const position = user;
-	return Vector2i_equal(position, &mover->body.position);
-}
-
-static Bool is_entity_on(
-	World const *world,
-	Vector2i const *position)
-{
-	void *match;
-	void * const end = Vector_end(&world->movers);
-
-	assert(world);
-
-	match = find(Vector_begin(&world->movers),
-				 end,
-				 sizeof(Mover),
-				 is_mover_on_position,
-				 (void *)position);
-	return (match != end);
-}
-
 static Bool is_walkable_tile(
 	TileGrid const *tiles,
 	Vector2i const *position)
@@ -72,15 +48,63 @@ static Bool is_walkable_tile(
 		);
 }
 
-Bool World_is_walkable(
-	World const *world,
-	Vector2i const *position)
+static int divide_floor(int x, int y)
 {
-	return
-		is_walkable_tile(&world->tiles, position) &&
-		!is_entity_on(world, position);
+	int q = x / y;
+	int r = x % y;
+	if ((r != 0) && ((r < 0) != (y < 0)))
+	{
+		--q;
+	}
+	return q;
 }
 
+static Bool is_walkable_pixel(World const *world, Vector2i const *position)
+{
+	Vector2i next_tile;
+	next_tile.x = divide_floor(position->x, world->tile_width);
+	next_tile.y = divide_floor(position->y, world->tile_width);
+	return is_walkable_tile(&world->tiles, &next_tile);
+}
+
+static size_t const collision_vertex_count = 2;
+static Vector2i const collision_vertex_offsets_by_direction[2][DIR_COUNT] =
+{
+	{
+		{0, 0},
+		{0, 0},
+		{0, 1},
+		{1, 0}
+	},
+	{
+		{1, 0},
+		{0, 1},
+		{1, 1},
+		{1, 1}
+	}
+};
+
+Bool World_is_possible_move(
+	World const *world,
+	PixelPosition const *from,
+	Direction direction
+	)
+{
+	Vector2i const pixel_delta = direction_to_vector(direction);
+	size_t i;
+	for (i = 0; i < collision_vertex_count; ++i)
+	{
+		Vector2i vertex = collision_vertex_offsets_by_direction[i][direction];
+		Vector2i_scale(&vertex, world->tile_width - 1);
+		Vector2i_add(&vertex, &from->vector);
+		Vector2i_add(&vertex, &pixel_delta);
+		if (!is_walkable_pixel(world, &vertex))
+		{
+			return False;
+		}
+	}
+	return True;
+}
 
 static void free_mover(void *element, void *user)
 {

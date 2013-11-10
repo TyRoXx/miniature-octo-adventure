@@ -81,8 +81,8 @@ static void draw_entities(
 	for (; begin != end; ++begin)
 	{
 		Vector2i pixel_pos;
-		pixel_pos.x = (int)(((float)begin->body.position.x - camera->position.x + get_mover_offset(begin, Dir_East )) * (float)tile_width) + Width  / 2;
-		pixel_pos.y = (int)(((float)begin->body.position.y - camera->position.y + get_mover_offset(begin, Dir_South)) * (float)tile_width) + Height / 2;
+		pixel_pos.x = begin->body.position.vector.x + (int)((- camera->position.x) * (float)tile_width) + Width  / 2;
+		pixel_pos.y = begin->body.position.vector.y + (int)((- camera->position.y) * (float)tile_width) + Height / 2;
 		draw_appearance(
 			pixel_pos,
 			screen,

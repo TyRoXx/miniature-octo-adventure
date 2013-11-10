@@ -92,6 +92,7 @@ static Bool load_world_from_text_v1(struct World *world, struct TileKind const *
 			AppearanceId app;
 			Entity entity;
 			Mover mover;
+			PixelPosition position;
 
 			if (fscanf(in, "%d%d%d", &x, &y, &direction) != 3 ||
 				!scan_size_t(in, &app))
@@ -99,9 +100,11 @@ static Bool load_world_from_text_v1(struct World *world, struct TileKind const *
 				goto fail_0;
 			}
 
-			if (Entity_init(&entity, Vector2i_new(x, y), app, world))
+			position.vector.x = x;
+			position.vector.y = y;
+			if (Entity_init(&entity, position, app, world))
 			{
-				Mover_init(&mover, 1.7f, entity);
+				Mover_init(&mover, 10, entity);
 
 				if (Vector_push_back(&world->movers, &mover, sizeof(mover)))
 				{
@@ -131,6 +134,8 @@ Bool load_world_from_text(struct World *world, struct TileKind const *tile_kinds
 
 	assert(world);
 	assert(in);
+
+	world->tile_width = 32;
 
 	fgets(version, sizeof(version), in);
 	if (!strcmp(version, VersionLine_1))
@@ -188,7 +193,7 @@ static void save_entity_to_text(void *element, void *user)
 	assert(mover);
 	assert(out);
 
-	fprintf(out, "%d %d\n",	(int)mover->body.position.x, (int)mover->body.position.y);
+	fprintf(out, "%d %d\n",	(int)mover->body.position.vector.x, (int)mover->body.position.vector.y);
 	fprintf(out, "%d\n", (int)mover->body.direction);
 	fprintf(out, "%u\n", (unsigned)mover->body.appearance);
 

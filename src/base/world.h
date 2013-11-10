@@ -11,6 +11,7 @@
 typedef struct World
 {
 	TileGrid tiles;
+	int tile_width;
 	Vector movers;
 }
 World;
@@ -19,9 +20,11 @@ void World_free(World *w);
 void World_update(World *w, unsigned delta);
 Bool World_add_entity(World *w, Entity const *entity);
 Bool World_add_mover(World *w, Mover mover);
-Bool World_is_walkable(
+Bool World_is_possible_move(
 	World const *world,
-	Vector2i const *position);
+	PixelPosition const *from,
+	Direction direction
+	);
 
 void free_movers(Vector *movers);
 
