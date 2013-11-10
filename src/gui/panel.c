@@ -1,4 +1,5 @@
 #include "panel.h"
+#include "base/minmax.h"
 #include <stdlib.h>
 
 
@@ -78,7 +79,7 @@ static void pack_vertically(Panel *panel)
 		int const child_actual = (desired_height > panel_size.y) ? (child_desired * panel_size.y / desired_height) : child_desired;
 		child->absolute_position = current_child_pos;
 		current_child_pos.y += child_actual;
-		child->actual_size = Vector2i_new(panel_size.x, child_actual);
+		child->actual_size = Vector2i_new(min_int(panel_size.x, child->desired_size.x), child_actual);
 		Widget_pack(child);
 	}
 }
