@@ -152,8 +152,8 @@ static void draw_tile_layers(
 
 			assert(tile);
 
-			pixel_pos.x = (int)((float)tile_width * ((float)x - (float)camera->position.vector.x / (float)tile_width) + Width  / 2.0f);
-			pixel_pos.y = (int)((float)tile_width * ((float)y - (float)camera->position.vector.y / (float)tile_width) + Height / 2.0f);
+			pixel_pos.x = ((tile_width * x - camera->position.vector.x) + Width  / 2);
+			pixel_pos.y = ((tile_width * y - camera->position.vector.y) + Height / 2);
 
 			draw_layered_tile(
 				pixel_pos,
