@@ -230,10 +230,13 @@ static void draw_user_interface(
 {
 	TTF_Font * const font = FontManager_find_font(fonts, 0);
 	Panel * const root = Panel_create(Vector2i_new(150, 200), make_vertical_layout());
-	Button * const button = Button_create(SDL_strdup("Click me"), Vector2i_new(100, 20));
+	Button * const button1 = Button_create(SDL_strdup("Click me 1"), Vector2i_new(100, 20));
+	Button * const button2 = Button_create(SDL_strdup("Click me 2"), Vector2i_new(80, 25));
 	SDL_GUI_Renderer renderer;
 	SDL_GUI_Renderer_init(&renderer, screen, font);
-	PtrVector_push_back(&root->children, button);
+	PtrVector_push_back(&root->children, button1);
+	PtrVector_push_back(&root->children, button2);
+	root->base.absolute_position = Vector2i_new(200, 5);
 	root->base.actual_size = root->base.desired_size;
 	Widget_pack(&root->base);
 	Widget_render(&root->base, &renderer.base);
