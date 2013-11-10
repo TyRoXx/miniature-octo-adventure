@@ -67,7 +67,6 @@ static void draw_entities(
 	Camera const *camera,
 	SDL_Surface *screen,
 	World const *world,
-	int tile_width,
 	AppearanceManager const *appearances)
 {
 	Mover *begin = (Mover *)Vector_begin(&world->movers);
@@ -81,8 +80,8 @@ static void draw_entities(
 	for (; begin != end; ++begin)
 	{
 		Vector2i pixel_pos;
-		pixel_pos.x = begin->body.position.vector.x + (int)((- camera->position.x) * (float)tile_width) + Width  / 2;
-		pixel_pos.y = begin->body.position.vector.y + (int)((- camera->position.y) * (float)tile_width) + Height / 2;
+		pixel_pos.x = begin->body.position.vector.x + (int)((- camera->position.vector.x)) + Width  / 2;
+		pixel_pos.y = begin->body.position.vector.y + (int)((- camera->position.vector.y)) + Height / 2;
 		draw_appearance(
 			pixel_pos,
 			screen,
@@ -127,10 +126,10 @@ static void draw_tile_layers(
 {
 	int y;
 
-	int visible_begin_idx = (int)(camera->position.x - (float)Width  / (float)tile_width / 2.0f);
-	int visible_begin_idy = (int)(camera->position.y - (float)Height / (float)tile_width / 2.0f);
-	int visible_end_idx   = (int)(camera->position.x + (float)Width  / (float)tile_width / 2.0f + 1.0f);
-	int visible_end_idy   = (int)(camera->position.y + (float)Height / (float)tile_width / 2.0f + 1.0f);
+	int visible_begin_idx = (int)((float)camera->position.vector.x / (float)tile_width - (float)Width  / (float)tile_width / 2.0f);
+	int visible_begin_idy = (int)((float)camera->position.vector.y / (float)tile_width - (float)Height / (float)tile_width / 2.0f);
+	int visible_end_idx   = (int)((float)camera->position.vector.x / (float)tile_width + (float)Width  / (float)tile_width / 2.0f + 1.0f);
+	int visible_end_idy   = (int)((float)camera->position.vector.y / (float)tile_width + (float)Height / (float)tile_width / 2.0f + 1.0f);
 
 	visible_begin_idx = max_int(visible_begin_idx, 0);
 	visible_begin_idy = max_int(visible_begin_idy, 0);
@@ -147,8 +146,8 @@ static void draw_tile_layers(
 
 			assert(tile);
 
-			pixel_pos.x = (int)((float)tile_width * ((float)x - camera->position.x) + Width  / 2.0f);
-			pixel_pos.y = (int)((float)tile_width * ((float)y - camera->position.y) + Height / 2.0f);
+			pixel_pos.x = (int)((float)tile_width * ((float)x - (float)camera->position.vector.x / (float)tile_width) + Width  / 2.0f);
+			pixel_pos.y = (int)((float)tile_width * ((float)y - (float)camera->position.vector.y / (float)tile_width) + Height / 2.0f);
 
 			draw_layered_tile(
 				pixel_pos,
@@ -249,7 +248,6 @@ static void AdventureStateView_draw(GameStateView *view)
 		&adv_view->camera,
 		screen,
 		&adv_view->state->world,
-	    world->tile_width,
 		&adv_view->front->data.appearances
 		);
 
