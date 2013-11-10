@@ -10,7 +10,7 @@
 
 enum
 {
-	Width = 640, Height = 480, TileWidth = 32
+	Width = 640, Height = 480
 };
 
 
@@ -67,7 +67,7 @@ static void draw_entities(
 	Camera const *camera,
 	SDL_Surface *screen,
 	World const *world,
-	size_t tile_width,
+	int tile_width,
 	AppearanceManager const *appearances)
 {
 	Mover *begin = (Mover *)Vector_begin(&world->movers);
@@ -120,7 +120,7 @@ static void draw_tile_layers(
 	Camera const *camera,
 	SDL_Surface *screen,
 	TileGrid const *tiles,
-	size_t tile_width,
+	int tile_width,
 	AppearanceManager const *appearances,
 	size_t layer_begin,
 	size_t layer_end)
@@ -225,6 +225,7 @@ static void AdventureStateView_draw(GameStateView *view)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 	SDL_Surface * const screen = adv_view->front->screen;
+	World const * const world = &adv_view->state->world;
 
 	if (adv_view->state->avatar)
 	{
@@ -238,7 +239,7 @@ static void AdventureStateView_draw(GameStateView *view)
 		&adv_view->camera,
 		screen,
 		&adv_view->state->world.tiles,
-		TileWidth,
+		world->tile_width,
 		&adv_view->front->data.appearances,
 		0,
 		2
@@ -248,7 +249,7 @@ static void AdventureStateView_draw(GameStateView *view)
 		&adv_view->camera,
 		screen,
 		&adv_view->state->world,
-		TileWidth,
+	    world->tile_width,
 		&adv_view->front->data.appearances
 		);
 
@@ -257,7 +258,7 @@ static void AdventureStateView_draw(GameStateView *view)
 		&adv_view->camera,
 		screen,
 		&adv_view->state->world.tiles,
-		TileWidth,
+	    world->tile_width,
 		&adv_view->front->data.appearances,
 		2,
 		3
