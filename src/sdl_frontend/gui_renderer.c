@@ -44,7 +44,7 @@ static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const 
 	rendered_text = TTF_RenderUTF8_Blended(renderer->default_font, text, text_color);
 	assert(rendered_text);
 	SDL_GetClipRect(rendered_text, &text_size);
-	SDL_BlitSurface(rendered_text, &destination, renderer->screen, &text_size);
+	SDL_BlitSurface(rendered_text, &text_size, renderer->screen, &destination);
 	SDL_FreeSurface(rendered_text);
 }
 
