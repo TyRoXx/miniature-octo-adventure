@@ -18,6 +18,7 @@ static void rect_outline(Renderer *r, Rectangle dimensions, Color color)
 	(void)renderer;
 	(void)dimensions;
 	(void)color;
+
 }
 
 static void rect_solid(Renderer *r, Rectangle dimensions, Color color)

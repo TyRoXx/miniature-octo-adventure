@@ -91,3 +91,22 @@ Layout make_vertical_layout(void)
 	layout.user = NULL;
 	return layout;
 }
+
+static void pack_absolute(Panel *panel)
+{
+	size_t i, c;
+	for (i = 0, c = PtrVector_size(&panel->children); i < c; ++i)
+	{
+		Widget * const child = PtrVector_get(&panel->children, i);
+		child->actual_size = child->desired_size;
+		Widget_pack(child);
+	}
+}
+
+Layout make_absolute_layout(void)
+{
+	Layout layout;
+	layout.pack_children = pack_absolute;
+	layout.user = NULL;
+	return layout;
+}
