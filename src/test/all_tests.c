@@ -24,6 +24,26 @@ static void test_vector(void)
 	}
 
 	{
+		Vector v;
+		Vector_init(&v);
+		TEST(Vector_reserve(&v, 100));
+		TEST(Vector_reserve(&v, 200));
+		TEST(Vector_reserve(&v, 50));
+		TEST(Vector_reserve(&v, 0));
+		Vector_free(&v);
+	}
+
+	{
+		Vector v;
+		Vector_init(&v);
+		TEST(Vector_resize(&v, 100));
+		TEST(Vector_resize(&v, 200));
+		TEST(Vector_resize(&v, 50));
+		TEST(Vector_resize(&v, 0));
+		Vector_free(&v);
+	}
+
+	{
 		size_t i;
 		size_t const count = 1000;
 		Vector v;
