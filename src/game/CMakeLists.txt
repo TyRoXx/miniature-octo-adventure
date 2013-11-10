@@ -2,7 +2,7 @@ file(GLOB sources "*.h" "*.c")
 
 add_executable(game ${sources})
 
-target_link_libraries(game sdl_frontend base)
+target_link_libraries(game sdl_frontend gui base)
 
 if(MINGW)
 	target_link_libraries(game "-lmingw32")

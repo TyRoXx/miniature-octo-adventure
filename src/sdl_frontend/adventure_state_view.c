@@ -2,6 +2,9 @@
 #include "camera.h"
 #include "avatar_controller.h"
 #include "sdl_frontend.h"
+#include "gui_renderer.h"
+#include "gui/panel.h"
+#include "gui/button.h"
 #include "base/adventure_state.h"
 #include "base/minmax.h"
 #include <stdlib.h>
@@ -225,20 +228,16 @@ static void draw_user_interface(
         SDL_Surface *screen,
         FontManager const *fonts)
 {
-	Uint32 const time = SDL_GetTicks();
 	TTF_Font * const font = FontManager_find_font(fonts, 0);
-	SDL_Surface *rendered_text;
-	SDL_Color text_color;
-	SDL_Rect text_size;
-	text_color.r = (time / 4) % 256;
-	text_color.g = (time / 7) % 256;
-	text_color.b = (time / 27) % 256;
-	assert(font);
-	rendered_text = TTF_RenderUTF8_Blended(font, "Test 123 öß", text_color);
-	assert(rendered_text);
-	SDL_GetClipRect(rendered_text, &text_size);
-	SDL_BlitSurface(rendered_text, NULL, screen, &text_size);
-	SDL_FreeSurface(rendered_text);
+	Panel * const root = Panel_create(Vector2i_new(150, 200), make_vertical_layout());
+	Button * const button = Button_create(SDL_strdup("Click me"), Vector2i_new(100, 20));
+	SDL_GUI_Renderer renderer;
+	SDL_GUI_Renderer_init(&renderer, screen, font);
+	PtrVector_push_back(&root->children, button);
+	root->base.actual_size = root->base.desired_size;
+	Widget_pack(&root->base);
+	Widget_render(&root->base, &renderer.base);
+	Widget_destroy(&root->base);
 }
 
 static void AdventureStateView_draw(GameStateView *view)
