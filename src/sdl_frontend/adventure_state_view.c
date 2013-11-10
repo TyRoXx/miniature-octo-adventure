@@ -115,6 +115,13 @@ static void draw_layered_tile(
 	}
 }
 
+static int divide_ceil(int dividend, int divisor)
+{
+	assert(divisor);
+	/* TODO: do this correctly for negatives */
+	return (dividend + divisor - 1) / divisor;
+}
+
 static void draw_tile_layers(
 	Camera const *camera,
 	SDL_Surface *screen,
@@ -125,11 +132,10 @@ static void draw_tile_layers(
 	size_t layer_end)
 {
 	int y;
-
-	int visible_begin_idx = (int)((float)camera->position.vector.x / (float)tile_width - (float)Width  / (float)tile_width / 2.0f);
-	int visible_begin_idy = (int)((float)camera->position.vector.y / (float)tile_width - (float)Height / (float)tile_width / 2.0f);
-	int visible_end_idx   = (int)((float)camera->position.vector.x / (float)tile_width + (float)Width  / (float)tile_width / 2.0f + 1.0f);
-	int visible_end_idy   = (int)((float)camera->position.vector.y / (float)tile_width + (float)Height / (float)tile_width / 2.0f + 1.0f);
+	int visible_begin_idx = (int)((float)camera->position.vector.x - (float)Width  / 2.0f) / tile_width;
+	int visible_begin_idy = (int)((float)camera->position.vector.y - (float)Height / 2.0f) / tile_width;
+	int visible_end_idx   = divide_ceil((int)((float)camera->position.vector.x + (float)Width  / 2.0f + 1.0f), tile_width);
+	int visible_end_idy   = divide_ceil((int)((float)camera->position.vector.y + (float)Height / 2.0f + 1.0f), tile_width);
 
 	visible_begin_idx = max_int(visible_begin_idx, 0);
 	visible_begin_idy = max_int(visible_begin_idy, 0);
