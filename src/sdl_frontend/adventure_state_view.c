@@ -132,10 +132,10 @@ static void draw_tile_layers(
 	size_t layer_end)
 {
 	int y;
-	int visible_begin_idx = (int)((float)camera->position.vector.x - (float)Width  / 2.0f) / tile_width;
-	int visible_begin_idy = (int)((float)camera->position.vector.y - (float)Height / 2.0f) / tile_width;
-	int visible_end_idx   = divide_ceil((int)((float)camera->position.vector.x + (float)Width  / 2.0f + 1.0f), tile_width);
-	int visible_end_idy   = divide_ceil((int)((float)camera->position.vector.y + (float)Height / 2.0f + 1.0f), tile_width);
+	int visible_begin_idx = (camera->position.vector.x - Width  / 2) / tile_width;
+	int visible_begin_idy = (camera->position.vector.y - Height / 2) / tile_width;
+	int visible_end_idx   =  camera->position.vector.x + divide_ceil(Width  / 2 + 1, tile_width);
+	int visible_end_idy   =  camera->position.vector.y + divide_ceil(Height / 2 + 1, tile_width);
 
 	visible_begin_idx = max_int(visible_begin_idx, 0);
 	visible_begin_idy = max_int(visible_begin_idy, 0);
