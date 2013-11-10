@@ -1,0 +1,7 @@
+#ifndef BASE_STRINGIZE_H
+#define BASE_STRINGIZE_H
+
+#define MOA_IMPL_STRINGIZE(x) #x
+#define MOA_STRINGIZE(x) MOA_IMPL_STRINGIZE(x)
+
+#endif

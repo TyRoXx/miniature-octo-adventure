@@ -1,5 +1,6 @@
 #include "all_tests.h"
 #include "base/vector.h"
+#include "base/stringize.h"
 
 static void test_vector(void);
 
@@ -8,8 +9,6 @@ void moa_test_run_all(void)
 	test_vector();
 }
 
-#define MOA_IMPL_STRINGIZE(x) #x
-#define MOA_STRINGIZE(x) MOA_IMPL_STRINGIZE(x)
 #define TEST(x)   do { if (!(x)) { moa_test_on_message("TEST("   MOA_STRINGIZE(x) ") fail", __FILE__, __LINE__);         } } while (0)
 #define ASSERT(x) do { if (!(x)) { moa_test_on_message("ASSERT(" MOA_STRINGIZE(x) ") fail", __FILE__, __LINE__); return; } } while (0)
 

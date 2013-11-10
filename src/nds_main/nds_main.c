@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "grass_32.h"
 #include "base/ptr_vector.h"
+#include "base/stringize.h"
 
 static void halt_with_message(char const *message)
 {
@@ -11,8 +12,6 @@ static void halt_with_message(char const *message)
 	for (;;);
 }
 
-#define MOA_IMPL_STRINGIZE(x) #x
-#define MOA_STRINGIZE(x) MOA_IMPL_STRINGIZE(x)
 #define VERIFY(x) do { if (!(x)) { halt_with_message("VERIFY(" MOA_STRINGIZE(x) ") fail at " __FILE__ ":" MOA_STRINGIZE(__LINE__)); } } while (0)
 
 typedef struct SpritePlacement
