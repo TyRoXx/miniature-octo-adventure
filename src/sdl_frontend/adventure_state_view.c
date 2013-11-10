@@ -221,9 +221,24 @@ static void AdventureStateView_update(GameStateView *view)
 	AvatarController_update(&adv_view->avatar_controller);
 }
 
-static void draw_user_interface()
+static void draw_user_interface(
+        SDL_Surface *screen,
+        FontManager const *fonts)
 {
-
+	Uint32 const time = SDL_GetTicks();
+	TTF_Font * const font = FontManager_find_font(fonts, 0);
+	SDL_Surface *rendered_text;
+	SDL_Color text_color;
+	SDL_Rect text_size;
+	text_color.r = (time / 4) % 256;
+	text_color.g = (time / 7) % 256;
+	text_color.b = (time / 27) % 256;
+	assert(font);
+	rendered_text = TTF_RenderText_Blended(font, "Test", text_color);
+	assert(rendered_text);
+	SDL_GetClipRect(rendered_text, &text_size);
+	SDL_BlitSurface(rendered_text, NULL, screen, &text_size);
+	SDL_FreeSurface(rendered_text);
 }
 
 static void AdventureStateView_draw(GameStateView *view)
@@ -268,7 +283,7 @@ static void AdventureStateView_draw(GameStateView *view)
 		3
 		);
 
-	draw_user_interface();
+	draw_user_interface(screen, &adv_view->front->data.fonts);
 }
 
 static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const *event)
