@@ -5,6 +5,7 @@
 #include "gui_renderer.h"
 #include "gui/panel.h"
 #include "gui/button.h"
+#include "gui/label.h"
 #include "base/adventure_state.h"
 #include "base/minmax.h"
 #include <stdlib.h>
@@ -230,13 +231,15 @@ static void draw_user_interface(
 {
 	TTF_Font * const font = FontManager_find_font(fonts, 0);
 	Panel * const root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
-	Panel * const window = Panel_create(Vector2i_new(150, 40), make_vertical_layout());
+	Panel * const window = Panel_create(Vector2i_new(150, 90), make_vertical_layout());
 	Button * const button1 = Button_create(SDL_strdup("Click me 1"), Vector2i_new(100, 20));
 	Button * const button2 = Button_create(SDL_strdup("Click me 2"), Vector2i_new(80, 25));
+	Label * const label1 = Label_create(SDL_strdup("Label 1"), Vector2i_new(200, 40));
 	SDL_GUI_Renderer renderer;
 	SDL_GUI_Renderer_init(&renderer, screen, font);
 	PtrVector_push_back(&root->children, window);
 	PtrVector_push_back(&window->children, button1);
+	PtrVector_push_back(&window->children, label1);
 	PtrVector_push_back(&window->children, button2);
 	window->base.absolute_position = Vector2i_new(200, 5);
 	Widget_pack(&root->base);
