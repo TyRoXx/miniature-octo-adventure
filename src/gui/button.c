@@ -30,8 +30,8 @@ static void Button_render(Widget *this_, Renderer *renderer)
 static WidgetClass const button_class =
 {
 	Button_destroy,
-    Button_pack,
-    Button_render
+	Button_pack,
+	Button_render
 };
 
 static void Button_init(Button *b, char *label, Vector2i desired_size)

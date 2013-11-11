@@ -25,7 +25,7 @@ static void rect_solid(Renderer *r, Rectangle dimensions, Color color)
 {
 	SDL_GUI_Renderer * const renderer = (SDL_GUI_Renderer *)r;
 	SDL_Rect rect = to_SDL_rect(dimensions);
-	SDL_FillRect(renderer->screen, &rect, SDL_MapRGB(renderer->screen->format, color.r, color.g, color.b));
+	SDL_FillRect(renderer->screen, &rect, SDL_MapRGBA(renderer->screen->format, color.r, color.g, color.b, color.a));
 }
 
 static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, Color color)
