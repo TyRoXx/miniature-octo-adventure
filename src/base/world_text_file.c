@@ -138,7 +138,10 @@ Bool load_world_from_text(struct World *world, struct TileKind const *tile_kinds
 
 	world->tile_width = 32;
 
-	fgets(version, sizeof(version), in);
+	if (!fgets(version, sizeof(version), in))
+	{
+		return False;
+	}
 	if (!strcmp(version, VersionLine_1))
 	{
 		return load_world_from_text_v1(world, tile_kinds, tile_kind_count, in, error_out);
