@@ -232,9 +232,12 @@ static void draw_user_interface(
 	TTF_Font * const font = FontManager_find_font(fonts, 0);
 	Panel * const root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
 	Panel * const window = Panel_create(Vector2i_new(150, 90), make_vertical_layout());
-	Button * const button1 = Button_create((Widget *)Label_create(SDL_strdup("Click me 1 !!!!!!!!!!!!!!!!!!!"), TextAlignment_Left, Vector2i_new(100, 20)), Vector2i_new(100, 20));
-	Label * const label1 = Label_create(SDL_strdup("abcdefghijklmnopqrstuvwxyz Label 1"), TextAlignment_Right, Vector2i_new(200, 40));
-	Button * const button2 = Button_create((Widget *)Label_create(SDL_strdup("123456 Click me 654321"), TextAlignment_Center, Vector2i_new(80, 25)), Vector2i_new(80, 25));
+	TextStyle const styleA = make_text_style(TextAlignment_Center, TextAlignment_Center, make_color(255, 255, 255, 255));
+	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Right, make_color(255, 0, 0, 255));
+	TextStyle const styleC = make_text_style(TextAlignment_Right, TextAlignment_Center, make_color(0, 255, 255, 255));
+	Button * const button1 = Button_create((Widget *)Label_create(SDL_strdup("Click me 1 !!!!!!!!!!!!!!!!!!!"), styleA, Vector2i_new(100, 20)), Vector2i_new(100, 20));
+	Label * const label1 = Label_create(SDL_strdup("abcdefghijklmnopqrstuvwxyz Label 1"), styleB, Vector2i_new(200, 40));
+	Button * const button2 = Button_create((Widget *)Label_create(SDL_strdup("123456 Click me 654321"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25));
 	SDL_GUI_Renderer renderer;
 	SDL_GUI_Renderer_init(&renderer, screen, font);
 	PtrVector_push_back(&root->children, window);

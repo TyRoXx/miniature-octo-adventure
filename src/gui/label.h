@@ -10,11 +10,11 @@ typedef struct Label
 {
 	Widget base;
 	char *text;
-	TextAlignment alignment;
+	TextStyle style;
 }
 Label;
 
-Label *Label_create(char *text, TextAlignment alignment, Vector2i desired_size);
+Label *Label_create(char *text, TextStyle style, Vector2i desired_size);
 
 
 #endif

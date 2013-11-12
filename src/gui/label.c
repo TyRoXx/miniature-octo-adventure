@@ -17,11 +17,10 @@ static void Label_render(Widget *this_, Renderer *renderer)
 {
 	Label * const instance = (Label *)this_;
 	Rectangle dimensions;
-	Color const text_color = {255, 255, 255, 255};
 	dimensions.top_left = instance->base.absolute_position;
 	dimensions.bottom_right = dimensions.top_left;
 	Vector2i_add(&dimensions.bottom_right, &instance->base.actual_size);
-	Renderer_text(renderer, dimensions, Vector2i_zero, instance->text, instance->alignment, text_color);
+	Renderer_text(renderer, dimensions, Vector2i_zero, instance->text, &instance->style);
 }
 
 static WidgetClass const label_class =
@@ -31,14 +30,14 @@ static WidgetClass const label_class =
     Label_render
 };
 
-Label *Label_create(char *text, TextAlignment alignment, Vector2i desired_size)
+Label *Label_create(char *text, TextStyle style, Vector2i desired_size)
 {
 	Label * const instance = malloc(sizeof(*instance));
 	if (instance)
 	{
 		Widget_init(&instance->base, &label_class, desired_size);
 		instance->text = text;
-		instance->alignment = alignment;
+		instance->style = style;
 	}
 	return instance;
 }

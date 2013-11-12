@@ -11,6 +11,8 @@ typedef struct Color
 }
 Color;
 
+Color make_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+
 typedef struct Rectangle
 {
 	Vector2i top_left;
@@ -28,6 +30,16 @@ typedef enum TextAlignment
 }
 TextAlignment;
 
+typedef struct TextStyle
+{
+	TextAlignment horizontal;
+	TextAlignment vertical;
+	Color color;
+}
+TextStyle;
+
+TextStyle make_text_style(TextAlignment horizontal, TextAlignment vertical, Color color);
+
 struct RendererClass;
 
 typedef struct Renderer
@@ -38,13 +50,13 @@ Renderer;
 
 void Renderer_rect_outline(Renderer *r, Rectangle dimensions, Color color);
 void Renderer_rect_solid(Renderer *r, Rectangle dimensions, Color color);
-void Renderer_text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, TextAlignment alignment, Color color);
+void Renderer_text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, TextStyle const *style);
 
 typedef struct RendererClass
 {
 	void (*rect_outline)(Renderer *, Rectangle, Color);
 	void (*rect_solid)(Renderer *, Rectangle, Color);
-	void (*text)(Renderer *, Rectangle, Vector2i, char const *, TextAlignment, Color);
+	void (*text)(Renderer *, Rectangle, Vector2i, char const *, TextStyle const *);
 }
 RendererClass;
 
