@@ -50,10 +50,16 @@ static void center_1D(int *src_begin, int *src_end, int *dest_begin, int *dest_e
 	int const src = (*src_end - *src_begin);
 	int const dest = (*dest_end - *dest_begin);
 	int const margin = (dest - src) / 2;
-	*src_begin += min_int(0, margin);
-	*src_end -= min_int(0, margin);
-	*dest_begin += min_int(0, margin);
-	*dest_end -= min_int(0, margin);
+	if (src < dest)
+	{
+		*dest_begin += margin;
+		*dest_end -= margin;
+	}
+	else
+	{
+		*src_begin -= margin;
+		*src_end += margin;
+	}
 }
 
 static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, TextAlignment alignment, Color color)
