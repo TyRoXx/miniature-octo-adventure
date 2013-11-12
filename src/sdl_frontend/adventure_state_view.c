@@ -233,8 +233,8 @@ static void draw_user_interface(
 	Panel * const root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
 	Panel * const window = Panel_create(Vector2i_new(150, 90), make_vertical_layout());
 	Button * const button1 = Button_create((Widget *)Label_create(SDL_strdup("Click me 1 !!!!!!!!!!!!!!!!!!!"), TextAlignment_Left, Vector2i_new(100, 20)), Vector2i_new(100, 20));
+	Label * const label1 = Label_create(SDL_strdup("abcdefghijklmnopqrstuvwxyz Label 1"), TextAlignment_Right, Vector2i_new(200, 40));
 	Button * const button2 = Button_create((Widget *)Label_create(SDL_strdup("123456 Click me 654321"), TextAlignment_Center, Vector2i_new(80, 25)), Vector2i_new(80, 25));
-	Label * const label1 = Label_create(SDL_strdup("Label 1"), TextAlignment_Right, Vector2i_new(200, 40));
 	SDL_GUI_Renderer renderer;
 	SDL_GUI_Renderer_init(&renderer, screen, font);
 	PtrVector_push_back(&root->children, window);

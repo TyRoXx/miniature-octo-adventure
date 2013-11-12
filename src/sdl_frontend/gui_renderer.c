@@ -62,6 +62,24 @@ static void center_1D(int *src_begin, int *src_end, int *dest_begin, int *dest_e
 	}
 }
 
+static void align_left(int *src_begin, int *src_end, int *dest_begin, int *dest_end)
+{
+	int const src = (*src_end - *src_begin);
+	int const dest = (*dest_end - *dest_begin);
+	int const minimum = min_int(src, dest);
+	*src_end  = (*src_begin  + min_int(*src_end, minimum));
+	*dest_end = (*dest_begin + min_int(*dest_end, minimum));
+}
+
+static void align_right(int *src_begin, int *src_end, int *dest_begin, int *dest_end)
+{
+	int const src = (*src_end - *src_begin);
+	int const dest = (*dest_end - *dest_begin);
+	int const minimum = min_int(src, dest);
+	*src_begin  = (*src_end  - min_int(*src_end, minimum));
+	*dest_begin = (*dest_end - min_int(*dest_end, minimum));
+}
+
 static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, TextAlignment alignment, Color color)
 {
 	SDL_GUI_Renderer * const renderer = (SDL_GUI_Renderer *)r;
@@ -71,6 +89,7 @@ static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const 
 	TextPositioning positioning;
 	SDL_Rect destination;
 	TTF_Font * const font = renderer->default_font;
+	void (*align)(int *, int *, int *, int *);
 	(void)offset; /*TODO*/
 
 	text_color.r = color.r;
@@ -88,17 +107,20 @@ static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const 
 	switch (alignment)
 	{
 	case TextAlignment_Center:
-		center_1D(&positioning.source.top_left.x, &positioning.source.bottom_right.x, &positioning.destination.top_left.x, &positioning.destination.bottom_right.x);
-		center_1D(&positioning.source.top_left.y, &positioning.source.bottom_right.y, &positioning.destination.top_left.y, &positioning.destination.bottom_right.y);
+		align = center_1D;
 		break;
 
 	case TextAlignment_Left:
+		align = align_left;
 		break;
 
 	case TextAlignment_Right:
-		/* TODO */
+		align = align_right;
 		break;
 	}
+
+	align(&positioning.source.top_left.x, &positioning.source.bottom_right.x, &positioning.destination.top_left.x, &positioning.destination.bottom_right.x);
+	align(&positioning.source.top_left.y, &positioning.source.bottom_right.y, &positioning.destination.top_left.y, &positioning.destination.bottom_right.y);
 
 	text_src = to_SDL_rect(positioning.source);
 	destination = to_SDL_rect(positioning.destination);
