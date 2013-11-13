@@ -11,13 +11,6 @@
 #include <stdlib.h>
 #include <assert.h>
 
-
-enum
-{
-	Width = 640, Height = 480
-};
-
-
 typedef struct AdventureStateView
 {
 	GameStateView base;
@@ -27,7 +20,6 @@ typedef struct AdventureStateView
 	AvatarController avatar_controller;
 }
 AdventureStateView;
-
 
 static void draw_animation(
 	Vector2i pixel_pos,
@@ -71,7 +63,8 @@ static void draw_entities(
 	Camera const *camera,
 	SDL_Surface *screen,
 	World const *world,
-	AppearanceManager const *appearances)
+	AppearanceManager const *appearances,
+	Vector2i resolution)
 {
 	Mover *begin = (Mover *)Vector_begin(&world->movers);
 	Mover * const end = (Mover *)Vector_end(&world->movers);
@@ -84,8 +77,8 @@ static void draw_entities(
 	for (; begin != end; ++begin)
 	{
 		Vector2i pixel_pos;
-		pixel_pos.x = begin->body.position.vector.x + (int)((- camera->position.vector.x)) + Width  / 2;
-		pixel_pos.y = begin->body.position.vector.y + (int)((- camera->position.vector.y)) + Height / 2;
+		pixel_pos.x = begin->body.position.vector.x + (int)((- camera->position.vector.x)) + resolution.x  / 2;
+		pixel_pos.y = begin->body.position.vector.y + (int)((- camera->position.vector.y)) + resolution.y / 2;
 		draw_appearance(
 			pixel_pos,
 			screen,
@@ -133,13 +126,14 @@ static void draw_tile_layers(
 	int tile_width,
 	AppearanceManager const *appearances,
 	size_t layer_begin,
-	size_t layer_end)
+	size_t layer_end,
+	Vector2i resolution)
 {
 	int y;
-	int visible_begin_idx = (camera->position.vector.x - Width  / 2) / tile_width;
-	int visible_begin_idy = (camera->position.vector.y - Height / 2) / tile_width;
-	int visible_end_idx   =  camera->position.vector.x + divide_ceil(Width  / 2 + 1, tile_width);
-	int visible_end_idy   =  camera->position.vector.y + divide_ceil(Height / 2 + 1, tile_width);
+	int visible_begin_idx = (camera->position.vector.x - resolution.x  / 2) / tile_width;
+	int visible_begin_idy = (camera->position.vector.y - resolution.y / 2) / tile_width;
+	int visible_end_idx   =  camera->position.vector.x + divide_ceil(resolution.x  / 2 + 1, tile_width);
+	int visible_end_idy   =  camera->position.vector.y + divide_ceil(resolution.y / 2 + 1, tile_width);
 
 	visible_begin_idx = max_int(visible_begin_idx, 0);
 	visible_begin_idy = max_int(visible_begin_idy, 0);
@@ -156,8 +150,8 @@ static void draw_tile_layers(
 
 			assert(tile);
 
-			pixel_pos.x = ((tile_width * x - camera->position.vector.x) + Width  / 2);
-			pixel_pos.y = ((tile_width * y - camera->position.vector.y) + Height / 2);
+			pixel_pos.x = ((tile_width * x - camera->position.vector.x) + resolution.x / 2);
+			pixel_pos.y = ((tile_width * y - camera->position.vector.y) + resolution.y / 2);
 
 			draw_layered_tile(
 				pixel_pos,
@@ -255,6 +249,13 @@ static void AdventureStateView_draw(GameStateView *view)
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 	SDL_Surface * const screen = adv_view->front->screen;
 	World const * const world = &adv_view->state->world;
+	Vector2i screen_resolution;
+	{
+		SDL_Rect screen_size;
+		SDL_GetClipRect(screen, &screen_size);
+		screen_resolution.x = (int)screen_size.w;
+		screen_resolution.y = (int)screen_size.h;
+	}
 
 	if (adv_view->state->avatar)
 	{
@@ -271,14 +272,16 @@ static void AdventureStateView_draw(GameStateView *view)
 		world->tile_width,
 		&adv_view->front->data.appearances,
 		0,
-		2
+		2,
+	    screen_resolution
 		);
 
 	draw_entities(
 		&adv_view->camera,
 		screen,
 		&adv_view->state->world,
-		&adv_view->front->data.appearances
+		&adv_view->front->data.appearances,
+	    screen_resolution
 		);
 
 	/*draw layer 2*/
@@ -289,7 +292,8 @@ static void AdventureStateView_draw(GameStateView *view)
 	    world->tile_width,
 		&adv_view->front->data.appearances,
 		2,
-		3
+		3,
+	    screen_resolution
 		);
 
 	draw_user_interface(screen, &adv_view->front->data.fonts);

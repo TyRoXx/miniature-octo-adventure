@@ -10,6 +10,13 @@ struct Game;
 struct GameStateView;
 
 
+typedef struct SDLSettings
+{
+	Vector2i resolution;
+	Bool fullscreen;
+}
+SDLSettings;
+
 typedef struct SDLFrontend
 {
 	Frontend base;
@@ -21,7 +28,7 @@ typedef struct SDLFrontend
 SDLFrontend;
 
 
-Frontend *SDLFrontEnd_create(struct Game *game);
+Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings);
 
 
 #endif

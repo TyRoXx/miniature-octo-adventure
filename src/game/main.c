@@ -13,13 +13,17 @@ int main(int argc, char **argv)
 	{
 		Game game;
 		Frontend *frontend;
+		SDLSettings settings;
 
 		if (!Game_init(&game))
 		{
 			return 1;
 		}
 
-		frontend = SDLFrontEnd_create(&game);
+		settings.fullscreen = False;
+		settings.resolution = Vector2i_new(1024, 768);
+
+		frontend = SDLFrontEnd_create(&game, settings);
 		if (!frontend)
 		{
 			result = 1;

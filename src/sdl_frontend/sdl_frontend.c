@@ -7,11 +7,6 @@
 #include "SDL_main.h"
 #include <assert.h>
 
-enum
-{
-	Width = 640, Height = 480
-};
-
 static void SDLFrontend_destroy(Frontend *front)
 {
 	SDLFrontend * const sdl_front = (SDLFrontend *)front;
@@ -114,7 +109,7 @@ static void on_enter_game_state(void *user_data, GameState *state)
 	sdl_front->state_view->type = &AdventureStateViewType;
 }
 
-Frontend *SDLFrontEnd_create(struct Game *game)
+Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings)
 {
 	SDLFrontend * const front = malloc(sizeof(*front));
 	if (!front)
@@ -138,8 +133,8 @@ Frontend *SDLFrontEnd_create(struct Game *game)
 
 	front->base.type = &SDLFrontendType;
 	front->game = game;
-	front->screen = SDL_SetVideoMode(Width, Height, 32,
-									 SDL_HWSURFACE | SDL_DOUBLEBUF);
+	front->screen = SDL_SetVideoMode(settings.resolution.x, settings.resolution.y, 32,
+	                                 SDL_HWSURFACE | SDL_DOUBLEBUF | (settings.fullscreen ? SDL_FULLSCREEN : 0));
 	front->state_view = 0;
 
 	if (!front->screen)
