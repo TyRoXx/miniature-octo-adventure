@@ -15,7 +15,7 @@ Camera;
 
 Bool Camera_init(Camera *cam);
 void Camera_free(Camera *cam);
-void Camera_focus_on(Camera *cam, struct Mover const *target);
+void Camera_focus_on(Camera *cam, struct Mover const *target, Vector2i target_size);
 
 
 #endif

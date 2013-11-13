@@ -66,7 +66,7 @@ static void draw_entities(
 	AppearanceManager const *appearances,
 	Vector2i resolution)
 {
-	Mover *begin = (Mover *)Vector_begin(&world->movers);
+	Mover * begin = (Mover *)Vector_begin(&world->movers);
 	Mover * const end = (Mover *)Vector_end(&world->movers);
 
 	assert(world);
@@ -77,7 +77,7 @@ static void draw_entities(
 	for (; begin != end; ++begin)
 	{
 		Vector2i pixel_pos;
-		pixel_pos.x = begin->body.position.vector.x + (int)((- camera->position.vector.x)) + resolution.x  / 2;
+		pixel_pos.x = begin->body.position.vector.x + (int)((- camera->position.vector.x)) + resolution.x / 2;
 		pixel_pos.y = begin->body.position.vector.y + (int)((- camera->position.vector.y)) + resolution.y / 2;
 		draw_appearance(
 			pixel_pos,
@@ -259,7 +259,8 @@ static void AdventureStateView_draw(GameStateView *view)
 
 	if (adv_view->state->avatar)
 	{
-		Camera_focus_on(&adv_view->camera, adv_view->state->avatar);
+		Vector2i const avatar_size = Vector2i_new(world->tile_width, world->tile_width);
+		Camera_focus_on(&adv_view->camera, adv_view->state->avatar, avatar_size);
 	}
 
 	assert(TILE_LAYER_COUNT == 3);
