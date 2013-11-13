@@ -132,11 +132,21 @@ static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const 
 	SDL_FreeSurface(rendered_text);
 }
 
+static void image(Renderer *r, ImageHandle image, Vector2i source, Vector2i destination, Vector2i size)
+{
+	(void)r;
+	(void)image;
+	(void)source;
+	(void)destination;
+	(void)size;
+}
+
 static RendererClass const renderer_class =
 {
     rect_outline,
     rect_solid,
-    text
+    text,
+    image
 };
 
 void SDL_GUI_Renderer_init(SDL_GUI_Renderer *r, SDL_Surface *screen, TTF_Font *default_font)

@@ -48,15 +48,19 @@ typedef struct Renderer
 }
 Renderer;
 
+typedef void const *ImageHandle;
+
 void Renderer_rect_outline(Renderer *r, Rectangle dimensions, Color color);
 void Renderer_rect_solid(Renderer *r, Rectangle dimensions, Color color);
 void Renderer_text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, TextStyle const *style);
+void Renderer_image(Renderer *r, ImageHandle image, Vector2i source, Vector2i destination, Vector2i size);
 
 typedef struct RendererClass
 {
 	void (*rect_outline)(Renderer *, Rectangle, Color);
 	void (*rect_solid)(Renderer *, Rectangle, Color);
 	void (*text)(Renderer *, Rectangle, Vector2i, char const *, TextStyle const *);
+	void (*image)(Renderer *, ImageHandle, Vector2i, Vector2i, Vector2i);
 }
 RendererClass;
 

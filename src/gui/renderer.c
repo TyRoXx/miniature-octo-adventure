@@ -40,3 +40,8 @@ void Renderer_text(Renderer *r, Rectangle dimensions, Vector2i offset, char cons
 {
 	r->type->text(r, dimensions, offset, text, style);
 }
+
+void Renderer_image(Renderer *r, ImageHandle image, Vector2i source, Vector2i destination, Vector2i size)
+{
+	r->type->image(r, image, source, destination, size);
+}
