@@ -39,13 +39,13 @@ static WidgetClass const button_class =
 	Button_render
 };
 
-static void Button_init(Button *b, Widget *content, Vector2i desired_size)
+static void Button_init(Button *b, OwnedWidget *content, Vector2i desired_size)
 {
 	Widget_init(&b->base, &button_class, desired_size);
 	b->content = content;
 }
 
-Button *Button_create(Widget *content, Vector2i desired_size)
+Button *Button_create(OwnedWidget *content, Vector2i desired_size)
 {
 	Button * const button = malloc(sizeof(*button));
 	if (button)

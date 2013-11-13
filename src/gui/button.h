@@ -8,11 +8,11 @@
 typedef struct Button
 {
 	Widget base;
-	Widget *content;
+	OwnedWidget *content;
 }
 Button;
 
-Button *Button_create(Widget *content, Vector2i desired_size);
+Button *Button_create(OwnedWidget *content, Vector2i desired_size);
 
 
 #endif
