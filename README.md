@@ -22,7 +22,7 @@ It might work with older versions of the dependencies.
 
 The game is written in C89 with GNU extensions, so any Clang or non-ancient GCC should work.
 
-On Ubuntu you can install the dependencies like this:
+On Debian or Ubuntu you can install the dependencies like this:
 ```sh
 sudo apt-get install cmake build-essential libsdl1.2-dev libsdl-ttf2.0-dev libjansson-dev
 ```
