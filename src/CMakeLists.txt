@@ -5,14 +5,16 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(Jansson REQUIRED)
 find_package(SDL REQUIRED)
-find_package(SDL2)
 find_package(SDL_ttf REQUIRED)
+
+#for future SDL2 support:
+#find_package(SDL2)
+#if(SDL2_FOUND)
+#	include_directories(${SDL2_INCLUDE_DIR})
+#endif()
 
 include_directories(${JANSSON_INCLUDE_DIR})
 include_directories(${SDL_INCLUDE_DIR})
-if(SDL2_FOUND)
-	include_directories(${SDL2_INCLUDE_DIR})
-endif()
 include_directories(${SDLTTF_INCLUDE_DIR})
 
 if(UNIX OR MINGW)
