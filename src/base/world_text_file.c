@@ -16,9 +16,9 @@ static Bool scan_size_t(FILE *in, size_t *value)
 	if (fscanf(in, "%u", &buf_value) > 0)
 	{
 		*value = buf_value;
-		return 1;
+		return True;
 	}
-	return 0;
+	return False;
 }
 
 static Bool load_world_from_text_v1(struct World *world, struct TileKind const *tile_kinds, size_t tile_kind_count, FILE *in, FILE *error_out)
@@ -34,13 +34,13 @@ static Bool load_world_from_text_v1(struct World *world, struct TileKind const *
 		!scan_size_t(in, &height))
 	{
 		fprintf(error_out, "Invalid map size\n");
-		return 0;
+		return False;
 	}
 
 	if (!TileGrid_init(&world->tiles, width, height))
 	{
 		fprintf(error_out, "Could not initialize the tile grid\n");
-		return 0;
+		return False;
 	}
 
 	{
@@ -119,14 +119,14 @@ static Bool load_world_from_text_v1(struct World *world, struct TileKind const *
 		}
 	}
 
-	return 1;
+	return True;
 
 fail_0:
 	free_movers(&world->movers);
 
 fail_1:
 	TileGrid_free(&world->tiles);
-	return 0;
+	return False;
 }
 
 Bool load_world_from_text(struct World *world, struct TileKind const *tile_kinds, size_t tile_kind_count, FILE *in, FILE *error_out)
@@ -149,7 +149,7 @@ Bool load_world_from_text(struct World *world, struct TileKind const *tile_kinds
 	else
 	{
 		fprintf(error_out, "Unknown map version line\n");
-		return 0;
+		return False;
 	}
 }
 

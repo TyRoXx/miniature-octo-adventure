@@ -10,7 +10,7 @@ Bool AvatarController_init(AvatarController *a, struct Mover *avatar)
 	assert(avatar);
 	a->avatar = avatar;
 	memset(a->is_direction_key_down, 0, sizeof(a->is_direction_key_down));
-	return 1;
+	return True;
 }
 
 void AvatarController_free(AvatarController *a)

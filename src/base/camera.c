@@ -8,7 +8,7 @@ Bool Camera_init(Camera *cam)
 {
 	assert(cam);
 	cam->position.vector = Vector2i_zero;
-	return 1;
+	return True;
 }
 
 void Camera_free(Camera *cam)

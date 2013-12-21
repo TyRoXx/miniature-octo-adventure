@@ -40,7 +40,7 @@ static Bool is_walkable_tile(
 		position->x >= (ptrdiff_t)tiles->width ||
 		position->y >= (ptrdiff_t)tiles->height)
 	{
-		return 0;
+		return False;
 	}
 
 	return LayeredTile_is_walkable(

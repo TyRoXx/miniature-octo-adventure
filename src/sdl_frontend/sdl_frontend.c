@@ -166,5 +166,5 @@ fail_1:
 	free(front);
 
 fail_0:
-	return 0;
+	return NULL;
 }

@@ -16,7 +16,7 @@ static SDL_Surface *load_bmp_texture(char const *file_name,
 	if (!bitmap)
 	{
 		fprintf(stderr, "Could not load image %s\n", file_name);
-		return 0;
+		return NULL;
 	}
 
 	converted = SDL_ConvertSurface(bitmap, format, 0);
@@ -34,7 +34,7 @@ static SDL_Surface *load_bmp_texture(char const *file_name,
 			SDL_MapRGB(converted->format, AlphaKey.r, AlphaKey.g, AlphaKey.b)) < 0)
 	{
 		SDL_FreeSurface(converted);
-		return 0;
+		return NULL;
 	}
 
 	return converted;

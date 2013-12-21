@@ -23,11 +23,11 @@ Bool Vector_push_back(Vector *v, void const *element, size_t size)
 {
 	if (!Vector_reserve(v, v->size + size))
 	{
-		return 0;
+		return False;
 	}
 	memcpy(v->data + v->size, element, size);
 	v->size += size;
-	return 1;
+	return True;
 }
 
 size_t Vector_size(Vector const *v)
@@ -51,7 +51,7 @@ Bool Vector_reserve(Vector *v, size_t capacity)
 
 	if (v->capacity >= capacity)
 	{
-		return 1;
+		return True;
 	}
 
 	capacity *= 2;
@@ -59,12 +59,12 @@ Bool Vector_reserve(Vector *v, size_t capacity)
 	new_data = realloc(v->data, capacity);
 	if (!new_data)
 	{
-		return 0;
+		return False;
 	}
 
 	v->data = new_data;
 	v->capacity = capacity;
-	return 1;
+	return True;
 }
 
 Bool Vector_resize(Vector *v, size_t size)
@@ -77,9 +77,9 @@ Bool Vector_resize(Vector *v, size_t size)
 			memset(v->data + old_size, 0, size - old_size);
 		}
 		v->size = size;
-		return 1;
+		return True;
 	}
-	return 0;
+	return False;
 }
 
 char *Vector_begin(Vector const *v)

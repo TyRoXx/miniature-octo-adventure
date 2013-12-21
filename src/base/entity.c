@@ -27,7 +27,7 @@ Bool Entity_init(
 	e->direction = Dir_South;
 	e->appearance = appearance;
 	e->world = world;
-	return 1;
+	return True;
 }
 
 void Entity_free(Entity *e)
@@ -63,17 +63,17 @@ Bool Mover_move(Mover *m, size_t steps_to_go)
 {
 	if (m->steps_to_go > 0)
 	{
-		return 0;
+		return False;
 	}
 
 	if (!is_possible_step(&m->body, m->body.direction))
 	{
-		return 0;
+		return False;
 	}
 
 	m->steps_to_go = steps_to_go;
 	m->remaining_time = 0;
-	return 1;
+	return True;
 }
 
 void Mover_stop(Mover *m)

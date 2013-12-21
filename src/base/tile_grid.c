@@ -13,16 +13,16 @@ Bool LayeredTile_is_walkable(LayeredTile const *tile)
 		/*cannot walk when there is no ground*/
 		if (!layer && (i == 0))
 		{
-			return 0;
+			return False;
 		}
 
 		if (layer &&
 			!layer->is_walkable)
 		{
-			return 0;
+			return False;
 		}
 	}
-	return 1;
+	return True;
 }
 
 

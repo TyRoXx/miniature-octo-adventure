@@ -5,7 +5,7 @@ Bool Game_init(Game *g)
 {
 	g->state = 0;
 	g->on_enter_state.function = 0;
-	return 1;
+	return True;
 }
 
 void Game_free(Game *g)
@@ -19,7 +19,7 @@ void Game_free(Game *g)
 int Game_update(Game *g, unsigned delta)
 {
 	g->state->definition->update(g->state, delta);
-	return 1;
+	return True;
 }
 
 int Game_enter_state(Game *g, GameStateDefinition const *state)
@@ -27,7 +27,7 @@ int Game_enter_state(Game *g, GameStateDefinition const *state)
 	GameState * const new_state = state->create(g);
 	if (!new_state)
 	{
-		return 0;
+		return False;
 	}
 	new_state->definition = state;
 	if (g->state)
@@ -39,5 +39,5 @@ int Game_enter_state(Game *g, GameStateDefinition const *state)
 	{
 		g->on_enter_state.function(g->on_enter_state.user_data, new_state);
 	}
-	return 1;
+	return True;
 }

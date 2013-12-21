@@ -200,7 +200,7 @@ fail_1:
 	free(adv_view);
 
 fail_0:
-	return 0;
+	return NULL;
 }
 
 static void AdventureStateView_destroy(GameStateView *view)
