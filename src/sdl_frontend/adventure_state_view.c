@@ -1,12 +1,12 @@
 #include "adventure_state_view.h"
 #include "camera.h"
-#include "avatar_controller.h"
 #include "sdl_frontend.h"
 #include "gui_renderer.h"
 #include "gui/panel.h"
 #include "gui/button.h"
 #include "gui/label.h"
 #include "base/adventure_state.h"
+#include "base/avatar_controller.h"
 #include "base/minmax.h"
 #include <stdlib.h>
 #include <assert.h>
