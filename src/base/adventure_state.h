@@ -6,11 +6,14 @@
 #include "world.h"
 
 
+struct Widget;
+
 typedef struct AdventureState
 {
 	GameState base;
 	World world;
 	Mover *avatar;
+	struct Widget *gui;
 }
 AdventureState;
 

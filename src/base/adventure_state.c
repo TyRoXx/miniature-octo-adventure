@@ -1,6 +1,9 @@
 #include "adventure_state.h"
 #include "world_text_file.h"
 #include "game.h"
+#include "gui/button.h"
+#include "gui/label.h"
+#include "gui/panel.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,6 +43,38 @@ static Bool load_world(char const *file_name, World *world)
 	return result;
 }
 
+static char *moa_strdup(char const *str)
+{
+	size_t const len = strlen(str);
+	char *copy = malloc(len + 1);
+	if (!copy)
+	{
+		return NULL;
+	}
+	memcpy(copy, str, len + 1);
+	return copy;
+}
+
+static Widget *create_gui(void)
+{
+	/*TODO: check success */
+	Panel * const root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
+	Panel * const window = Panel_create(Vector2i_new(150, 90), make_vertical_layout());
+	TextStyle const styleA = make_text_style(TextAlignment_Center, TextAlignment_Center, make_color(255, 255, 255, 255));
+	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Right, make_color(255, 0, 0, 255));
+	TextStyle const styleC = make_text_style(TextAlignment_Right, TextAlignment_Center, make_color(0, 255, 255, 255));
+	Button * const button1 = Button_create((Widget *)Label_create(moa_strdup("Click me 1 !!!!!!!!!!!!!!!!!!!"), styleA, Vector2i_new(100, 20)), Vector2i_new(100, 20));
+	Label * const label1 = Label_create(moa_strdup("abcdefghijklmnopqrstuvwxyz Label 1"), styleB, Vector2i_new(200, 40));
+	Button * const button2 = Button_create((Widget *)Label_create(moa_strdup("123456 Click me 654321"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25));
+	PtrVector_push_back(&root->children, window);
+	PtrVector_push_back(&window->children, button1);
+	PtrVector_push_back(&window->children, label1);
+	PtrVector_push_back(&window->children, button2);
+	window->base.absolute_position = Vector2i_new(200, 5);
+	Widget_pack(&root->base);
+	return (Widget *)root;
+}
+
 static GameState *AdventureState_create(Game *game)
 {
 	AdventureState * const adv_state = malloc(sizeof(*adv_state));
@@ -60,6 +95,10 @@ static GameState *AdventureState_create(Game *game)
 			if (!Vector_empty(&world->movers))
 			{
 				adv_state->avatar = (Mover *)Vector_begin(&world->movers);
+
+				/*TODO: check success*/
+				adv_state->gui = create_gui();
+
 				return (GameState *)adv_state;
 			}
 
@@ -73,6 +112,7 @@ static GameState *AdventureState_create(Game *game)
 static void AdventureState_destroy(GameState *state)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
+	Widget_destroy(adv_state->gui);
 	World_free(&adv_state->world);
 	free(state);
 }

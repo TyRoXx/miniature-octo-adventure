@@ -219,54 +219,23 @@ static void AdventureStateView_update(GameStateView *view)
 	AvatarController_update(&adv_view->avatar_controller);
 }
 
-static char *moa_strdup(char const *str)
-{
-	size_t const len = strlen(str);
-	char *copy = malloc(len + 1);
-	if (!copy)
-	{
-		return NULL;
-	}
-	memcpy(copy, str, len + 1);
-	return copy;
-}
-
-static Widget *create_gui(void)
-{
-	Panel * const root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
-	Panel * const window = Panel_create(Vector2i_new(150, 90), make_vertical_layout());
-	TextStyle const styleA = make_text_style(TextAlignment_Center, TextAlignment_Center, make_color(255, 255, 255, 255));
-	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Right, make_color(255, 0, 0, 255));
-	TextStyle const styleC = make_text_style(TextAlignment_Right, TextAlignment_Center, make_color(0, 255, 255, 255));
-	Button * const button1 = Button_create((Widget *)Label_create(moa_strdup("Click me 1 !!!!!!!!!!!!!!!!!!!"), styleA, Vector2i_new(100, 20)), Vector2i_new(100, 20));
-	Label * const label1 = Label_create(moa_strdup("abcdefghijklmnopqrstuvwxyz Label 1"), styleB, Vector2i_new(200, 40));
-	Button * const button2 = Button_create((Widget *)Label_create(moa_strdup("123456 Click me 654321"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25));
-	PtrVector_push_back(&root->children, window);
-	PtrVector_push_back(&window->children, button1);
-	PtrVector_push_back(&window->children, label1);
-	PtrVector_push_back(&window->children, button2);
-	window->base.absolute_position = Vector2i_new(200, 5);
-	Widget_pack(&root->base);
-	return (Widget *)root;
-}
-
 static void draw_user_interface(
-        SDL_Surface *screen,
-        FontManager const *fonts)
+	Widget *root,
+    SDL_Surface *screen,
+    FontManager const *fonts)
 {
-	Widget * const root = create_gui();
 	TTF_Font * const font = FontManager_find_font(fonts, 0);
 	SDL_GUI_Renderer renderer;
 	SDL_GUI_Renderer_init(&renderer, screen, font);
 	Widget_render(root, &renderer.base);
-	Widget_destroy(root);
 }
 
 static void AdventureStateView_draw(GameStateView *view)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 	SDL_Surface * const screen = adv_view->front->screen;
-	World const * const world = &adv_view->state->world;
+	AdventureState * const adventure = adv_view->state;
+	World const * const world = &adventure->world;
 	Vector2i screen_resolution;
 	{
 		SDL_Rect screen_size;
@@ -315,7 +284,7 @@ static void AdventureStateView_draw(GameStateView *view)
 	    screen_resolution
 		);
 
-	draw_user_interface(screen, &adv_view->front->data.fonts);
+	draw_user_interface(adventure->gui, screen, &adv_view->front->data.fonts);
 }
 
 static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const *event)
