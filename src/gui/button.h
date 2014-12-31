@@ -9,10 +9,11 @@ typedef struct Button
 {
 	Widget base;
 	OwnedWidget *content;
+	Color background_color;
 }
 Button;
 
-Button *Button_create(OwnedWidget *content, Vector2i desired_size);
+Button *Button_create(OwnedWidget *content, Vector2i desired_size, Color background_color);
 
 
 #endif

@@ -60,34 +60,57 @@ Panel *Panel_create(Vector2i desired_size, Layout layout)
 	return panel;
 }
 
-
-static void pack_vertically(Panel *panel)
+static void generic_pack(Panel *panel, Direction2 direction)
 {
+	Direction2 const opposite_direction = Direction2_opposite(direction);
 	Vector2i const panel_size = panel->base.actual_size;
-	int desired_height = 0;
+	int desired_dimension = 0;
 	size_t i, c;
 	Vector2i current_child_pos = panel->base.absolute_position;
 	for (i = 0, c = PtrVector_size(&panel->children); i < c; ++i)
 	{
 		Widget const * const child = PtrVector_get(&panel->children, i);
-		desired_height += child->desired_size.y;
+		desired_dimension += Vector2i_get_component(&child->desired_size, direction);
 	}
 	for (i = 0; i < c; ++i)
 	{
 		Widget * const child = PtrVector_get(&panel->children, i);
-		int const child_desired = child->desired_size.y;
-		int const child_actual = (desired_height > panel_size.y) ? (child_desired * panel_size.y / desired_height) : child_desired;
+		int const child_desired = Vector2i_get_component(&child->desired_size, direction);
+		int const child_actual = (desired_dimension > Vector2i_get_component(&panel_size, direction)) ? (child_desired * Vector2i_get_component(&panel_size, direction) / desired_dimension) : child_desired;
 		child->absolute_position = current_child_pos;
-		current_child_pos.y += child_actual;
-		child->actual_size = Vector2i_new(min_int(panel_size.x, child->desired_size.x), child_actual);
+		Vector2i_add_component(&current_child_pos, direction, child_actual);
+		Vector2i_set_component(&child->actual_size, direction, child_actual);
+		Vector2i_set_component(
+			&child->actual_size,
+			opposite_direction,
+			min_int(Vector2i_get_component(&panel_size, opposite_direction), Vector2i_get_component(&child->desired_size, opposite_direction))
+		);
 		Widget_pack(child);
 	}
+}
+
+static void pack_vertically(Panel *panel)
+{
+	generic_pack(panel, Direction2_Down);
+}
+
+static void pack_horizontally(Panel *panel)
+{
+	generic_pack(panel, Direction2_Right);
 }
 
 Layout make_vertical_layout(void)
 {
 	Layout layout;
 	layout.pack_children = pack_vertically;
+	layout.user = NULL;
+	return layout;
+}
+
+Layout make_horizontal_layout(void)
+{
+	Layout layout;
+	layout.pack_children = pack_horizontally;
 	layout.user = NULL;
 	return layout;
 }

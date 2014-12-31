@@ -59,17 +59,25 @@ static Widget *create_gui(void)
 {
 	/*TODO: check success */
 	Panel * const root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
-	Panel * const window = Panel_create(Vector2i_new(150, 90), make_vertical_layout());
-	TextStyle const styleA = make_text_style(TextAlignment_Center, TextAlignment_Center, make_color(255, 255, 255, 255));
-	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Right, make_color(255, 0, 0, 255));
-	TextStyle const styleC = make_text_style(TextAlignment_Right, TextAlignment_Center, make_color(0, 255, 255, 255));
-	Button * const button1 = Button_create((Widget *)Label_create(moa_strdup("Click me 1 !!!!!!!!!!!!!!!!!!!"), styleA, Vector2i_new(100, 20)), Vector2i_new(100, 20));
-	Label * const label1 = Label_create(moa_strdup("abcdefghijklmnopqrstuvwxyz Label 1"), styleB, Vector2i_new(200, 40));
-	Button * const button2 = Button_create((Widget *)Label_create(moa_strdup("123456 Click me 654321"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25));
+	Panel * const window = Panel_create(Vector2i_new(150, 400), make_vertical_layout());
+	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
+	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
+	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
+	Button * const button1 = Button_create((Widget *)Label_create(moa_strdup("button1"), styleA, Vector2i_new(100, 20)), Vector2i_new(100, 20), make_color(255, 255, 255, 255));
+	Label * const label1 = Label_create(moa_strdup("label1"), styleB, Vector2i_new(200, 40));
+	Button * const button2 = Button_create((Widget *)Label_create(moa_strdup("button2"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(0, 255, 255, 255));
+	Button * const button3 = Button_create((Widget *)Label_create(moa_strdup("button3"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(255, 0, 255, 255));
+	Button * const button4 = Button_create((Widget *)Label_create(moa_strdup("4"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(255, 255, 0, 255));
+	Button * const button5 = Button_create((Widget *)Label_create(moa_strdup("5"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(127, 127, 127, 255));
+	Panel * const panel1 = Panel_create(Vector2i_new(200, 100), make_horizontal_layout());
 	PtrVector_push_back(&root->children, window);
 	PtrVector_push_back(&window->children, button1);
 	PtrVector_push_back(&window->children, label1);
 	PtrVector_push_back(&window->children, button2);
+	PtrVector_push_back(&window->children, button3);
+	PtrVector_push_back(&window->children, panel1);
+	PtrVector_push_back(&panel1->children, button4);
+	PtrVector_push_back(&panel1->children, button5);
 	window->base.absolute_position = Vector2i_new(200, 5);
 	Widget_pack(&root->base);
 	return (Widget *)root;
