@@ -4,6 +4,7 @@
 #include "gui/button.h"
 #include "gui/label.h"
 #include "gui/panel.h"
+#include "gui/padding.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,7 +69,8 @@ static Widget *create_gui(void)
 	Button * const button2 = Button_create((Widget *)Label_create(moa_strdup("button2"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(0, 255, 255, 255));
 	Button * const button3 = Button_create((Widget *)Label_create(moa_strdup("button3"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(255, 0, 255, 255));
 	Button * const button4 = Button_create((Widget *)Label_create(moa_strdup("4"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(255, 255, 0, 255));
-	Button * const button5 = Button_create((Widget *)Label_create(moa_strdup("5"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(127, 127, 127, 255));
+	Button * const button5 = Button_create((Widget *)Label_create(moa_strdup("555"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 40), make_color(127, 127, 127, 255));
+	Padding * const padding1 = Padding_create(Vector2i_new(80, 30), button5, 1);
 	Panel * const panel1 = Panel_create(Vector2i_new(200, 100), make_horizontal_layout());
 	PtrVector_push_back(&root->children, window);
 	PtrVector_push_back(&window->children, button1);
@@ -77,7 +79,7 @@ static Widget *create_gui(void)
 	PtrVector_push_back(&window->children, button3);
 	PtrVector_push_back(&window->children, panel1);
 	PtrVector_push_back(&panel1->children, button4);
-	PtrVector_push_back(&panel1->children, button5);
+	PtrVector_push_back(&panel1->children, padding1);
 	window->base.absolute_position = Vector2i_new(200, 5);
 	Widget_pack(&root->base);
 	return (Widget *)root;

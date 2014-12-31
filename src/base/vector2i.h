@@ -29,6 +29,7 @@ Bool Vector2i_equal(Vector2i const *first, Vector2i const *second);
 int Vector2i_get_component(Vector2i const *from, Direction2 component);
 int Vector2i_add_component(Vector2i *to, Direction2 component, int difference);
 void Vector2i_set_component(Vector2i *to, Direction2 component, int value);
+void Vector2i_add_xy(Vector2i *to, int x, int y);
 
 Vector2i const Vector2i_zero;
 

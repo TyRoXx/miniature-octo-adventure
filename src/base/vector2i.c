@@ -75,5 +75,10 @@ void Vector2i_set_component(Vector2i *to, Direction2 component, int value)
 	MOA_UNREACHABLE();
 }
 
+void Vector2i_add_xy(Vector2i *to, int x, int y)
+{
+	to->x += x;
+	to->y += y;
+}
 
 Vector2i const Vector2i_zero = {0, 0};
