@@ -30,7 +30,11 @@ static SDL_Surface *load_bmp_texture(char const *file_name,
 
 	if (SDL_SetColorKey(
 			converted,
+#if SDL_MAJOR_VERSION >= 2
+			SDL_TRUE,
+#else
 			SDL_SRCCOLORKEY,
+#endif
 			SDL_MapRGB(converted->format, AlphaKey.r, AlphaKey.g, AlphaKey.b)) < 0)
 	{
 		SDL_FreeSurface(converted);

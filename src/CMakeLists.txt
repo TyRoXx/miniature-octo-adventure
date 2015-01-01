@@ -4,18 +4,21 @@ cmake_minimum_required(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 find_package(Jansson REQUIRED)
-find_package(SDL REQUIRED)
-find_package(SDL_ttf REQUIRED)
-
-#for future SDL2 support:
-#find_package(SDL2)
-#if(SDL2_FOUND)
-#	include_directories(${SDL2_INCLUDE_DIR})
-#endif()
-
 include_directories(${JANSSON_INCLUDE_DIR})
-include_directories(${SDL_INCLUDE_DIR})
-include_directories(${SDLTTF_INCLUDE_DIR})
+
+find_package(SDL2)
+if(SDL2_FOUND)
+	include_directories(${SDL2_INCLUDE_DIR})
+	find_package(SDL2_ttf REQUIRED)
+	include_directories(${SDL2TTF_INCLUDE_DIR})
+endif()
+
+if(NOT SDL2_FOUND)
+	find_package(SDL REQUIRED)
+	include_directories(${SDL_INCLUDE_DIR})
+	find_package(SDL_ttf REQUIRED)
+	include_directories(${SDLTTF_INCLUDE_DIR})
+endif()
 
 if(UNIX OR MINGW)
 	set(CMAKE_C_FLAGS "-Wall -Wextra -Wconversion -Werror -pedantic -Wconversion -Wunused -Wundef")

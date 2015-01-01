@@ -22,6 +22,11 @@ typedef struct SDLFrontend
 	Frontend base;
 	struct Game *game;
 	SDL_Surface *screen;
+#if SDL_MAJOR_VERSION >= 2
+	SDL_Texture *texture;
+	SDL_Renderer *renderer;
+	SDL_Window *window;
+#endif
 	Data data;
 	struct GameStateView *state_view;
 }

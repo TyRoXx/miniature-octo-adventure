@@ -86,7 +86,11 @@ static SDL_Color to_SDL_color(Color color)
 	result.r = color.r;
 	result.g = color.g;
 	result.b = color.b;
+#if SDL_MAJOR_VERSION >= 2
+	result.a = color.a;
+#else
 	result.unused = color.a;
+#endif
 	return result;
 }
 

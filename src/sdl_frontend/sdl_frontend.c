@@ -18,10 +18,17 @@ static void SDLFrontend_destroy(Frontend *front)
 	}
 
 	Data_free(&sdl_front->data, sdl_front->game->memory.deallocator);
-	free(front);
 
 	TTF_Quit();
+#if SDL_MAJOR_VERSION >= 2
+	SDL_FreeSurface(sdl_front->screen);
+	SDL_DestroyTexture(sdl_front->texture);
+	SDL_DestroyRenderer(sdl_front->renderer);
+	SDL_DestroyWindow(sdl_front->window);
+#endif
 	SDL_Quit();
+
+	free(front);
 }
 
 static void SDLFrontend_main_loop(Frontend *front)
@@ -78,7 +85,14 @@ static void SDLFrontend_main_loop(Frontend *front)
 
 		sdl_front->state_view->type->draw(sdl_front->state_view);
 
+#if SDL_MAJOR_VERSION >= 2
+		SDL_RenderClear(sdl_front->renderer);
+		SDL_UpdateTexture(sdl_front->texture, NULL, sdl_front->screen->pixels, sdl_front->screen->w * 4);
+		SDL_RenderCopy(sdl_front->renderer, sdl_front->texture, NULL, NULL);
+		SDL_RenderPresent(sdl_front->renderer);
+#else
 		SDL_Flip(screen);
+#endif
 		SDL_Delay(16);
 	}
 }
@@ -133,8 +147,38 @@ Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings)
 
 	front->base.type = &SDLFrontendType;
 	front->game = game;
+#if SDL_MAJOR_VERSION >= 2
+	front->window = SDL_CreateWindow(
+		WindowTitle,
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		settings.resolution.x, settings.resolution.y,
+		SDL_WINDOW_SHOWN
+	);
+	assert(front->window); /*TODO error handling*/
+
+	front->renderer = SDL_CreateRenderer(front->window, -1, 0);
+	assert(front->renderer); /*TODO error handling*/
+
+	front->texture = SDL_CreateTexture(
+		front->renderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		settings.resolution.x, settings.resolution.y
+	);
+	assert(front->texture); /*TODO error handling*/
+
+	front->screen = SDL_CreateRGBSurface(
+		0, settings.resolution.x, settings.resolution.y, 32,
+		0x00FF0000,
+		0x0000FF00,
+		0x000000FF,
+		0xFF000000
+	);
+#else
 	front->screen = SDL_SetVideoMode(settings.resolution.x, settings.resolution.y, 32,
 	                                 SDL_HWSURFACE | SDL_DOUBLEBUF | (settings.fullscreen ? SDL_FULLSCREEN : 0));
+#endif
 	front->state_view = 0;
 
 	if (!front->screen)
@@ -152,7 +196,9 @@ Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings)
 	game->on_enter_state.function = on_enter_game_state;
 	game->on_enter_state.user_data = front;
 
+#if SDL_MAJOR_VERSION == 1
 	SDL_WM_SetCaption(WindowTitle, WindowTitle);
+#endif
 
 	return (Frontend *)front;
 
@@ -160,6 +206,9 @@ fail_3:
 	TTF_Quit();
 
 fail_2:
+#if SDL_MAJOR_VERSION >= 2
+	SDL_FreeSurface(front->screen);
+#endif
 	SDL_Quit();
 
 fail_1:
