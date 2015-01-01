@@ -29,7 +29,7 @@ static WidgetClass const labeled_button_class =
 	LabeledButton_render
 };
 
-LabeledButton LabeledButton_create(char *text, TextStyle style, Vector2i desired_size, Color background_color)
+LabeledButton LabeledButton_create(char const *text, TextStyle style, Vector2i desired_size, Color background_color)
 {
 	LabeledButton button;
 	Widget_init(&button.base, &labeled_button_class, desired_size);
