@@ -1,7 +1,6 @@
 #include "algorithm.h"
 #include <assert.h>
 
-
 void for_each(void *begin,
 			  void *end,
 			  size_t element_size,

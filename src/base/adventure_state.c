@@ -44,18 +44,6 @@ static Bool load_world(char const *file_name, World *world)
 	return result;
 }
 
-static char *moa_strdup(char const *str)
-{
-	size_t const len = strlen(str);
-	char *copy = malloc(len + 1);
-	if (!copy)
-	{
-		return NULL;
-	}
-	memcpy(copy, str, len + 1);
-	return copy;
-}
-
 typedef struct AdventureGui
 {
 	Widget base;
@@ -118,12 +106,12 @@ static Widget *create_gui(void)
 
 	gui->root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
 	gui->window = Panel_create(Vector2i_new(150, 400), make_vertical_layout());
-	gui->buttons[0] = LabeledButton_create(moa_strdup("button1"), styleA, Vector2i_new(100, 20), make_color(255, 255, 255, 255));
-	gui->label1 = Label_create(moa_strdup("label1"), styleB, Vector2i_new(200, 40));
-	gui->buttons[1] = LabeledButton_create(moa_strdup("button2"), styleC, Vector2i_new(80, 25), make_color(0, 255, 255, 255));
-	gui->buttons[2] = LabeledButton_create(moa_strdup("button3"), styleC, Vector2i_new(80, 25), make_color(255, 0, 255, 255));
-	gui->buttons[3] = LabeledButton_create(moa_strdup("4"), styleC, Vector2i_new(80, 25), make_color(255, 255, 0, 255));
-	gui->buttons[4] = LabeledButton_create(moa_strdup("555"), styleC, Vector2i_new(80, 40), make_color(127, 127, 127, 255));
+	gui->buttons[0] = LabeledButton_create("button1", styleA, Vector2i_new(100, 20), make_color(255, 255, 255, 255));
+	gui->label1 = Label_create("label1", styleB, Vector2i_new(200, 40));
+	gui->buttons[1] = LabeledButton_create("button2", styleC, Vector2i_new(80, 25), make_color(0, 255, 255, 255));
+	gui->buttons[2] = LabeledButton_create("button3", styleC, Vector2i_new(80, 25), make_color(255, 0, 255, 255));
+	gui->buttons[3] = LabeledButton_create("4", styleC, Vector2i_new(80, 25), make_color(255, 255, 0, 255));
+	gui->buttons[4] = LabeledButton_create("555", styleC, Vector2i_new(80, 40), make_color(127, 127, 127, 255));
 	gui->padding1 = Padding_create(Vector2i_new(80, 30), &gui->buttons[4].base, 1);
 	gui->panel1 = Panel_create(Vector2i_new(200, 100), make_horizontal_layout());
 	PtrVector_push_back(&gui->root.children, &gui->window);

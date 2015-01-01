@@ -9,12 +9,12 @@
 typedef struct Label
 {
 	Widget base;
-	char *text;
+	char const *text;
 	TextStyle style;
 }
 Label;
 
-Label Label_create(char *text, TextStyle style, Vector2i desired_size);
+Label Label_create(char const *text, TextStyle style, Vector2i desired_size);
 
 
 #endif
