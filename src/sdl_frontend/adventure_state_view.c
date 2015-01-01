@@ -3,7 +3,7 @@
 #include "gui_renderer.h"
 #include "gui/panel.h"
 #include "gui/button.h"
-#include "gui/label.h"
+#include "gui/labeled_button.h"
 #include "base/adventure_state.h"
 #include "base/camera.h"
 #include "base/avatar_controller.h"
@@ -11,6 +11,99 @@
 #include <assert.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
+
+typedef struct AdventureGui
+{
+	Widget base;
+	Panel root;
+	Label frame_number;
+	Vector frame_number_text;
+#if MOA_MEMORY_DEBUGGING
+	Label active_allocations;
+	Vector active_allocations_text;
+	Label total_allocations;
+	Vector total_allocations_text;
+#endif
+	Deallocator deallocator;
+}
+AdventureGui;
+
+static void AdventureGui_destroy(Widget *this_)
+{
+	AdventureGui * const instance = (AdventureGui *)this_;
+#if MOA_MEMORY_DEBUGGING
+	Widget_destroy(&instance->active_allocations.base);
+	Vector_free(&instance->active_allocations_text, instance->deallocator);
+	Widget_destroy(&instance->total_allocations.base);
+	Vector_free(&instance->total_allocations_text, instance->deallocator);
+#endif
+	Widget_destroy(&instance->frame_number.base);
+	Vector_free(&instance->frame_number_text, instance->deallocator);
+	Widget_destroy(&instance->root.base);
+}
+
+static void AdventureGui_pack(Widget *this_)
+{
+	AdventureGui * const instance = (AdventureGui *)this_;
+	Widget_pack(&instance->root.base);
+}
+
+static void AdventureGui_render(Widget *this_, Renderer *renderer)
+{
+	AdventureGui * const instance = (AdventureGui *)this_;
+	Widget_render(&instance->root.base, renderer);
+}
+
+static WidgetClass const adventure_gui_class =
+{
+	AdventureGui_destroy,
+	AdventureGui_pack,
+	AdventureGui_render
+};
+
+MOA_USE_RESULT
+static Bool create_gui(AdventureGui *gui, MemoryManager memory)
+{
+	Vector2i screen_resolution = {1024, 768}; /*TODO use the actual resolution*/
+#if MOA_MEMORY_DEBUGGING
+	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
+	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
+#endif
+	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
+
+	int root_width = 200;
+	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(root_width, screen_resolution.y));
+
+	gui->deallocator = memory.deallocator;
+	gui->root = Panel_create(Vector2i_new(root_width, screen_resolution.y), make_vertical_layout(), memory.deallocator);
+	gui->root.base.actual_size = gui->root.base.desired_size;
+	gui->root.base.absolute_position.x = screen_resolution.x - root_width;
+	gui->root.base.absolute_position.y = 0;
+
+#if MOA_MEMORY_DEBUGGING
+	gui->active_allocations = Label_create("", styleA, Vector2i_new(300, 30));
+	Vector_init(&gui->active_allocations_text);
+
+	gui->total_allocations = Label_create("", styleB, Vector2i_new(300, 30));
+	Vector_init(&gui->total_allocations_text);
+#endif
+
+	gui->frame_number = Label_create("", styleC, Vector2i_new(300, 30));
+	Vector_init(&gui->frame_number_text);
+
+	if (
+#if MOA_MEMORY_DEBUGGING
+		PtrVector_push_back(&gui->root.children, &gui->active_allocations, memory.allocator) &&
+		PtrVector_push_back(&gui->root.children, &gui->total_allocations, memory.allocator) &&
+#endif
+		PtrVector_push_back(&gui->root.children, &gui->frame_number, memory.allocator))
+	{
+		return True;
+	}
+
+	AdventureGui_destroy(&gui->base);
+	return False;
+}
 
 typedef struct AdventureStateView
 {
@@ -20,6 +113,7 @@ typedef struct AdventureStateView
 	Camera camera;
 	AvatarController avatar_controller;
 	uint64_t current_frame;
+	AdventureGui gui;
 }
 AdventureStateView;
 
@@ -192,10 +286,19 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 		goto fail_2;
 	}
 
+	if (!create_gui(&adv_view->gui, adv_state->memory))
+	{
+		goto fail_3;
+	}
+	Widget_pack(&adv_view->gui.base);
+
 	adv_view->current_frame = 0;
 	adv_view->front = front;
 	adv_view->state = adv_state;
 	return (GameStateView *)adv_view;
+
+fail_3:
+	AvatarController_free(&adv_view->avatar_controller);
 
 fail_2:
 	Camera_free(&adv_view->camera);
@@ -213,6 +316,7 @@ static void AdventureStateView_destroy(GameStateView *view)
 
 	AvatarController_free(&adv_view->avatar_controller);
 	Camera_free(&adv_view->camera);
+	Widget_destroy(&adv_view->gui.base);
 	Deallocator_free(adv_view->state->memory.deallocator, view);
 }
 
@@ -226,25 +330,25 @@ static Bool AdventureStateView_update(GameStateView *view)
 	{
 		MemoryStatistics const *stats = adv_view->state->memory_statistics;
 
-		if (!Vector_printf(&adv_view->state->gui.active_allocations_text, adv_view->state->memory.allocator, "Active: %" PRIu64, stats->active_allocations))
+		if (!Vector_printf(&adv_view->gui.active_allocations_text, adv_view->state->memory.allocator, "Active: %" PRIu64, stats->active_allocations))
 		{
 			return False;
 		}
-		adv_view->state->gui.active_allocations.text = adv_view->state->gui.active_allocations_text.data;
+		adv_view->gui.active_allocations.text = adv_view->gui.active_allocations_text.data;
 
-		if (!Vector_printf(&adv_view->state->gui.total_allocations_text, adv_view->state->memory.allocator, "Total: %" PRIu64, stats->total_allocations))
+		if (!Vector_printf(&adv_view->gui.total_allocations_text, adv_view->state->memory.allocator, "Total: %" PRIu64, stats->total_allocations))
 		{
 			return False;
 		}
-		adv_view->state->gui.total_allocations.text = adv_view->state->gui.total_allocations_text.data;
+		adv_view->gui.total_allocations.text = adv_view->gui.total_allocations_text.data;
 	}
 #endif
 
-	if (!Vector_printf(&adv_view->state->gui.frame_number_text, adv_view->state->memory.allocator, "Frame: %" PRIu64, adv_view->current_frame))
+	if (!Vector_printf(&adv_view->gui.frame_number_text, adv_view->state->memory.allocator, "Frame: %" PRIu64, adv_view->current_frame))
 	{
 		return False;
 	}
-	adv_view->state->gui.frame_number.text = adv_view->state->gui.frame_number_text.data;
+	adv_view->gui.frame_number.text = adv_view->gui.frame_number_text.data;
 
 	return True;
 }
@@ -314,7 +418,7 @@ static void AdventureStateView_draw(GameStateView *view)
 	    screen_resolution
 		);
 
-	draw_user_interface(&adventure->gui.base, screen, &adv_view->front->data.fonts);
+	draw_user_interface(&adv_view->gui.base, screen, &adv_view->front->data.fonts);
 
 	adv_view->current_frame += 1;
 }
