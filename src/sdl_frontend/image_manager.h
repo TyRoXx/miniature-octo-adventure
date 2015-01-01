@@ -14,7 +14,7 @@ typedef struct Image
 Image;
 
 void Image_init(Image *im, char *name, SDL_Surface *surface);
-void Image_free(Image *im);
+void Image_free(Image *im, Deallocator deallocator);
 
 
 typedef struct ImageManager

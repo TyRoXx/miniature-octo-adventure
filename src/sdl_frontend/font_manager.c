@@ -42,7 +42,7 @@ Bool FontManager_load(FontManager *m, MemoryManager fonts_memory, char const *fo
 			success = False;
 			fprintf(stderr, "Could not load font file %s\n", full_file_name);
 		}
-		free(full_file_name);
+		Deallocator_free(fonts_memory.deallocator, full_file_name);
 		if (!success)
 		{
 			return False;

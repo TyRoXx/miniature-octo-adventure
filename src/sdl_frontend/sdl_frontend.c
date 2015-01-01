@@ -28,7 +28,7 @@ static void SDLFrontend_destroy(Frontend *front)
 #endif
 	SDL_Quit();
 
-	free(front);
+	Deallocator_free(sdl_front->game->memory.deallocator, front);
 }
 
 static void SDLFrontend_main_loop(Frontend *front)
@@ -125,7 +125,7 @@ static void on_enter_game_state(void *user_data, GameState *state)
 
 Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings)
 {
-	SDLFrontend * const front = malloc(sizeof(*front));
+	SDLFrontend * const front = Allocator_alloc(game->memory.allocator, sizeof(*front));
 	if (!front)
 	{
 		goto fail_0;
@@ -212,7 +212,7 @@ fail_2:
 	SDL_Quit();
 
 fail_1:
-	free(front);
+	Deallocator_free(game->memory.deallocator, front);
 
 fail_0:
 	return NULL;

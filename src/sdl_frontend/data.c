@@ -23,7 +23,7 @@ static Bool init_appearances(
 	if (!file)
 	{
 		fprintf(stderr, "Could not open file %s\n", appearance_file_name);
-		free(appearance_file_name);
+		Deallocator_free(memory.deallocator, appearance_file_name);
 		return False;
 	}
 
@@ -72,7 +72,7 @@ Bool Data_init(Data *d,
 				FontManager_free(&d->fonts, memory.deallocator);
 				success = False;
 			}
-			free(font_directory);
+			Deallocator_free(memory.deallocator, font_directory);
 			return success;
 		}
 	}

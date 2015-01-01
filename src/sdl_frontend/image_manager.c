@@ -50,9 +50,9 @@ void Image_init(Image *im, char *name, SDL_Surface *surface)
 	im->surface = surface;
 }
 
-void Image_free(Image *im)
+void Image_free(Image *im, Deallocator deallocator)
 {
-	free(im->name);
+	Deallocator_free(deallocator, im->name);
 	SDL_FreeSurface(im->surface);
 }
 
@@ -68,8 +68,8 @@ void ImageManager_init(ImageManager *im,
 
 static void free_image(void *image, void *user)
 {
-	(void)user;
-	Image_free(image);
+	Deallocator *deallocator = user;
+	Image_free(image, *deallocator);
 }
 
 void ImageManager_free(ImageManager *im, Deallocator images_deallocator)
@@ -78,9 +78,9 @@ void ImageManager_free(ImageManager *im, Deallocator images_deallocator)
 			 Vector_end(&im->images),
 			 sizeof(Image),
 			 free_image,
-			 NULL);
+			 &images_deallocator);
 	Vector_free(&im->images, images_deallocator);
-	free(im->directory);
+	Deallocator_free(images_deallocator, im->directory);
 }
 
 static Bool is_image_name(void *element, void *user)
@@ -104,7 +104,7 @@ static Image *add_image(
 
 	image.name = name;
 	image.surface = load_bmp_texture(full_name, manager->format);
-	free(full_name);
+	Deallocator_free(memory.deallocator, full_name);
 
 	if (!image.surface)
 	{
@@ -120,10 +120,10 @@ static Image *add_image(
 	return ((Image *)Vector_end(&manager->images)) - 1;
 }
 
-static char *copy_string(char const *str)
+static char *copy_string(char const *str, Allocator allocator)
 {
 	size_t const length = strlen(str) + 1;
-	char *copy = malloc(length);
+	char *copy = Allocator_alloc(allocator, length);
 	if (copy)
 	{
 		memcpy(copy, str, length);
@@ -148,7 +148,7 @@ SDL_Surface *ImageManager_get(ImageManager *im, char const *name, MemoryManager 
 		return existing->surface;
 	}
 
-	name_copy = copy_string(name);
+	name_copy = copy_string(name, memory.allocator);
 	created = add_image(im, name_copy, memory);
 
 	if (created)
@@ -156,6 +156,6 @@ SDL_Surface *ImageManager_get(ImageManager *im, char const *name, MemoryManager 
 		return created->surface;
 	}
 
-	free(name_copy);
+	Deallocator_free(memory.deallocator, name_copy);
 	return NULL;
 }

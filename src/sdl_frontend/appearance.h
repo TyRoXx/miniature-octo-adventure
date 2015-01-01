@@ -35,8 +35,8 @@ typedef struct AnimationSide
 AnimationSide;
 
 MOA_USE_RESULT
-Bool AnimationSide_init(AnimationSide *a, size_t frame_count);
-void AnimationSide_free(AnimationSide *a);
+Bool AnimationSide_init(AnimationSide *a, size_t frame_count, Allocator allocator);
+void AnimationSide_free(AnimationSide *a, Deallocator deallocator);
 
 
 typedef struct Animation
@@ -45,7 +45,7 @@ typedef struct Animation
 }
 Animation;
 
-void Animation_free(Animation *a);
+void Animation_free(Animation *a, Deallocator deallocator);
 
 
 typedef struct AppearanceLayout
@@ -55,7 +55,7 @@ typedef struct AppearanceLayout
 AppearanceLayout;
 
 
-void AppearanceLayout_free(AppearanceLayout *a);
+void AppearanceLayout_free(AppearanceLayout *a, Deallocator deallocator);
 
 
 typedef struct Appearance

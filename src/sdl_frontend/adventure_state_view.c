@@ -171,7 +171,7 @@ static void draw_tile_layers(
 static GameStateView *AdventureStateView_create(GameState *state, struct SDLFrontend *front)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
-	AdventureStateView * const adv_view = malloc(sizeof(*adv_view));
+	AdventureStateView * const adv_view = Allocator_alloc(adv_state->memory.allocator, sizeof(*adv_view));
 
 	assert(adv_state);
 	assert(front);
@@ -199,7 +199,7 @@ fail_2:
 	Camera_free(&adv_view->camera);
 
 fail_1:
-	free(adv_view);
+	Deallocator_free(adv_state->memory.deallocator, adv_view);
 
 fail_0:
 	return NULL;
@@ -211,7 +211,7 @@ static void AdventureStateView_destroy(GameStateView *view)
 
 	AvatarController_free(&adv_view->avatar_controller);
 	Camera_free(&adv_view->camera);
-	free(view);
+	Deallocator_free(adv_view->state->memory.deallocator, view);
 }
 
 static void AdventureStateView_update(GameStateView *view)

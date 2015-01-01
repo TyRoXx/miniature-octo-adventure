@@ -5,36 +5,36 @@
 #include <jansson.h>
 
 
-Bool AnimationSide_init(AnimationSide *a, size_t frame_count)
+Bool AnimationSide_init(AnimationSide *a, size_t frame_count, Allocator allocator)
 {
-	a->frames = malloc(frame_count * sizeof(AnimationFrame));
+	a->frames = Allocator_calloc(allocator, frame_count, sizeof(AnimationFrame));
 	a->frame_count = frame_count;
 	return (a->frames != NULL);
 }
 
-void AnimationSide_free(AnimationSide *a)
+void AnimationSide_free(AnimationSide *a, Deallocator deallocator)
 {
-	free(a->frames);
+	Deallocator_free(deallocator, a->frames);
 }
 
 
-void Animation_free(Animation *a)
+void Animation_free(Animation *a, Deallocator deallocator)
 {
 	size_t i;
 	for (i = 0; i < DIR_COUNT; ++i)
 	{
-		AnimationSide_free(&a->sides[i]);
+		AnimationSide_free(&a->sides[i], deallocator);
 	}
 }
 
 
-void AppearanceLayout_free(AppearanceLayout *a)
+void AppearanceLayout_free(AppearanceLayout *a, Deallocator deallocator)
 {
 	size_t i;
 
 	for (i = 0; i < (size_t)Anim_COUNT; ++i)
 	{
-		Animation_free(a->animations + i);
+		Animation_free(a->animations + i, deallocator);
 	}
 }
 
@@ -58,7 +58,8 @@ static unsigned const tile_size = 32;
 static Bool init_animation(
 		Animation *anim,
 		AnimationType anim_id,
-		Bool (*init_side)(AnimationSide *, AnimationType, Direction))
+		Bool (*init_side)(AnimationSide *, AnimationType, Direction, Allocator),
+		MemoryManager memory)
 {
 	Bool result = True;
 	size_t i;
@@ -66,7 +67,7 @@ static Bool init_animation(
 	for (i = 0; i < DIR_COUNT; ++i)
 	{
 		AnimationSide * const side = &anim->sides[i];
-		if (!init_side(side, anim_id, (Direction)i))
+		if (!init_side(side, anim_id, (Direction)i, memory.allocator))
 		{
 			result = False;
 			break;
@@ -78,7 +79,7 @@ static Bool init_animation(
 		size_t c;
 		for (c = i, i = 0; i < c; ++i)
 		{
-			AnimationSide_free(&anim->sides[i]);
+			AnimationSide_free(&anim->sides[i], memory.deallocator);
 		}
 	}
 
@@ -86,7 +87,8 @@ static Bool init_animation(
 }
 
 static Bool init_layout(AppearanceLayout *layout,
-						Bool (*init_side)(AnimationSide *, AnimationType, Direction))
+						Bool (*init_side)(AnimationSide *, AnimationType, Direction, Allocator),
+						MemoryManager memory)
 {
 	Bool result = True;
 	size_t i, c;
@@ -98,7 +100,7 @@ static Bool init_layout(AppearanceLayout *layout,
 	{
 		Animation * const anim = layout->animations + i;
 
-		if (!init_animation(anim, (AnimationType)i, init_side))
+		if (!init_animation(anim, (AnimationType)i, init_side, memory))
 		{
 			result = False;
 			break;
@@ -111,7 +113,7 @@ static Bool init_layout(AppearanceLayout *layout,
 	{
 		for (c = i, i = 0; i < c; ++i)
 		{
-			Animation_free(layout->animations + i);
+			Animation_free(layout->animations + i, memory.deallocator);
 		}
 		return False;
 	}
@@ -121,13 +123,14 @@ static Bool init_layout(AppearanceLayout *layout,
 
 static Bool init_dynamic_side_1(AnimationSide *side,
 								AnimationType anim_id,
-								Direction side_id)
+								Direction side_id,
+								Allocator allocator)
 {
 	size_t const frame_count = 3;
 	size_t j;
 	SDL_Rect section;
 
-	if (!AnimationSide_init(side, frame_count))
+	if (!AnimationSide_init(side, frame_count, allocator))
 	{
 		return False;
 	}
@@ -151,14 +154,15 @@ static Bool init_dynamic_side_1(AnimationSide *side,
 
 static Bool init_static_side(AnimationSide *side,
 							 AnimationType anim_id,
-							 Direction side_id)
+							 Direction side_id,
+							 Allocator allocator)
 {
 	SDL_Rect section;
 
 	(void)anim_id;
 	(void)side_id;
 
-	if (!AnimationSide_init(side, 1))
+	if (!AnimationSide_init(side, 1, allocator))
 	{
 		return False;
 	}
@@ -173,14 +177,14 @@ static Bool init_static_side(AnimationSide *side,
 	return True;
 }
 
-static Bool init_dynamic_layout_1(AppearanceLayout *layout)
+static Bool init_dynamic_layout_1(AppearanceLayout *layout, MemoryManager memory)
 {
-	return init_layout(layout, &init_dynamic_side_1);
+	return init_layout(layout, &init_dynamic_side_1, memory);
 }
 
-static Bool init_static_layout(AppearanceLayout *layout)
+static Bool init_static_layout(AppearanceLayout *layout, MemoryManager memory)
 {
-	return init_layout(layout, &init_static_side);
+	return init_layout(layout, &init_static_side, memory);
 }
 
 static Bool add_appearance(AppearanceManager *a,
@@ -225,14 +229,14 @@ static void free_appearances(Vector *appearances, Deallocator deallocator)
 
 Bool AppearanceManager_init(AppearanceManager *a, MemoryManager appearances_memory)
 {
-	if (init_static_layout(&a->static_layout))
+	if (init_static_layout(&a->static_layout, appearances_memory))
 	{
-		if (init_dynamic_layout_1(&a->dynamic_layout_1))
+		if (init_dynamic_layout_1(&a->dynamic_layout_1, appearances_memory))
 		{
 			Vector_init(&a->appearances);
 			return True;
 		}
-		AppearanceLayout_free(&a->static_layout);
+		AppearanceLayout_free(&a->static_layout, appearances_memory.deallocator);
 	}
 	AppearanceManager_free(a, appearances_memory.deallocator);
 	return False;
@@ -349,8 +353,8 @@ Bool AppearanceManager_parse_file(
 void AppearanceManager_free(AppearanceManager *a, Deallocator deallocator)
 {
 	free_appearances(&a->appearances, deallocator);
-	AppearanceLayout_free(&a->dynamic_layout_1);
-	AppearanceLayout_free(&a->static_layout);
+	AppearanceLayout_free(&a->dynamic_layout_1, deallocator);
+	AppearanceLayout_free(&a->static_layout, deallocator);
 }
 
 Appearance const *AppearanceManager_get(AppearanceManager const *a,
