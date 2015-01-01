@@ -5,7 +5,7 @@
 #ifdef _MSC_VER
 #define MOA_UNREACHABLE() __assume(0)
 #else
-#define MOA_UNREACHABLE() //TODO
+#define MOA_UNREACHABLE() __builtin_unreachable()
 #endif
 
 

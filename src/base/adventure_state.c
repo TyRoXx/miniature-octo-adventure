@@ -70,7 +70,7 @@ static Widget *create_gui(void)
 	Button * const button3 = Button_create((Widget *)Label_create(moa_strdup("button3"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(255, 0, 255, 255));
 	Button * const button4 = Button_create((Widget *)Label_create(moa_strdup("4"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 25), make_color(255, 255, 0, 255));
 	Button * const button5 = Button_create((Widget *)Label_create(moa_strdup("555"), styleC, Vector2i_new(80, 25)), Vector2i_new(80, 40), make_color(127, 127, 127, 255));
-	Padding * const padding1 = Padding_create(Vector2i_new(80, 30), button5, 1);
+	Padding * const padding1 = Padding_create(Vector2i_new(80, 30), &button5->base, 1);
 	Panel * const panel1 = Panel_create(Vector2i_new(200, 100), make_horizontal_layout());
 	PtrVector_push_back(&root->children, window);
 	PtrVector_push_back(&window->children, button1);
