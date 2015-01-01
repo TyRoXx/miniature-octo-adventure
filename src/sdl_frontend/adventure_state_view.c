@@ -9,6 +9,8 @@
 #include "base/avatar_controller.h"
 #include "base/min_max.h"
 #include <assert.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 
 typedef struct AdventureStateView
 {
@@ -216,6 +218,19 @@ static void AdventureStateView_update(GameStateView *view)
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 
 	AvatarController_update(&adv_view->avatar_controller);
+
+#if MOA_MEMORY_DEBUGGING
+	{
+		MemoryStatistics const *stats = adv_view->state->memory_statistics;
+		/*TODO: do this without static variables*/
+		static char text_a[1000];
+		static char text_b[1000];
+		sprintf(text_a, "Active: %" PRIu64, stats->active_allocations);
+		sprintf(text_b, "Total: %" PRIu64, stats->total_allocations);
+		adv_view->state->gui.buttons[0].label.text = text_a;
+		adv_view->state->gui.buttons[1].label.text = text_b;
+	}
+#endif
 }
 
 static void draw_user_interface(
@@ -283,7 +298,7 @@ static void AdventureStateView_draw(GameStateView *view)
 	    screen_resolution
 		);
 
-	draw_user_interface(adventure->gui, screen, &adv_view->front->data.fonts);
+	draw_user_interface(&adventure->gui.base, screen, &adv_view->front->data.fonts);
 }
 
 static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const *event)

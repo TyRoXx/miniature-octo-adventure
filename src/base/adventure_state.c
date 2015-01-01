@@ -44,18 +44,6 @@ static Bool load_world(char const *file_name, World *world, MemoryManager world_
 	return result;
 }
 
-typedef struct AdventureGui
-{
-	Widget base;
-	Panel root;
-	Panel window;
-	LabeledButton buttons[5];
-	Label label1;
-	Padding padding1;
-	Panel panel1;
-}
-AdventureGui;
-
 static void destroy_widget(void *widget, void *user)
 {
 	(void)user;
@@ -94,17 +82,11 @@ static WidgetClass const adventure_gui_class =
 	AdventureGui_render
 };
 
-static Widget *create_gui(MemoryManager memory)
+static Bool create_gui(AdventureGui *gui, MemoryManager memory)
 {
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
 	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
-
-	AdventureGui *gui = Allocator_realloc(memory.allocator, NULL, sizeof(*gui));
-	if (!gui)
-	{
-		return NULL;
-	}
 
 	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(500, 400));
 
@@ -129,11 +111,11 @@ static Widget *create_gui(MemoryManager memory)
 		PtrVector_push_back(&gui->panel1.children, &gui->buttons[3], memory.allocator) &&
 		PtrVector_push_back(&gui->panel1.children, &gui->padding1, memory.allocator))
 	{
-		return &gui->base;
+		return True;
 	}
 
 	AdventureGui_destroy(&gui->base);
-	return NULL;
+	return False;
 }
 
 static GameState *AdventureState_create(Game *game)
@@ -145,6 +127,9 @@ static GameState *AdventureState_create(Game *game)
 	}
 
 	adv_state->memory = game->memory;
+#if MOA_MEMORY_DEBUGGING
+	adv_state->memory_statistics = &game->memory_statistics;
+#endif
 
 	{
 		char const * const world_file_name = "data/world.txt";
@@ -157,11 +142,9 @@ static GameState *AdventureState_create(Game *game)
 			{
 				adv_state->avatar = (Mover *)Vector_begin(&world->movers);
 
-				/*TODO: check success*/
-				adv_state->gui = create_gui(adv_state->memory);
-				if (adv_state->gui)
+				if (create_gui(&adv_state->gui, adv_state->memory))
 				{
-					Widget_pack(adv_state->gui);
+					Widget_pack(&adv_state->gui.base);
 					return (GameState *)adv_state;
 				}
 			}
@@ -176,8 +159,7 @@ static GameState *AdventureState_create(Game *game)
 static void AdventureState_destroy(GameState *state)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
-	Widget_destroy(adv_state->gui);
-	Deallocator_free(adv_state->memory.deallocator, adv_state->gui);
+	Widget_destroy(&adv_state->gui.base);
 	World_free(&adv_state->world, adv_state->memory.deallocator);
 	Deallocator_free(adv_state->memory.deallocator, state);
 }

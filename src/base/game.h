@@ -19,6 +19,9 @@ typedef struct Game
 	GameState *state;
 	GameStateEnterCallback on_enter_state;
 	MemoryManager memory;
+#if MOA_MEMORY_DEBUGGING
+	MemoryStatistics memory_statistics;
+#endif
 }
 Game;
 
