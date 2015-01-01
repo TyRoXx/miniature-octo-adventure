@@ -2,6 +2,8 @@
 #define GAME_STATE_VIEW_H
 
 
+#include "base/bool.h"
+#include "base/unused.h"
 #include "SDL.h"
 
 
@@ -12,9 +14,9 @@ struct SDLFrontend;
 
 typedef struct GameStateViewType
 {
-	struct GameStateView *(*create)(struct GameState *, struct SDLFrontend *front);
+	MOA_USE_RESULT struct GameStateView *(*create)(struct GameState *, struct SDLFrontend *front);
 	void (*destroy)(struct GameStateView *);
-	void (*update)(struct GameStateView *);
+	MOA_USE_RESULT Bool (*update)(struct GameStateView *);
 	void (*draw)(struct GameStateView *);
 	void (*handle_event)(struct GameStateView *, SDL_Event const *);
 }

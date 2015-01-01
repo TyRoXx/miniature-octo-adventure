@@ -2,6 +2,9 @@
 #define FRONTEND_H
 
 
+#include "base/unused.h"
+#include "base/bool.h"
+
 struct FrontendType;
 
 
@@ -15,7 +18,7 @@ Frontend;
 typedef struct FrontendType
 {
 	void (*destroy)(Frontend *);
-	void (*main_loop)(Frontend *);
+	MOA_USE_RESULT Bool (*main_loop)(Frontend *);
 }
 FrontendType;
 

@@ -31,7 +31,7 @@ static void SDLFrontend_destroy(Frontend *front)
 	Deallocator_free(sdl_front->game->memory.deallocator, front);
 }
 
-static void SDLFrontend_main_loop(Frontend *front)
+static Bool SDLFrontend_main_loop(Frontend *front)
 {
 	SDLFrontend * const sdl_front = (SDLFrontend *)front;
 	SDL_Surface * const screen = sdl_front->screen;
@@ -79,7 +79,10 @@ static void SDLFrontend_main_loop(Frontend *front)
 			last_time = current_time;
 		}
 
-		sdl_front->state_view->type->update(sdl_front->state_view);
+		if (!sdl_front->state_view->type->update(sdl_front->state_view))
+		{
+			return False;
+		}
 
 		SDL_FillRect(screen, 0, 0);
 
@@ -95,6 +98,7 @@ static void SDLFrontend_main_loop(Frontend *front)
 #endif
 		SDL_Delay(16);
 	}
+	return True;
 }
 
 

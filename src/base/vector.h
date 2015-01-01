@@ -52,5 +52,8 @@ char *Vector_end(Vector const *v);
 MOA_USE_RESULT
 Bool Vector_append_binary_file(Vector *v, Allocator v_allocator, FILE *in);
 
+MOA_USE_RESULT
+Bool Vector_printf(Vector *v, Allocator allocator, char const *format, ...);
+
 
 #endif

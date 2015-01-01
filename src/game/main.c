@@ -70,7 +70,10 @@ int main(int argc, char **argv)
 			goto fail_0;
 		}
 
-		frontend->type->main_loop(frontend);
+		if (!frontend->type->main_loop(frontend))
+		{
+			result = 1;
+		}
 
 fail_0:
 		frontend->type->destroy(frontend);

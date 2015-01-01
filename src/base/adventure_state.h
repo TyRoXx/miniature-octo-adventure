@@ -11,11 +11,15 @@ typedef struct AdventureGui
 {
 	Widget base;
 	Panel root;
-	Panel window;
-	LabeledButton buttons[5];
-	Label label1;
-	Padding padding1;
-	Panel panel1;
+	Label frame_number;
+	Vector frame_number_text;
+#if MOA_MEMORY_DEBUGGING
+	Label active_allocations;
+	Vector active_allocations_text;
+	Label total_allocations;
+	Vector total_allocations_text;
+#endif
+	Deallocator deallocator;
 }
 AdventureGui;
 

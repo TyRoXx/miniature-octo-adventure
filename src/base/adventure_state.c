@@ -45,22 +45,17 @@ static Bool load_world(char const *file_name, World *world, MemoryManager world_
 	return result;
 }
 
-static void destroy_widget(void *widget, void *user)
-{
-	(void)user;
-	Widget_destroy(widget);
-}
-
 static void AdventureGui_destroy(Widget *this_)
 {
 	AdventureGui * const instance = (AdventureGui *)this_;
-	Widget_destroy(&instance->panel1.base);
-	Widget_destroy(&instance->padding1.base);
-	Widget_destroy(&instance->label1.base);
-
-	for_each(&instance->buttons, MOA_ARRAY_END(instance->buttons), sizeof(*instance->buttons), destroy_widget, NULL);
-
-	Widget_destroy(&instance->window.base);
+#if MOA_MEMORY_DEBUGGING
+	Widget_destroy(&instance->active_allocations.base);
+	Vector_free(&instance->active_allocations_text, instance->deallocator);
+	Widget_destroy(&instance->total_allocations.base);
+	Vector_free(&instance->total_allocations_text, instance->deallocator);
+#endif
+	Widget_destroy(&instance->frame_number.base);
+	Vector_free(&instance->frame_number_text, instance->deallocator);
 	Widget_destroy(&instance->root.base);
 }
 
@@ -86,32 +81,39 @@ static WidgetClass const adventure_gui_class =
 MOA_USE_RESULT
 static Bool create_gui(AdventureGui *gui, MemoryManager memory)
 {
+	Vector2i screen_resolution = {1024, 768}; /*TODO use the actual resolution*/
+#if MOA_MEMORY_DEBUGGING
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
+#endif
 	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
 
-	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(500, 400));
+	int root_width = 200;
+	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(root_width, screen_resolution.y));
 
-	gui->root = Panel_create(Vector2i_new(0, 0), make_absolute_layout(), memory.deallocator);
-	gui->window = Panel_create(Vector2i_new(150, 400), make_vertical_layout(), memory.deallocator);
-	gui->buttons[0] = LabeledButton_create("button1", styleA, Vector2i_new(100, 20), make_color(255, 255, 255, 255));
-	gui->label1 = Label_create("label1", styleB, Vector2i_new(200, 40));
-	gui->buttons[1] = LabeledButton_create("button2", styleC, Vector2i_new(80, 25), make_color(0, 255, 255, 255));
-	gui->buttons[2] = LabeledButton_create("button3", styleC, Vector2i_new(80, 25), make_color(255, 0, 255, 255));
-	gui->buttons[3] = LabeledButton_create("4", styleC, Vector2i_new(80, 25), make_color(255, 255, 0, 255));
-	gui->buttons[4] = LabeledButton_create("555", styleC, Vector2i_new(80, 40), make_color(127, 127, 127, 255));
-	gui->padding1 = Padding_create(Vector2i_new(80, 30), &gui->buttons[4].base, 1);
-	gui->panel1 = Panel_create(Vector2i_new(200, 100), make_horizontal_layout(), memory.deallocator);
-	gui->window.base.absolute_position = Vector2i_new(200, 5);
+	gui->deallocator = memory.deallocator;
+	gui->root = Panel_create(Vector2i_new(root_width, screen_resolution.y), make_vertical_layout(), memory.deallocator);
+	gui->root.base.actual_size = gui->root.base.desired_size;
+	gui->root.base.absolute_position.x = screen_resolution.x - root_width;
+	gui->root.base.absolute_position.y = 0;
 
-	if (PtrVector_push_back(&gui->root.children, &gui->window, memory.allocator) &&
-		PtrVector_push_back(&gui->window.children, &gui->buttons[0], memory.allocator) &&
-		PtrVector_push_back(&gui->window.children, &gui->label1, memory.allocator) &&
-		PtrVector_push_back(&gui->window.children, &gui->buttons[1], memory.allocator) &&
-		PtrVector_push_back(&gui->window.children, &gui->buttons[2], memory.allocator) &&
-		PtrVector_push_back(&gui->window.children, &gui->panel1, memory.allocator) &&
-		PtrVector_push_back(&gui->panel1.children, &gui->buttons[3], memory.allocator) &&
-		PtrVector_push_back(&gui->panel1.children, &gui->padding1, memory.allocator))
+#if MOA_MEMORY_DEBUGGING
+	gui->active_allocations = Label_create("", styleA, Vector2i_new(300, 30));
+	Vector_init(&gui->active_allocations_text);
+
+	gui->total_allocations = Label_create("", styleB, Vector2i_new(300, 30));
+	Vector_init(&gui->total_allocations_text);
+#endif
+
+	gui->frame_number = Label_create("", styleC, Vector2i_new(300, 30));
+	Vector_init(&gui->frame_number_text);
+
+	if (
+#if MOA_MEMORY_DEBUGGING
+		PtrVector_push_back(&gui->root.children, &gui->active_allocations, memory.allocator) &&
+		PtrVector_push_back(&gui->root.children, &gui->total_allocations, memory.allocator) &&
+#endif
+		PtrVector_push_back(&gui->root.children, &gui->frame_number, memory.allocator))
 	{
 		return True;
 	}

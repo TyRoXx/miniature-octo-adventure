@@ -19,6 +19,7 @@ typedef struct AdventureStateView
 	SDLFrontend *front;
 	Camera camera;
 	AvatarController avatar_controller;
+	uint64_t current_frame;
 }
 AdventureStateView;
 
@@ -191,6 +192,7 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 		goto fail_2;
 	}
 
+	adv_view->current_frame = 0;
 	adv_view->front = front;
 	adv_view->state = adv_state;
 	return (GameStateView *)adv_view;
@@ -214,7 +216,7 @@ static void AdventureStateView_destroy(GameStateView *view)
 	Deallocator_free(adv_view->state->memory.deallocator, view);
 }
 
-static void AdventureStateView_update(GameStateView *view)
+static Bool AdventureStateView_update(GameStateView *view)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 
@@ -223,15 +225,28 @@ static void AdventureStateView_update(GameStateView *view)
 #if MOA_MEMORY_DEBUGGING
 	{
 		MemoryStatistics const *stats = adv_view->state->memory_statistics;
-		/*TODO: do this without static variables*/
-		static char text_a[1000];
-		static char text_b[1000];
-		sprintf(text_a, "Active: %" PRIu64, stats->active_allocations);
-		sprintf(text_b, "Total: %" PRIu64, stats->total_allocations);
-		adv_view->state->gui.buttons[0].label.text = text_a;
-		adv_view->state->gui.buttons[1].label.text = text_b;
+
+		if (!Vector_printf(&adv_view->state->gui.active_allocations_text, adv_view->state->memory.allocator, "Active: %" PRIu64, stats->active_allocations))
+		{
+			return False;
+		}
+		adv_view->state->gui.active_allocations.text = adv_view->state->gui.active_allocations_text.data;
+
+		if (!Vector_printf(&adv_view->state->gui.total_allocations_text, adv_view->state->memory.allocator, "Total: %" PRIu64, stats->total_allocations))
+		{
+			return False;
+		}
+		adv_view->state->gui.total_allocations.text = adv_view->state->gui.total_allocations_text.data;
 	}
 #endif
+
+	if (!Vector_printf(&adv_view->state->gui.frame_number_text, adv_view->state->memory.allocator, "Frame: %" PRIu64, adv_view->current_frame))
+	{
+		return False;
+	}
+	adv_view->state->gui.frame_number.text = adv_view->state->gui.frame_number_text.data;
+
+	return True;
 }
 
 static void draw_user_interface(
@@ -300,6 +315,8 @@ static void AdventureStateView_draw(GameStateView *view)
 		);
 
 	draw_user_interface(&adventure->gui.base, screen, &adv_view->front->data.fonts);
+
+	adv_view->current_frame += 1;
 }
 
 static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const *event)

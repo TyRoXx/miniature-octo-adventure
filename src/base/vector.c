@@ -1,6 +1,8 @@
 #include "vector.h"
 #include <string.h>
 #include <assert.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 void Vector_init(Vector *v)
 {
@@ -125,4 +127,33 @@ Bool Vector_append_binary_file(Vector *v, Allocator v_allocator, FILE *in)
 			return True;
 		}
 	}
+}
+
+Bool Vector_printf(Vector *v, Allocator allocator, char const *format, ...)
+{
+	size_t const speculative_result_length = strlen(format) * 2;
+	va_list args;
+	ptrdiff_t printed;
+
+	if (!Vector_resize(v, speculative_result_length, allocator))
+	{
+		return False;
+	}
+
+	va_start(args, format);
+	printed = vsnprintf(Vector_data(v), Vector_size(v), format, args);
+	assert(printed >= 0);
+	if ((size_t)printed == Vector_size(v))
+	{
+		if (!Vector_resize(v, (size_t)printed + 1, allocator))
+		{
+			va_end(args);
+			return False;
+		}
+		printed = vsnprintf(Vector_data(v), Vector_size(v), format, args);
+		assert((size_t)printed == Vector_size(v));
+	}
+	Vector_resize_smaller(v, (size_t)printed + 1);
+	va_end(args);
+	return True;
 }
