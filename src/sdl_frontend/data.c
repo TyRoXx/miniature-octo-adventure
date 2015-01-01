@@ -27,7 +27,7 @@ static Bool init_appearances(
 		return False;
 	}
 
-	memory.deallocator.free(appearance_file_name);
+	Deallocator_free(memory.deallocator, appearance_file_name);
 	result = AppearanceManager_init(appearances, memory);
 	if (result)
 	{

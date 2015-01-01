@@ -100,7 +100,7 @@ static Widget *create_gui(MemoryManager memory)
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
 	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
 
-	AdventureGui *gui = memory.allocator.realloc(NULL, sizeof(*gui));
+	AdventureGui *gui = Allocator_realloc(memory.allocator, NULL, sizeof(*gui));
 	if (!gui)
 	{
 		return NULL;
@@ -138,7 +138,7 @@ static Widget *create_gui(MemoryManager memory)
 
 static GameState *AdventureState_create(Game *game)
 {
-	AdventureState * const adv_state = game->memory.allocator.realloc(NULL, sizeof(*adv_state));
+	AdventureState * const adv_state = Allocator_realloc(game->memory.allocator, NULL, sizeof(*adv_state));
 	if (!adv_state)
 	{
 		return NULL;
@@ -177,9 +177,9 @@ static void AdventureState_destroy(GameState *state)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
 	Widget_destroy(adv_state->gui);
-	adv_state->memory.deallocator.free(adv_state->gui);
+	Deallocator_free(adv_state->memory.deallocator, adv_state->gui);
 	World_free(&adv_state->world, adv_state->memory.deallocator);
-	adv_state->memory.deallocator.free(state);
+	Deallocator_free(adv_state->memory.deallocator, state);
 }
 
 static void AdventureState_update(GameState *state, unsigned delta)

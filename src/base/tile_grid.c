@@ -35,7 +35,7 @@ Bool TileGrid_init(TileGrid *g, size_t width, size_t height, Allocator allocator
 void TileGrid_free(TileGrid *g, Deallocator deallocator)
 {
 	assert(g);
-	deallocator.free(g->tiles);
+	Deallocator_free(deallocator, g->tiles);
 }
 
 LayeredTile *TileGrid_get(TileGrid const *g, size_t x, size_t y)

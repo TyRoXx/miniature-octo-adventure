@@ -10,7 +10,7 @@ void Vector_init(Vector *v)
 
 void Vector_free(Vector *v, Deallocator deallocator)
 {
-	deallocator.free(v->data);
+	Deallocator_free(deallocator, v->data);
 }
 
 char *Vector_release(Vector *v)
@@ -55,7 +55,7 @@ Bool Vector_reserve(Vector *v, size_t capacity, Allocator allocator)
 
 	capacity *= 2;
 
-	new_data = allocator.realloc(v->data, capacity);
+	new_data = Allocator_realloc(allocator, v->data, capacity);
 	if (!new_data)
 	{
 		return False;
