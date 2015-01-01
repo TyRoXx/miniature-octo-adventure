@@ -13,7 +13,7 @@ static Bool ends_with_separator(char const *data, size_t size)
 	return False;
 }
 
-static Bool append_path(Vector *left, char const *right, size_t right_size)
+static Bool append_path(Vector *left, Allocator left_allocator, char const *right, size_t right_size)
 {
 	Bool need_separator;
 	size_t const left_previous_size = Vector_size(left);
@@ -30,37 +30,37 @@ static Bool append_path(Vector *left, char const *right, size_t right_size)
 	if (need_separator)
 	{
 		char const separator[1] = "/";
-		if (!Vector_push_back(left, &separator, sizeof(separator)))
+		if (!Vector_push_back(left, &separator, sizeof(separator), left_allocator))
 		{
 			return False;
 		}
 	}
 
-	if (!Vector_push_back(left, right, right_size + 1))
+	if (!Vector_push_back(left, right, right_size + 1, left_allocator))
 	{
-		Vector_resize(left, left_previous_size);
+		Vector_resize(left, left_previous_size, left_allocator);
 		return False;
 	}
 
 	return True;
 }
 
-static Bool zero_terminate(Vector *str)
+static Bool zero_terminate(Vector *str, Allocator str_allocator)
 {
 	char const terminator = '\0';
-	return Vector_push_back(str, &terminator, 1);
+	return Vector_push_back(str, &terminator, 1, str_allocator);
 }
 
-char *join_paths(char const *left, char const *right)
+char *join_paths(char const *left, char const *right, MemoryManager memory)
 {
 	Vector joined;
 	Vector_init(&joined);
 
-	if (!Vector_push_back(&joined, left, strlen(left)) ||
-		!append_path(&joined, right, strlen(right)) ||
-		!zero_terminate(&joined))
+	if (!Vector_push_back(&joined, left, strlen(left), memory.allocator) ||
+		!append_path(&joined, memory.allocator, right, strlen(right)) ||
+		!zero_terminate(&joined, memory.allocator))
 	{
-		Vector_free(&joined);
+		Vector_free(&joined, memory.deallocator);
 		return NULL;
 	}
 

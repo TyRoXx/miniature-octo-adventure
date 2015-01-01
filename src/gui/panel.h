@@ -20,10 +20,11 @@ typedef struct Panel
 	Widget base;
 	Layout layout;
 	PtrVector children;
+	Deallocator children_deallocator;
 }
 Panel;
 
-Panel Panel_create(Vector2i desired_size, Layout layout);
+Panel Panel_create(Vector2i desired_size, Layout layout, Deallocator children_deallocator);
 
 
 Layout make_vertical_layout(void);

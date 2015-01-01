@@ -68,14 +68,14 @@ static void free_image(void *image, void *user)
 	Image_free(image);
 }
 
-void ImageManager_free(ImageManager *im)
+void ImageManager_free(ImageManager *im, Deallocator images_deallocator)
 {
 	for_each(Vector_begin(&im->images),
 			 Vector_end(&im->images),
 			 sizeof(Image),
 			 free_image,
 			 NULL);
-	Vector_free(&im->images);
+	Vector_free(&im->images, images_deallocator);
 	free(im->directory);
 }
 
@@ -85,10 +85,12 @@ static Bool is_image_name(void *element, void *user)
 	return !strcmp(image->name, user);
 }
 
-static Image *add_image(ImageManager *manager,
-						char *name)
+static Image *add_image(
+	ImageManager *manager,
+	char *name,
+	MemoryManager memory)
 {
-	char * const full_name = join_paths(manager->directory, name);
+	char * const full_name = join_paths(manager->directory, name, memory);
 	Image image;
 
 	if (!full_name)
@@ -105,7 +107,7 @@ static Image *add_image(ImageManager *manager,
 		return NULL;
 	}
 
-	if (!Vector_push_back(&manager->images, &image, sizeof(image)))
+	if (!Vector_push_back(&manager->images, &image, sizeof(image), memory.allocator))
 	{
 		SDL_FreeSurface(image.surface);
 		return NULL;
@@ -125,7 +127,7 @@ static char *copy_string(char const *str)
 	return copy;
 }
 
-SDL_Surface *ImageManager_get(ImageManager *im, char const *name)
+SDL_Surface *ImageManager_get(ImageManager *im, char const *name, MemoryManager memory)
 {
 	Image *created;
 	Image * const end = (Image *)Vector_end(&im->images);
@@ -143,7 +145,7 @@ SDL_Surface *ImageManager_get(ImageManager *im, char const *name)
 	}
 
 	name_copy = copy_string(name);
-	created = add_image(im, name_copy);
+	created = add_image(im, name_copy, memory);
 
 	if (created)
 	{

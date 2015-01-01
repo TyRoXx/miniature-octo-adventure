@@ -17,7 +17,7 @@ static void SDLFrontend_destroy(Frontend *front)
 		sdl_front->state_view->type->destroy(sdl_front->state_view);
 	}
 
-	Data_free(&sdl_front->data);
+	Data_free(&sdl_front->data, sdl_front->game->memory.deallocator);
 	free(front);
 
 	TTF_Quit();
@@ -143,7 +143,7 @@ Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings)
 		goto fail_3;
 	}
 
-	if (!Data_init(&front->data, "data", front->screen->format))
+	if (!Data_init(&front->data, "data", front->screen->format, game->memory))
 	{
 		goto fail_3;
 	}

@@ -1,5 +1,4 @@
 #include "button.h"
-#include <stdlib.h>
 #include <assert.h>
 
 static void Button_destroy(Widget *this_)

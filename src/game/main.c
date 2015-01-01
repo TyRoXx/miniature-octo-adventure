@@ -15,6 +15,8 @@ int main(int argc, char **argv)
 		Frontend *frontend;
 		SDLSettings settings;
 
+		game.memory = create_standard_memory_manager();
+
 		if (!Game_init(&game))
 		{
 			return 1;

@@ -1,8 +1,6 @@
 #include "camera.h"
 #include "base/entity.h"
 #include <assert.h>
-#include <stdlib.h>
-
 
 Bool Camera_init(Camera *cam)
 {

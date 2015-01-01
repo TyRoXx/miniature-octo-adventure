@@ -1,7 +1,5 @@
 #include "tile_grid.h"
-#include <stdlib.h>
 #include <assert.h>
-
 
 Bool LayeredTile_is_walkable(LayeredTile const *tile)
 {
@@ -25,20 +23,19 @@ Bool LayeredTile_is_walkable(LayeredTile const *tile)
 	return True;
 }
 
-
-Bool TileGrid_init(TileGrid *g, size_t width, size_t height)
+Bool TileGrid_init(TileGrid *g, size_t width, size_t height, Allocator allocator)
 {
 	assert(g);
-	g->tiles = calloc(width * height, sizeof(*g->tiles));
+	g->tiles = Allocator_calloc(allocator, width * height, sizeof(*g->tiles));
 	g->width = width;
 	g->height = height;
 	return (g->tiles != 0);
 }
 
-void TileGrid_free(TileGrid *g)
+void TileGrid_free(TileGrid *g, Deallocator deallocator)
 {
 	assert(g);
-	free(g->tiles);
+	deallocator.free(g->tiles);
 }
 
 LayeredTile *TileGrid_get(TileGrid const *g, size_t x, size_t y)

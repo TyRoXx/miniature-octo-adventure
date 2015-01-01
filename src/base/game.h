@@ -18,6 +18,7 @@ typedef struct Game
 {
 	GameState *state;
 	GameStateEnterCallback on_enter_state;
+	MemoryManager memory;
 }
 Game;
 

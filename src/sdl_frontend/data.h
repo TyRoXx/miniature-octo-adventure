@@ -16,8 +16,9 @@ typedef struct Data
 Data;
 
 
-Bool Data_init(Data *d, char const *directory, SDL_PixelFormat *format);
-void Data_free(Data *d);
+Bool Data_init(Data *d, char const *directory, SDL_PixelFormat *format,
+			   MemoryManager memory);
+void Data_free(Data *d, Deallocator deallocator);
 
 
 #endif

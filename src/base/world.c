@@ -1,13 +1,11 @@
 #include "world.h"
 #include "algorithm.h"
-#include <stdlib.h>
 #include <assert.h>
 
-
-void World_free(World *w)
+void World_free(World *w, Deallocator deallocator)
 {
-	free_movers(&w->movers);
-	TileGrid_free(&w->tiles);
+	free_movers(&w->movers, deallocator);
+	TileGrid_free(&w->tiles, deallocator);
 }
 
 static void update_mover(void *element, void *user)
@@ -26,9 +24,9 @@ void World_update(World *w, unsigned delta)
 			 &delta);
 }
 
-Bool World_add_mover(World *w, Mover mover)
+Bool World_add_mover(World *w, Mover mover, Allocator allocator)
 {
-	return Vector_push_back(&w->movers, &mover, sizeof(mover));
+	return Vector_push_back(&w->movers, &mover, sizeof(mover), allocator);
 }
 
 static Bool is_walkable_tile(
@@ -112,12 +110,12 @@ static void free_mover(void *element, void *user)
 	Mover_free(element);
 }
 
-void free_movers(Vector *movers)
+void free_movers(Vector *movers, Deallocator movers_deallocator)
 {
 	for_each(Vector_begin(movers),
 			 Vector_end(movers),
 			 sizeof(Mover),
 			 free_mover,
 			 NULL);
-	Vector_free(movers);
+	Vector_free(movers, movers_deallocator);
 }

@@ -1,11 +1,10 @@
 #include "panel.h"
 #include "base/min_max.h"
-#include <stdlib.h>
 
 static void Panel_destroy(Widget *this_)
 {
 	Panel * const panel = (Panel *)this_;
-	PtrVector_free(&panel->children);
+	PtrVector_free(&panel->children, panel->children_deallocator);
 }
 
 static void Panel_pack(Widget *this_)
@@ -34,12 +33,13 @@ static WidgetClass const panel_class =
 	Panel_render
 };
 
-Panel Panel_create(Vector2i desired_size, Layout layout)
+Panel Panel_create(Vector2i desired_size, Layout layout, Deallocator children_deallocator)
 {
 	Panel panel;
 	Widget_init(&panel.base, &panel_class, desired_size);
 	PtrVector_init(&panel.children);
 	panel.layout = layout;
+	panel.children_deallocator = children_deallocator;
 	return panel;
 }
 

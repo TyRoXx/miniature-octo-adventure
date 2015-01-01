@@ -8,7 +8,6 @@
 #include "base/camera.h"
 #include "base/avatar_controller.h"
 #include "base/min_max.h"
-#include <stdlib.h>
 #include <assert.h>
 
 typedef struct AdventureStateView

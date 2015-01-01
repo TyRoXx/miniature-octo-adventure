@@ -14,6 +14,7 @@ typedef struct AdventureState
 	World world;
 	Mover *avatar;
 	struct Widget *gui;
+	MemoryManager memory;
 }
 AdventureState;
 

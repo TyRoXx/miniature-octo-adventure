@@ -1,6 +1,5 @@
 #include "padding.h"
 #include "base/min_max.h"
-#include <stdlib.h>
 
 static void Padding_destroy(Widget *this_)
 {

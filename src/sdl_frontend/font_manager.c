@@ -13,12 +13,12 @@ static char const * const known_fonts[] =
     "SourceSansPro-Regular.ttf"
 };
 
-Bool FontManager_load(FontManager *m, char const *font_directory)
+Bool FontManager_load(FontManager *m, MemoryManager fonts_memory, char const *font_directory)
 {
 	size_t i, c;
 	for (i = 0, c = sizeof(known_fonts) / sizeof(known_fonts[0]); i < c; ++i)
 	{
-		char * const full_file_name = join_paths(font_directory, known_fonts[i]);
+		char * const full_file_name = join_paths(font_directory, known_fonts[i], fonts_memory);
 		TTF_Font *font;
 		Bool success;
 		if (!full_file_name)
@@ -28,7 +28,7 @@ Bool FontManager_load(FontManager *m, char const *font_directory)
 		font = TTF_OpenFont(full_file_name, 16);
 		if (font)
 		{
-			if (PtrVector_push_back(&m->fonts, font))
+			if (PtrVector_push_back(&m->fonts, font, fonts_memory.allocator))
 			{
 				success = True;
 			}
@@ -60,12 +60,12 @@ TTF_Font *FontManager_find_font(FontManager const *m, FontID id)
 	return NULL;
 }
 
-void FontManager_free(FontManager *m)
+void FontManager_free(FontManager *m, Deallocator fonts_deallocator)
 {
 	size_t i, c;
 	for (i = 0, c = PtrVector_size(&m->fonts); i < c; ++i)
 	{
 		TTF_CloseFont(PtrVector_get(&m->fonts, i));
 	}
-	PtrVector_free(&m->fonts);
+	PtrVector_free(&m->fonts, fonts_deallocator);
 }

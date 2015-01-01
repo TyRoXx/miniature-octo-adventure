@@ -1,6 +1,4 @@
 #include "labeled_button.h"
-#include <stdlib.h>
-
 
 static void LabeledButton_destroy(Widget *this_)
 {

@@ -77,13 +77,14 @@ typedef struct AppearanceManager
 }
 AppearanceManager;
 
-Bool AppearanceManager_init(AppearanceManager *a);
+Bool AppearanceManager_init(AppearanceManager *a, MemoryManager appearances_memory);
 Bool AppearanceManager_parse_file(
         AppearanceManager *a,
+		MemoryManager appearances_memory,
         char const *begin,
         size_t length,
         struct ImageManager *images);
-void AppearanceManager_free(AppearanceManager *a);
+void AppearanceManager_free(AppearanceManager *a, Deallocator deallocator);
 Appearance const *AppearanceManager_get(AppearanceManager const *a,
 										AppearanceId id);
 

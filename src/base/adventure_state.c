@@ -6,7 +6,6 @@
 #include "gui/panel.h"
 #include "gui/padding.h"
 #include <assert.h>
-#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -25,7 +24,7 @@ static TileKind const TileKinds[] =
 	{9, 0},
 };
 
-static Bool load_world(char const *file_name, World *world)
+static Bool load_world(char const *file_name, World *world, MemoryManager world_memory)
 {
 	Bool result;
 	FILE * const file = fopen(file_name, "r");
@@ -36,6 +35,7 @@ static Bool load_world(char const *file_name, World *world)
 	}
 
 	result = load_world_from_text(world,
+								  world_memory,
 								  TileKinds,
 								  sizeof(TileKinds) / sizeof(*TileKinds),
 								  file,
@@ -94,13 +94,13 @@ static WidgetClass const adventure_gui_class =
 	AdventureGui_render
 };
 
-static Widget *create_gui(void)
+static Widget *create_gui(MemoryManager memory)
 {
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
 	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
 
-	AdventureGui *gui = malloc(sizeof(*gui));
+	AdventureGui *gui = memory.allocator.realloc(NULL, sizeof(*gui));
 	if (!gui)
 	{
 		return NULL;
@@ -108,8 +108,8 @@ static Widget *create_gui(void)
 
 	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(500, 400));
 
-	gui->root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
-	gui->window = Panel_create(Vector2i_new(150, 400), make_vertical_layout());
+	gui->root = Panel_create(Vector2i_new(0, 0), make_absolute_layout(), memory.deallocator);
+	gui->window = Panel_create(Vector2i_new(150, 400), make_vertical_layout(), memory.deallocator);
 	gui->buttons[0] = LabeledButton_create("button1", styleA, Vector2i_new(100, 20), make_color(255, 255, 255, 255));
 	gui->label1 = Label_create("label1", styleB, Vector2i_new(200, 40));
 	gui->buttons[1] = LabeledButton_create("button2", styleC, Vector2i_new(80, 25), make_color(0, 255, 255, 255));
@@ -117,17 +117,17 @@ static Widget *create_gui(void)
 	gui->buttons[3] = LabeledButton_create("4", styleC, Vector2i_new(80, 25), make_color(255, 255, 0, 255));
 	gui->buttons[4] = LabeledButton_create("555", styleC, Vector2i_new(80, 40), make_color(127, 127, 127, 255));
 	gui->padding1 = Padding_create(Vector2i_new(80, 30), &gui->buttons[4].base, 1);
-	gui->panel1 = Panel_create(Vector2i_new(200, 100), make_horizontal_layout());
+	gui->panel1 = Panel_create(Vector2i_new(200, 100), make_horizontal_layout(), memory.deallocator);
 	gui->window.base.absolute_position = Vector2i_new(200, 5);
 
-	if (PtrVector_push_back(&gui->root.children, &gui->window) &&
-		PtrVector_push_back(&gui->window.children, &gui->buttons[0]) &&
-		PtrVector_push_back(&gui->window.children, &gui->label1) &&
-		PtrVector_push_back(&gui->window.children, &gui->buttons[1]) &&
-		PtrVector_push_back(&gui->window.children, &gui->buttons[2]) &&
-		PtrVector_push_back(&gui->window.children, &gui->panel1) &&
-		PtrVector_push_back(&gui->panel1.children, &gui->buttons[3]) &&
-		PtrVector_push_back(&gui->panel1.children, &gui->padding1))
+	if (PtrVector_push_back(&gui->root.children, &gui->window, memory.allocator) &&
+		PtrVector_push_back(&gui->window.children, &gui->buttons[0], memory.allocator) &&
+		PtrVector_push_back(&gui->window.children, &gui->label1, memory.allocator) &&
+		PtrVector_push_back(&gui->window.children, &gui->buttons[1], memory.allocator) &&
+		PtrVector_push_back(&gui->window.children, &gui->buttons[2], memory.allocator) &&
+		PtrVector_push_back(&gui->window.children, &gui->panel1, memory.allocator) &&
+		PtrVector_push_back(&gui->panel1.children, &gui->buttons[3], memory.allocator) &&
+		PtrVector_push_back(&gui->panel1.children, &gui->padding1, memory.allocator))
 	{
 		return &gui->base;
 	}
@@ -138,19 +138,19 @@ static Widget *create_gui(void)
 
 static GameState *AdventureState_create(Game *game)
 {
-	AdventureState * const adv_state = malloc(sizeof(*adv_state));
+	AdventureState * const adv_state = game->memory.allocator.realloc(NULL, sizeof(*adv_state));
 	if (!adv_state)
 	{
 		return NULL;
 	}
 
-	(void)game;
+	adv_state->memory = game->memory;
 
 	{
 		char const * const world_file_name = "data/world.txt";
 		World * const world = &adv_state->world;
 
-		if (load_world(world_file_name, world))
+		if (load_world(world_file_name, world, adv_state->memory))
 		{
 			/*if there is a mover, choose the first one as the avatar*/
 			if (!Vector_empty(&world->movers))
@@ -158,7 +158,7 @@ static GameState *AdventureState_create(Game *game)
 				adv_state->avatar = (Mover *)Vector_begin(&world->movers);
 
 				/*TODO: check success*/
-				adv_state->gui = create_gui();
+				adv_state->gui = create_gui(adv_state->memory);
 				if (adv_state->gui)
 				{
 					Widget_pack(adv_state->gui);
@@ -166,7 +166,7 @@ static GameState *AdventureState_create(Game *game)
 				}
 			}
 
-			World_free(world);
+			World_free(world, adv_state->memory.deallocator);
 		}
 
 		return NULL;
@@ -177,9 +177,9 @@ static void AdventureState_destroy(GameState *state)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
 	Widget_destroy(adv_state->gui);
-	free(adv_state->gui);
-	World_free(&adv_state->world);
-	free(state);
+	adv_state->memory.deallocator.free(adv_state->gui);
+	World_free(&adv_state->world, adv_state->memory.deallocator);
+	adv_state->memory.deallocator.free(state);
 }
 
 static void AdventureState_update(GameState *state, unsigned delta)

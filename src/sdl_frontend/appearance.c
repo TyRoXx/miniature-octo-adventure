@@ -186,19 +186,20 @@ static Bool init_static_layout(AppearanceLayout *layout)
 static Bool add_appearance(AppearanceManager *a,
 						   ImageManager *images,
 						   char const *image_name,
-						   AppearanceLayout const *layout)
+						   AppearanceLayout const *layout,
+						   MemoryManager memory)
 {
 	SDL_Surface *image;
 	Appearance appearance;
 
-	image = ImageManager_get(images, image_name);
+	image = ImageManager_get(images, image_name, memory);
 	if (!image)
 	{
 		return False;
 	}
 
 	Appearance_init(&appearance, image, layout);
-	if (Vector_push_back(&a->appearances, &appearance, sizeof(appearance)))
+	if (Vector_push_back(&a->appearances, &appearance, sizeof(appearance), memory.allocator))
 	{
 		return True;
 	}
@@ -212,17 +213,17 @@ static void free_appearance(void *appearance, void *user)
 	Appearance_free(appearance);
 }
 
-static void free_appearances(Vector *appearances)
+static void free_appearances(Vector *appearances, Deallocator deallocator)
 {
 	for_each(Vector_begin(appearances),
 			 Vector_end(appearances),
 			 sizeof(Appearance),
 			 free_appearance,
 			 NULL);
-	Vector_free(appearances);
+	Vector_free(appearances, deallocator);
 }
 
-Bool AppearanceManager_init(AppearanceManager *a)
+Bool AppearanceManager_init(AppearanceManager *a, MemoryManager appearances_memory)
 {
 	if (init_static_layout(&a->static_layout))
 	{
@@ -233,7 +234,7 @@ Bool AppearanceManager_init(AppearanceManager *a)
 		}
 		AppearanceLayout_free(&a->static_layout);
 	}
-	AppearanceManager_free(a);
+	AppearanceManager_free(a, appearances_memory.deallocator);
 	return False;
 }
 
@@ -285,6 +286,7 @@ typedef struct parse_appearances_args
 {
 	AppearanceManager *a;
 	struct ImageManager *images;
+	MemoryManager memory;
 }
 parse_appearances_args;
 
@@ -306,11 +308,12 @@ static Bool on_appearance(size_t index, char const *type, char const *file, void
 		fprintf(stderr, "Appearance %lu has unknown layout %s\n", (unsigned long)index, type);
 		return False;
 	}
-	return add_appearance(args->a, args->images, file, layout);
+	return add_appearance(args->a, args->images, file, layout, args->memory);
 }
 
 Bool AppearanceManager_parse_file(
         AppearanceManager *a,
+		MemoryManager appearances_memory,
         char const *begin,
         size_t length,
         struct ImageManager *images)
@@ -330,6 +333,7 @@ Bool AppearanceManager_parse_file(
 			parse_appearances_args args;
 			args.a = a;
 			args.images = images;
+			args.memory = appearances_memory;
 			result = parse_appearances(root, on_appearance, &args);
 		}
 		else
@@ -342,9 +346,9 @@ Bool AppearanceManager_parse_file(
 	}
 }
 
-void AppearanceManager_free(AppearanceManager *a)
+void AppearanceManager_free(AppearanceManager *a, Deallocator deallocator)
 {
-	free_appearances(&a->appearances);
+	free_appearances(&a->appearances, deallocator);
 	AppearanceLayout_free(&a->dynamic_layout_1);
 	AppearanceLayout_free(&a->static_layout);
 }

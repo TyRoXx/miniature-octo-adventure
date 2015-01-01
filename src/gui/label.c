@@ -1,5 +1,4 @@
 #include "label.h"
-#include <stdlib.h>
 
 static void Label_destroy(Widget *this_)
 {

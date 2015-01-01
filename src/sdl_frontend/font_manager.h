@@ -15,9 +15,9 @@ typedef struct FontManager
 FontManager;
 
 void FontManager_init(FontManager *m);
-Bool FontManager_load(FontManager *m, char const *font_directory);
+Bool FontManager_load(FontManager *m, MemoryManager fonts_memory, char const *font_directory);
 TTF_Font *FontManager_find_font(FontManager const *m, FontID id);
-void FontManager_free(FontManager *m);
+void FontManager_free(FontManager *m, Deallocator fonts_deallocator);
 
 
 #endif

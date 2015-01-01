@@ -3,12 +3,9 @@
 #include "algorithm.h"
 #include <assert.h>
 #include <limits.h>
-#include <stdlib.h>
 #include <string.h>
 
-
 static char const * const VersionLine_1 = "World_v1\n";
-
 
 static Bool scan_size_t(FILE *in, size_t *value)
 {
@@ -21,7 +18,7 @@ static Bool scan_size_t(FILE *in, size_t *value)
 	return False;
 }
 
-static Bool load_world_from_text_v1(struct World *world, struct TileKind const *tile_kinds, size_t tile_kind_count, FILE *in, FILE *error_out)
+static Bool load_world_from_text_v1(struct World *world, MemoryManager world_memory, struct TileKind const *tile_kinds, size_t tile_kind_count, FILE *in, FILE *error_out)
 {
 	size_t width, height;
 
@@ -37,7 +34,7 @@ static Bool load_world_from_text_v1(struct World *world, struct TileKind const *
 		return False;
 	}
 
-	if (!TileGrid_init(&world->tiles, width, height))
+	if (!TileGrid_init(&world->tiles, width, height, world_memory.allocator))
 	{
 		fprintf(error_out, "Could not initialize the tile grid\n");
 		return False;
@@ -107,7 +104,7 @@ static Bool load_world_from_text_v1(struct World *world, struct TileKind const *
 				entity.direction = (Direction)(direction % DIR_COUNT);
 				Mover_init(&mover, 10, entity);
 
-				if (Vector_push_back(&world->movers, &mover, sizeof(mover)))
+				if (Vector_push_back(&world->movers, &mover, sizeof(mover), world_memory.allocator))
 				{
 					continue;
 				}
@@ -122,14 +119,14 @@ static Bool load_world_from_text_v1(struct World *world, struct TileKind const *
 	return True;
 
 fail_0:
-	free_movers(&world->movers);
+	free_movers(&world->movers, world_memory.deallocator);
 
 fail_1:
-	TileGrid_free(&world->tiles);
+	TileGrid_free(&world->tiles, world_memory.deallocator);
 	return False;
 }
 
-Bool load_world_from_text(struct World *world, struct TileKind const *tile_kinds, size_t tile_kind_count, FILE *in, FILE *error_out)
+Bool load_world_from_text(struct World *world, MemoryManager world_memory, struct TileKind const *tile_kinds, size_t tile_kind_count, FILE *in, FILE *error_out)
 {
 	char version[32];
 
@@ -144,7 +141,7 @@ Bool load_world_from_text(struct World *world, struct TileKind const *tile_kinds
 	}
 	if (!strcmp(version, VersionLine_1))
 	{
-		return load_world_from_text_v1(world, tile_kinds, tile_kind_count, in, error_out);
+		return load_world_from_text_v1(world, world_memory, tile_kinds, tile_kind_count, in, error_out);
 	}
 	else
 	{

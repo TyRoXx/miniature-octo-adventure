@@ -1,10 +1,9 @@
 #ifndef TILE_GRID_H
 #define TILE_GRID_H
 
-
 #include "bool.h"
+#include "base/allocator.h"
 #include <stddef.h>
-
 
 typedef struct TileKind
 {
@@ -31,8 +30,8 @@ typedef struct TileGrid
 }
 TileGrid;
 
-Bool TileGrid_init(TileGrid *g, size_t width, size_t height);
-void TileGrid_free(TileGrid *g);
+Bool TileGrid_init(TileGrid *g, size_t width, size_t height, Allocator allocator);
+void TileGrid_free(TileGrid *g, Deallocator deallocator);
 LayeredTile *TileGrid_get(TileGrid const *g, size_t x, size_t y);
 
 

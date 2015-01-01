@@ -7,9 +7,10 @@
 static Bool init_appearances(
 		AppearanceManager *appearances,
 		char const *data_directory,
-		ImageManager *images)
+		ImageManager *images,
+		MemoryManager memory)
 {
-	char * const appearance_file_name = join_paths(data_directory, "appearances.txt");
+	char * const appearance_file_name = join_paths(data_directory, "appearances.txt", memory);
 	FILE *file;
 	Bool result;
 
@@ -26,18 +27,18 @@ static Bool init_appearances(
 		return False;
 	}
 
-	free(appearance_file_name);
-	result = AppearanceManager_init(appearances);
+	memory.deallocator.free(appearance_file_name);
+	result = AppearanceManager_init(appearances, memory);
 	if (result)
 	{
 		Vector content;
 		Vector_init(&content);
-		result = Vector_append_binary_file(&content, file);
+		result = Vector_append_binary_file(&content, memory.allocator, file);
 		if (result)
 		{
-			result = AppearanceManager_parse_file(appearances, Vector_data(&content), Vector_size(&content), images);
+			result = AppearanceManager_parse_file(appearances, memory, Vector_data(&content), Vector_size(&content), images);
 		}
-		Vector_free(&content);
+		Vector_free(&content, memory.deallocator);
 	}
 	fclose(file);
 	return result;
@@ -45,9 +46,10 @@ static Bool init_appearances(
 
 Bool Data_init(Data *d,
 			   char const *directory,
-			   SDL_PixelFormat *format)
+			   SDL_PixelFormat *format,
+			   MemoryManager memory)
 {
-	char *image_directory = join_paths(directory, "sprites");
+	char *image_directory = join_paths(directory, "sprites", memory);
 	Bool success;
 	if (!image_directory)
 	{
@@ -55,32 +57,32 @@ Bool Data_init(Data *d,
 	}
 
 	ImageManager_init(&d->images, image_directory, format);
-	if (init_appearances(&d->appearances, directory, &d->images))
+	if (init_appearances(&d->appearances, directory, &d->images, memory))
 	{
-		char * const font_directory = join_paths(directory, "fonts");
+		char * const font_directory = join_paths(directory, "fonts", memory);
 		if (font_directory)
 		{
 			FontManager_init(&d->fonts);
-			if (FontManager_load(&d->fonts, font_directory))
+			if (FontManager_load(&d->fonts, memory, font_directory))
 			{
 				success = True;
 			}
 			else
 			{
-				FontManager_free(&d->fonts);
+				FontManager_free(&d->fonts, memory.deallocator);
 				success = False;
 			}
 			free(font_directory);
 			return success;
 		}
 	}
-	ImageManager_free(&d->images);
+	ImageManager_free(&d->images, memory.deallocator);
 	return False;
 }
 
-void Data_free(Data *d)
+void Data_free(Data *d, Deallocator deallocator)
 {
-	FontManager_free(&d->fonts);
-	AppearanceManager_free(&d->appearances);
-	ImageManager_free(&d->images);
+	FontManager_free(&d->fonts, deallocator);
+	AppearanceManager_free(&d->appearances, deallocator);
+	ImageManager_free(&d->images, deallocator);
 }

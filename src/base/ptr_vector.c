@@ -7,19 +7,19 @@ void PtrVector_init(PtrVector *v)
 	Vector_init(&v->content);
 }
 
-void PtrVector_free(PtrVector *v)
+void PtrVector_free(PtrVector *v, Deallocator deallocator)
 {
-	Vector_free(&v->content);
+	Vector_free(&v->content, deallocator);
 }
 
-Bool PtrVector_resize(PtrVector *v, size_t size)
+Bool PtrVector_resize(PtrVector *v, size_t size, Allocator allocator)
 {
-	return Vector_resize(&v->content, size * sizeof(void *));
+	return Vector_resize(&v->content, size * sizeof(void *), allocator);
 }
 
-Bool PtrVector_push_back(PtrVector *v, void *element)
+Bool PtrVector_push_back(PtrVector *v, void *element, Allocator allocator)
 {
-	return Vector_push_back(&v->content, &element, sizeof(element));
+	return Vector_push_back(&v->content, &element, sizeof(element), allocator);
 }
 
 size_t PtrVector_size(PtrVector const *v)
