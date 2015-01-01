@@ -19,14 +19,12 @@ Vector2i direction_to_vector(Direction dir)
 Bool Entity_init(
 	Entity *e,
 	PixelPosition position,
-	AppearanceId appearance,
-	struct World *world
+	AppearanceId appearance
 	)
 {
 	e->position = position;
 	e->direction = Dir_South;
 	e->appearance = appearance;
-	e->world = world;
 	return True;
 }
 
@@ -53,20 +51,21 @@ void Mover_free(Mover *m)
 
 static int is_possible_step(
 	Entity const *entity,
-	Direction dir
+	Direction dir,
+	World const *world
 	)
 {
-	return World_is_possible_move(entity->world, &entity->position, dir);
+	return World_is_possible_move(world, &entity->position, dir);
 }
 
-void Mover_move(Mover *m, size_t steps_to_go)
+void Mover_move(Mover *m, World const *world, size_t steps_to_go)
 {
 	if (m->steps_to_go > 0)
 	{
 		return;
 	}
 
-	if (!is_possible_step(&m->body, m->body.direction))
+	if (!is_possible_step(&m->body, m->body.direction, world))
 	{
 		return;
 	}
@@ -91,7 +90,7 @@ static void add_step(
 	Vector2i_add(&dest->vector, &delta);
 }
 
-void Mover_update(Mover *m, unsigned delta)
+void Mover_update(Mover *m, World const *world, unsigned delta)
 {
 	if (m->steps_to_go > 0)
 	{
@@ -107,7 +106,7 @@ void Mover_update(Mover *m, unsigned delta)
 				}
 			}
 
-			if (!is_possible_step(&m->body, m->body.direction))
+			if (!is_possible_step(&m->body, m->body.direction, world))
 			{
 				m->steps_to_go = 0;
 				break;

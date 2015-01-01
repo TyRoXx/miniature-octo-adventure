@@ -17,7 +17,10 @@ MOA_USE_RESULT
 Bool AvatarController_init(AvatarController *a, struct Mover *avatar);
 
 void AvatarController_free(AvatarController *a);
-void AvatarController_handle_input(AvatarController *a, Direction dir, int is_down);
-void AvatarController_update(AvatarController *a);
+void AvatarController_handle_input(AvatarController *a,
+								   struct World const *world,
+								   Direction dir,
+								   int is_down);
+void AvatarController_update(AvatarController *a, struct World const *world);
 
 #endif

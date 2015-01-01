@@ -19,6 +19,7 @@ void AvatarController_free(AvatarController *a)
 }
 
 void AvatarController_handle_input(AvatarController *a,
+								   World const *world,
 								   Direction dir,
 								   int is_down)
 {
@@ -34,7 +35,7 @@ void AvatarController_handle_input(AvatarController *a,
 		if (avatar->steps_to_go == 0)
 		{
 			avatar->body.direction = dir;
-			Mover_move(avatar, (size_t)-1);
+			Mover_move(avatar, world, (size_t)-1);
 		}
 	}
 	else
@@ -53,7 +54,7 @@ void AvatarController_handle_input(AvatarController *a,
 	}
 }
 
-void AvatarController_update(AvatarController *a)
+void AvatarController_update(AvatarController *a, World const *world)
 {
 	Mover * const avatar = a->avatar;
 	if (!avatar)
@@ -72,7 +73,7 @@ void AvatarController_update(AvatarController *a)
 		if (input_dir < 4)
 		{
 			avatar->body.direction = (Direction)input_dir;
-			Mover_move(avatar, (size_t)-1);
+			Mover_move(avatar, world, (size_t)-1);
 		}
 	}
 }

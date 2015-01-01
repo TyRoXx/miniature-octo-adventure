@@ -39,7 +39,6 @@ typedef struct Entity
 	PixelPosition position;
 	Direction direction;
 	AppearanceId appearance;
-	struct World *world;
 }
 Entity;
 
@@ -47,8 +46,7 @@ MOA_USE_RESULT
 Bool Entity_init(
 	Entity *e,
 	PixelPosition position,
-	AppearanceId appearance,
-	struct World *world
+	AppearanceId appearance
 	);
 void Entity_free(Entity *e);
 
@@ -66,9 +64,9 @@ void Mover_init(Mover *m,
 				unsigned time_per_pixel,
 				Entity body);
 void Mover_free(Mover *m);
-void Mover_move(Mover *m, size_t steps_to_go);
+void Mover_move(Mover *m, struct World const *world, size_t steps_to_go);
 void Mover_stop(Mover *m);
-void Mover_update(Mover *m, unsigned delta);
+void Mover_update(Mover *m, struct World const *world, unsigned delta);
 
 
 #endif

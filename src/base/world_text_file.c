@@ -101,7 +101,7 @@ static Bool load_world_from_text_v1(struct World *world, MemoryManager world_mem
 
 			position.vector.x = x;
 			position.vector.y = y;
-			if (Entity_init(&entity, position, app, world))
+			if (Entity_init(&entity, position, app))
 			{
 				entity.direction = (Direction)(direction % DIR_COUNT);
 				Mover_init(&mover, 10, entity);
