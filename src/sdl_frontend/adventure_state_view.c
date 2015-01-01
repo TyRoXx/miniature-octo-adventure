@@ -113,6 +113,7 @@ static void draw_layered_tile(
 	}
 }
 
+MOA_USE_RESULT
 static int divide_ceil(int dividend, int divisor)
 {
 	assert(divisor);

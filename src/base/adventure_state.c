@@ -24,6 +24,7 @@ static TileKind const TileKinds[] =
 	{9, 0},
 };
 
+MOA_USE_RESULT
 static Bool load_world(char const *file_name, World *world, MemoryManager world_memory)
 {
 	Bool result;
@@ -82,6 +83,7 @@ static WidgetClass const adventure_gui_class =
 	AdventureGui_render
 };
 
+MOA_USE_RESULT
 static Bool create_gui(AdventureGui *gui, MemoryManager memory)
 {
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));

@@ -29,6 +29,7 @@ Bool World_add_mover(World *w, Mover mover, Allocator allocator)
 	return Vector_push_back(&w->movers, &mover, sizeof(mover), allocator);
 }
 
+MOA_USE_RESULT
 static Bool is_walkable_tile(
 	TileGrid const *tiles,
 	Vector2i const *position)
@@ -46,6 +47,7 @@ static Bool is_walkable_tile(
 		);
 }
 
+MOA_USE_RESULT
 static int divide_floor(int x, int y)
 {
 	int q = x / y;
@@ -57,6 +59,7 @@ static int divide_floor(int x, int y)
 	return q;
 }
 
+MOA_USE_RESULT
 static Bool is_walkable_pixel(World const *world, Vector2i const *position)
 {
 	Vector2i next_tile;

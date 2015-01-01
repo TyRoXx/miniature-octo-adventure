@@ -7,6 +7,7 @@
 
 static char const * const VersionLine_1 = "World_v1\n";
 
+MOA_USE_RESULT
 static Bool scan_size_t(FILE *in, size_t *value)
 {
 	unsigned buf_value;
@@ -18,6 +19,7 @@ static Bool scan_size_t(FILE *in, size_t *value)
 	return False;
 }
 
+MOA_USE_RESULT
 static Bool load_world_from_text_v1(struct World *world, MemoryManager world_memory, struct TileKind const *tile_kinds, size_t tile_kind_count, FILE *in, FILE *error_out)
 {
 	size_t width, height;
