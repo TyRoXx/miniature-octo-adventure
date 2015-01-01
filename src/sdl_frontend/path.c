@@ -38,7 +38,7 @@ static Bool append_path(Vector *left, Allocator left_allocator, char const *righ
 
 	if (!Vector_push_back(left, right, right_size + 1, left_allocator))
 	{
-		Vector_resize(left, left_previous_size, left_allocator);
+		Vector_resize_smaller(left, left_previous_size);
 		return False;
 	}
 

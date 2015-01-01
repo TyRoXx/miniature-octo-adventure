@@ -26,9 +26,13 @@ typedef struct Game
 Game;
 
 
+MOA_USE_RESULT
 Bool Game_init(Game *g);
 void Game_free(Game *g);
-int Game_update(Game *g, unsigned delta);
+
+void Game_update(Game *g, unsigned delta);
+
+MOA_USE_RESULT
 int Game_enter_state(Game *g, GameStateDefinition const *state);
 
 

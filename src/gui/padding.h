@@ -14,6 +14,7 @@ typedef struct Padding
 }
 Padding;
 
+MOA_USE_RESULT
 Padding Padding_create(Vector2i desired_size, Widget *content, int amount);
 
 

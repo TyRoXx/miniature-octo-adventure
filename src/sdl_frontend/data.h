@@ -16,6 +16,7 @@ typedef struct Data
 Data;
 
 
+MOA_USE_RESULT
 Bool Data_init(Data *d, char const *directory, SDL_PixelFormat *format,
 			   MemoryManager memory);
 void Data_free(Data *d, Deallocator deallocator);

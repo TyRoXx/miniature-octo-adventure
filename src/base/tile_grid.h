@@ -20,6 +20,7 @@ typedef struct LayeredTile
 }
 LayeredTile;
 
+MOA_USE_RESULT
 Bool LayeredTile_is_walkable(LayeredTile const *tile);
 
 
@@ -30,8 +31,11 @@ typedef struct TileGrid
 }
 TileGrid;
 
+MOA_USE_RESULT
 Bool TileGrid_init(TileGrid *g, size_t width, size_t height, Allocator allocator);
 void TileGrid_free(TileGrid *g, Deallocator deallocator);
+
+MOA_USE_RESULT
 LayeredTile *TileGrid_get(TileGrid const *g, size_t x, size_t y);
 
 

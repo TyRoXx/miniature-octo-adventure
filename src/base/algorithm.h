@@ -3,6 +3,7 @@
 
 
 #include "bool.h"
+#include "unused.h"
 #include <stddef.h>
 
 
@@ -12,6 +13,7 @@ void for_each(void *begin,
 			  void (*action)(void *element, void *user),
 			  void *user);
 
+MOA_USE_RESULT
 void *find(void *begin,
 		   void *end,
 		   size_t element_size,

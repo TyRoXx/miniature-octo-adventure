@@ -16,10 +16,9 @@ void Game_free(Game *g)
 	}
 }
 
-int Game_update(Game *g, unsigned delta)
+void Game_update(Game *g, unsigned delta)
 {
 	g->state->definition->update(g->state, delta);
-	return True;
 }
 
 int Game_enter_state(Game *g, GameStateDefinition const *state)

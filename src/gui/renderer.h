@@ -11,6 +11,7 @@ typedef struct Color
 }
 Color;
 
+MOA_USE_RESULT
 Color make_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 typedef struct Rectangle
@@ -20,6 +21,7 @@ typedef struct Rectangle
 }
 Rectangle;
 
+MOA_USE_RESULT
 Vector2i Rectangle_size(Rectangle rect);
 
 typedef enum TextAlignment
@@ -38,6 +40,7 @@ typedef struct TextStyle
 }
 TextStyle;
 
+MOA_USE_RESULT
 TextStyle make_text_style(TextAlignment horizontal, TextAlignment vertical, Color color);
 
 struct RendererClass;

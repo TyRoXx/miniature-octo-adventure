@@ -24,11 +24,16 @@ typedef struct Panel
 }
 Panel;
 
+MOA_USE_RESULT
 Panel Panel_create(Vector2i desired_size, Layout layout, Deallocator children_deallocator);
 
-
+MOA_USE_RESULT
 Layout make_vertical_layout(void);
+
+MOA_USE_RESULT
 Layout make_horizontal_layout(void);
+
+MOA_USE_RESULT
 Layout make_absolute_layout(void);
 
 

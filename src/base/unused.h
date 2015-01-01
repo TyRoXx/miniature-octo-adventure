@@ -8,5 +8,11 @@
 #	define MOA_UNUSED /*TODO*/
 #endif
 
+#ifdef _MSC_VER
+#	define MOA_USE_RESULT _Check_return_
+#else
+#	define MOA_USE_RESULT __attribute__((warn_unused_result))
+#endif
+
 
 #endif

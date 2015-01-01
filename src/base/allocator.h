@@ -1,6 +1,7 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
+#include "base/unused.h"
 #include <stddef.h>
 
 typedef void *Allocation;
@@ -13,8 +14,13 @@ typedef struct Allocator
 }
 Allocator;
 
+MOA_USE_RESULT
 Allocation Allocator_alloc(Allocator allocator, size_t size);
+
+MOA_USE_RESULT
 Allocation Allocator_realloc(Allocator allocator, Allocation allocation, size_t size);
+
+MOA_USE_RESULT
 Allocation Allocator_calloc(Allocator allocator, size_t a, size_t b);
 
 typedef struct Deallocator
@@ -33,6 +39,7 @@ typedef struct MemoryManager
 }
 MemoryManager;
 
+MOA_USE_RESULT
 MemoryManager create_standard_memory_manager(void);
 
 #endif

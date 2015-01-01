@@ -34,6 +34,7 @@ typedef struct AnimationSide
 }
 AnimationSide;
 
+MOA_USE_RESULT
 Bool AnimationSide_init(AnimationSide *a, size_t frame_count);
 void AnimationSide_free(AnimationSide *a);
 
@@ -77,7 +78,10 @@ typedef struct AppearanceManager
 }
 AppearanceManager;
 
+MOA_USE_RESULT
 Bool AppearanceManager_init(AppearanceManager *a, MemoryManager appearances_memory);
+
+MOA_USE_RESULT
 Bool AppearanceManager_parse_file(
         AppearanceManager *a,
 		MemoryManager appearances_memory,
@@ -85,6 +89,8 @@ Bool AppearanceManager_parse_file(
         size_t length,
         struct ImageManager *images);
 void AppearanceManager_free(AppearanceManager *a, Deallocator deallocator);
+
+MOA_USE_RESULT
 Appearance const *AppearanceManager_get(AppearanceManager const *a,
 										AppearanceId id);
 

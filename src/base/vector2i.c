@@ -55,12 +55,12 @@ int Vector2i_get_component(Vector2i const *from, Direction2 component)
 	MOA_UNREACHABLE();
 }
 
-int Vector2i_add_component(Vector2i *to, Direction2 component, int difference)
+void Vector2i_add_component(Vector2i *to, Direction2 component, int difference)
 {
 	switch (component)
 	{
-	case Direction2_Right: return to->x += difference;
-	case Direction2_Down: return to->y += difference;
+	case Direction2_Right: to->x += difference; return;
+	case Direction2_Down: to->y += difference; return;
 	}
 	MOA_UNREACHABLE();
 }

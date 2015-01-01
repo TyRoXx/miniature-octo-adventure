@@ -14,6 +14,7 @@ typedef struct Label
 }
 Label;
 
+MOA_USE_RESULT
 Label Label_create(char const *text, TextStyle style, Vector2i desired_size);
 
 

@@ -1,6 +1,6 @@
 #include "vector.h"
 #include <string.h>
-
+#include <assert.h>
 
 void Vector_init(Vector *v)
 {
@@ -81,6 +81,12 @@ Bool Vector_resize(Vector *v, size_t size, Allocator allocator)
 	return False;
 }
 
+void Vector_resize_smaller(Vector *v, size_t size)
+{
+	assert(size <= v->size);
+	v->size = size;
+}
+
 char *Vector_begin(Vector const *v)
 {
 	return Vector_data(v);
@@ -108,16 +114,14 @@ Bool Vector_append_binary_file(Vector *v, Allocator v_allocator, FILE *in)
 		}
 		if (!Vector_resize(v, resizing, v_allocator))
 		{
-			/* shrinking cannot fail */
-			Vector_resize(v, original_size, v_allocator);
+			Vector_resize_smaller(v, original_size);
 			return False;
 		}
 		read_size = resizing - offset_to_read_to;
 		actually_read = fread(Vector_data(v) + offset_to_read_to, 1, read_size, in);
 		if (actually_read < read_size)
 		{
-			/* shrinking cannot fail */
-			Vector_resize(v, offset_to_read_to + actually_read, v_allocator);
+			Vector_resize_smaller(v, offset_to_read_to + actually_read);
 			return True;
 		}
 	}

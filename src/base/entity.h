@@ -4,6 +4,7 @@
 
 #include "vector2i.h"
 #include "bool.h"
+#include "base/unused.h"
 
 
 struct World;
@@ -30,6 +31,7 @@ Direction;
 
 #define DIR_COUNT 4
 
+MOA_USE_RESULT
 Vector2i direction_to_vector(Direction dir);
 
 typedef struct Entity
@@ -41,6 +43,7 @@ typedef struct Entity
 }
 Entity;
 
+MOA_USE_RESULT
 Bool Entity_init(
 	Entity *e,
 	PixelPosition position,
@@ -63,7 +66,7 @@ void Mover_init(Mover *m,
 				unsigned time_per_pixel,
 				Entity body);
 void Mover_free(Mover *m);
-Bool Mover_move(Mover *m, size_t steps_to_go);
+void Mover_move(Mover *m, size_t steps_to_go);
 void Mover_stop(Mover *m);
 void Mover_update(Mover *m, unsigned delta);
 

@@ -31,6 +31,8 @@ void ImageManager_init(ImageManager *im,
 					   char *directory,
 					   SDL_PixelFormat *format);
 void ImageManager_free(ImageManager *im, Deallocator images_deallocator);
+
+MOA_USE_RESULT
 SDL_Surface *ImageManager_get(ImageManager *im, char const *name, MemoryManager memory);
 
 

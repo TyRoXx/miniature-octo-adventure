@@ -6,12 +6,14 @@
 
 
 #define DEFINE_MAX_FUNCTION(type_) \
+MOA_USE_RESULT \
 type_ max_ ## type_(type_ left, type_ right) \
 { \
 	return (left > right) ? left : right; \
 }
 
 #define DEFINE_MIN_FUNCTION(type_) \
+MOA_USE_RESULT \
 type_ min_ ## type_(type_ left, type_ right) \
 { \
 	return (left < right) ? left : right; \

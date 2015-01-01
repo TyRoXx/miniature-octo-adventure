@@ -18,8 +18,14 @@ World;
 
 void World_free(World *w, Deallocator deallocator);
 void World_update(World *w, unsigned delta);
+
+MOA_USE_RESULT
 Bool World_add_entity(World *w, Entity const *entity);
+
+MOA_USE_RESULT
 Bool World_add_mover(World *w, Mover mover, Allocator allocator);
+
+MOA_USE_RESULT
 Bool World_is_possible_move(
 	World const *world,
 	PixelPosition const *from,

@@ -59,21 +59,20 @@ static int is_possible_step(
 	return World_is_possible_move(entity->world, &entity->position, dir);
 }
 
-Bool Mover_move(Mover *m, size_t steps_to_go)
+void Mover_move(Mover *m, size_t steps_to_go)
 {
 	if (m->steps_to_go > 0)
 	{
-		return False;
+		return;
 	}
 
 	if (!is_possible_step(&m->body, m->body.direction))
 	{
-		return False;
+		return;
 	}
 
 	m->steps_to_go = steps_to_go;
 	m->remaining_time = 0;
-	return True;
 }
 
 void Mover_stop(Mover *m)

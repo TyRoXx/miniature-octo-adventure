@@ -14,6 +14,7 @@ typedef struct LabeledButton
 }
 LabeledButton;
 
+MOA_USE_RESULT
 LabeledButton LabeledButton_create(char const *text, TextStyle style, Vector2i desired_size, Color background_color);
 
 

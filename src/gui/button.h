@@ -13,6 +13,7 @@ typedef struct Button
 }
 Button;
 
+MOA_USE_RESULT
 Button Button_create(Widget *content, Vector2i desired_size, Color background_color);
 
 

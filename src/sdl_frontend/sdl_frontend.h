@@ -33,6 +33,7 @@ typedef struct SDLFrontend
 SDLFrontend;
 
 
+MOA_USE_RESULT
 Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings);
 
 

@@ -2,6 +2,7 @@
 #define TEXTURE_REF_H
 
 
+#include "base/unused.h"
 #include <SDL.h>
 
 
@@ -12,6 +13,7 @@ typedef struct TextureRef
 }
 TextureRef;
 
+MOA_USE_RESULT
 TextureRef TextureRef_full(SDL_Surface *surface);
 
 
