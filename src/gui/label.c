@@ -5,7 +5,6 @@ static void Label_destroy(Widget *this_)
 {
 	Label * const instance = (Label *)this_;
 	free(instance->text);
-	free(instance);
 }
 
 static void Label_pack(Widget *this_)
@@ -30,14 +29,11 @@ static WidgetClass const label_class =
     Label_render
 };
 
-Label *Label_create(char *text, TextStyle style, Vector2i desired_size)
+Label Label_create(char *text, TextStyle style, Vector2i desired_size)
 {
-	Label * const instance = malloc(sizeof(*instance));
-	if (instance)
-	{
-		Widget_init(&instance->base, &label_class, desired_size);
-		instance->text = text;
-		instance->style = style;
-	}
+	Label instance;
+	Widget_init(&instance.base, &label_class, desired_size);
+	instance.text = text;
+	instance.style = style;
 	return instance;
 }

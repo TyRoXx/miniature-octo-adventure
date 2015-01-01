@@ -29,7 +29,5 @@ typedef struct WidgetClass
 }
 WidgetClass;
 
-typedef Widget OwnedWidget;
-
 
 #endif

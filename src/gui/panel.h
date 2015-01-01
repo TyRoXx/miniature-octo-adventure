@@ -23,7 +23,7 @@ typedef struct Panel
 }
 Panel;
 
-Panel *Panel_create(Vector2i desired_size, Layout layout);
+Panel Panel_create(Vector2i desired_size, Layout layout);
 
 
 Layout make_vertical_layout(void);

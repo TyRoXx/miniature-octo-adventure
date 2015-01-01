@@ -18,7 +18,7 @@ include_directories(${SDL_INCLUDE_DIR})
 include_directories(${SDLTTF_INCLUDE_DIR})
 
 if(UNIX OR MINGW)
-	set(CMAKE_C_FLAGS "-Wall -Wextra -Wconversion -Werror -pedantic -Wconversion")
+	set(CMAKE_C_FLAGS "-Wall -Wextra -Wconversion -Werror -pedantic -Wconversion -Wunused")
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCC)

@@ -4,9 +4,7 @@
 
 static void Padding_destroy(Widget *this_)
 {
-	Padding * const instance = (Padding *)this_;
-	Widget_destroy(instance->content);
-	free(instance);
+	(void)this_;
 }
 
 static void Padding_pack(Widget *this_)
@@ -33,14 +31,11 @@ static WidgetClass const padding_class =
 	Padding_render
 };
 
-Padding *Padding_create(Vector2i desired_size, OwnedWidget *content, int amount)
+Padding Padding_create(Vector2i desired_size, Widget *content, int amount)
 {
-	Padding * const instance = malloc(sizeof(*instance));
-	if (instance)
-	{
-		Widget_init(&instance->base, &padding_class, desired_size);
-		instance->content = content;
-		instance->amount = amount;
-	}
+	Padding instance;
+	Widget_init(&instance.base, &padding_class, desired_size);
+	instance.content = content;
+	instance.amount = amount;
 	return instance;
 }

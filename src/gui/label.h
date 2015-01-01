@@ -14,7 +14,7 @@ typedef struct Label
 }
 Label;
 
-Label *Label_create(char *text, TextStyle style, Vector2i desired_size);
+Label Label_create(char *text, TextStyle style, Vector2i desired_size);
 
 
 #endif

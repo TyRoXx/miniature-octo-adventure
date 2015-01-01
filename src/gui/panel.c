@@ -2,19 +2,10 @@
 #include "base/min_max.h"
 #include <stdlib.h>
 
-
-static void panel_child_deleter(void *child, void *user)
-{
-	(void)user;
-	Widget_destroy(child);
-}
-
 static void Panel_destroy(Widget *this_)
 {
 	Panel * const panel = (Panel *)this_;
-	PtrVector_for_each(&panel->children, panel_child_deleter, NULL);
 	PtrVector_free(&panel->children);
-	free(panel);
 }
 
 static void Panel_pack(Widget *this_)
@@ -43,20 +34,12 @@ static WidgetClass const panel_class =
 	Panel_render
 };
 
-static void Panel_init(Panel *p, Vector2i desired_size, Layout layout)
+Panel Panel_create(Vector2i desired_size, Layout layout)
 {
-	Widget_init(&p->base, &panel_class, desired_size);
-	PtrVector_init(&p->children);
-	p->layout = layout;
-}
-
-Panel *Panel_create(Vector2i desired_size, Layout layout)
-{
-	Panel * const panel = malloc(sizeof(*panel));
-	if (panel)
-	{
-		Panel_init(panel, desired_size, layout);
-	}
+	Panel panel;
+	Widget_init(&panel.base, &panel_class, desired_size);
+	PtrVector_init(&panel.children);
+	panel.layout = layout;
 	return panel;
 }
 

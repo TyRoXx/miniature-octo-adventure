@@ -8,12 +8,12 @@
 typedef struct Button
 {
 	Widget base;
-	OwnedWidget *content;
+	Widget *content;
 	Color background_color;
 }
 Button;
 
-Button *Button_create(OwnedWidget *content, Vector2i desired_size, Color background_color);
+Button Button_create(Widget *content, Vector2i desired_size, Color background_color);
 
 
 #endif

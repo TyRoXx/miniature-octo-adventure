@@ -18,5 +18,8 @@ void *find(void *begin,
 		   Bool (*predicate)(void *element, void *user),
 		   void *user);
 
+#define MOA_ARRAY_SIZE(array) (sizeof(array) / sizeof(*(array)))
+#define MOA_ARRAY_END(array) ((array) + MOA_ARRAY_SIZE((array)))
+
 
 #endif
