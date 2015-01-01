@@ -113,7 +113,7 @@ static void test_gui_panel_vertical_layout(void)
 	TEST(Vector2i_equal(&panel.base.actual_size, &actual_size));
 	TEST(Vector2i_equal(&panel.base.desired_size, &desired_size));
 
-	TEST(PtrVector_push_back(&panel.children, &child, memory.allocator));
+	ASSERT(PtrVector_push_back(&panel.children, &child, memory.allocator));
 	Widget_pack(&panel.base);
 	TEST(Vector2i_equal(&panel.base.absolute_position, &position));
 	TEST(Vector2i_equal(&panel.base.actual_size, &actual_size));
