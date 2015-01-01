@@ -155,33 +155,71 @@ static void draw_appearance(
 	draw_animation(pixel_pos, screen, animation, appearance->image, direction);
 }
 
-static void draw_entities(
+static int compare_entity_in_front(void const *left, void const *right)
+{
+	Entity const * const left_entity = *(Entity **)left;
+	Entity const * const right_entity = *(Entity **)right;
+	int const left_y = left_entity->position.vector.y;
+	int const right_y = right_entity->position.vector.y;
+	if (left_y < right_y)
+	{
+		return -1;
+	}
+	if (left_y == right_y)
+	{
+		return 0;
+	}
+	return 1;
+}
+
+MOA_USE_RESULT
+static Bool draw_entities(
 	Camera const *camera,
 	SDL_Surface *screen,
 	World const *world,
 	AppearanceManager const *appearances,
-	Vector2i resolution)
+	Vector2i resolution,
+	MemoryManager memory)
 {
-	Mover * begin = (Mover *)Vector_begin(&world->movers);
-	Mover * const end = (Mover *)Vector_end(&world->movers);
+	Mover const * begin = (Mover *)Vector_begin(&world->movers);
+	Mover const * const end = (Mover *)Vector_end(&world->movers);
+	PtrVector entities_in_z_order;
+	size_t i;
 
 	assert(world);
 	assert(camera);
 	assert(screen);
 	assert(appearances);
 
-	for (; begin != end; ++begin)
+	PtrVector_init(&entities_in_z_order);
+	if (!PtrVector_resize(&entities_in_z_order, (end - begin), memory.allocator))
 	{
+		return False;
+	}
+
+	for (i = 0; begin != end; ++begin, ++i)
+	{
+		PtrVector_set(&entities_in_z_order, i, &begin->body);
+	}
+
+	qsort(PtrVector_begin(&entities_in_z_order), PtrVector_size(&entities_in_z_order), sizeof(Entity *), compare_entity_in_front);
+
+	for (i = 0; i < PtrVector_size(&entities_in_z_order); ++i)
+	{
+		Entity const * const body = PtrVector_get(&entities_in_z_order, i);
 		Vector2i pixel_pos;
-		pixel_pos.x = begin->body.position.vector.x + (int)((- camera->position.vector.x)) + resolution.x / 2;
-		pixel_pos.y = begin->body.position.vector.y + (int)((- camera->position.vector.y)) + resolution.y / 2;
+		pixel_pos.x = body->position.vector.x + (int)((-camera->position.vector.x)) + resolution.x / 2;
+		pixel_pos.y = body->position.vector.y + (int)((-camera->position.vector.y)) + resolution.y / 2;
 		draw_appearance(
 			pixel_pos,
 			screen,
-			begin->body.appearance,
+			body->appearance,
 			appearances,
-			begin->body.direction);
+			body->direction);
 	}
+
+	PtrVector_free(&entities_in_z_order, memory.deallocator);
+	return True;
 }
 
 static void draw_layered_tile(
@@ -403,7 +441,8 @@ static void AdventureStateView_draw(GameStateView *view)
 		screen,
 		&adv_view->state->world,
 		&adv_view->front->data.appearances,
-	    screen_resolution
+	    screen_resolution,
+		adv_view->state->memory
 		);
 
 	/*draw layer 2*/

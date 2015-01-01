@@ -9,7 +9,7 @@
 #endif
 
 #ifdef _MSC_VER
-#	define MOA_USE_RESULT _Check_return_
+#	define MOA_USE_RESULT /*_Check_return_*/ /*disabled because of "syntax error" for no reason*/
 #else
 #	define MOA_USE_RESULT __attribute__((warn_unused_result))
 #endif
