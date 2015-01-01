@@ -100,8 +100,12 @@ static Widget *create_gui(void)
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
 	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
 
-	/*TODO: check success */
 	AdventureGui *gui = malloc(sizeof(*gui));
+	if (!gui)
+	{
+		return NULL;
+	}
+
 	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(500, 400));
 
 	gui->root = Panel_create(Vector2i_new(0, 0), make_absolute_layout());
@@ -114,17 +118,22 @@ static Widget *create_gui(void)
 	gui->buttons[4] = LabeledButton_create("555", styleC, Vector2i_new(80, 40), make_color(127, 127, 127, 255));
 	gui->padding1 = Padding_create(Vector2i_new(80, 30), &gui->buttons[4].base, 1);
 	gui->panel1 = Panel_create(Vector2i_new(200, 100), make_horizontal_layout());
-	PtrVector_push_back(&gui->root.children, &gui->window);
-	PtrVector_push_back(&gui->window.children, &gui->buttons[0]);
-	PtrVector_push_back(&gui->window.children, &gui->label1);
-	PtrVector_push_back(&gui->window.children, &gui->buttons[1]);
-	PtrVector_push_back(&gui->window.children, &gui->buttons[2]);
-	PtrVector_push_back(&gui->window.children, &gui->panel1);
-	PtrVector_push_back(&gui->panel1.children, &gui->buttons[3]);
-	PtrVector_push_back(&gui->panel1.children, &gui->padding1);
 	gui->window.base.absolute_position = Vector2i_new(200, 5);
 
-	return &gui->base;
+	if (PtrVector_push_back(&gui->root.children, &gui->window) &&
+		PtrVector_push_back(&gui->window.children, &gui->buttons[0]) &&
+		PtrVector_push_back(&gui->window.children, &gui->label1) &&
+		PtrVector_push_back(&gui->window.children, &gui->buttons[1]) &&
+		PtrVector_push_back(&gui->window.children, &gui->buttons[2]) &&
+		PtrVector_push_back(&gui->window.children, &gui->panel1) &&
+		PtrVector_push_back(&gui->panel1.children, &gui->buttons[3]) &&
+		PtrVector_push_back(&gui->panel1.children, &gui->padding1))
+	{
+		return &gui->base;
+	}
+
+	AdventureGui_destroy(&gui->base);
+	return NULL;
 }
 
 static GameState *AdventureState_create(Game *game)
@@ -150,9 +159,11 @@ static GameState *AdventureState_create(Game *game)
 
 				/*TODO: check success*/
 				adv_state->gui = create_gui();
-				Widget_pack(adv_state->gui);
-
-				return (GameState *)adv_state;
+				if (adv_state->gui)
+				{
+					Widget_pack(adv_state->gui);
+					return (GameState *)adv_state;
+				}
 			}
 
 			World_free(world);
