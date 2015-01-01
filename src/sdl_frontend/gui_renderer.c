@@ -1,5 +1,6 @@
 #include "gui_renderer.h"
 #include "base/min_max.h"
+#include "base/unreachable.h"
 #include <assert.h>
 
 
@@ -104,7 +105,7 @@ static alignment_function get_alignment_function(TextAlignment alignment)
 	case TextAlignment_Left:   return align_left;
 	case TextAlignment_Right:  return align_right;
 	}
-	return NULL;
+	MOA_UNREACHABLE();
 }
 
 static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, TextStyle const *style)
