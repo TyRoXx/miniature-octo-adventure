@@ -1,6 +1,7 @@
 #include "image_manager.h"
 #include "path.h"
 #include "base/algorithm.h"
+#include "SDL_image.h"
 #include <assert.h>
 #include <string.h>
 

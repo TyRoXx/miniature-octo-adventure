@@ -2,6 +2,7 @@
 #include "image_manager.h"
 #include "base/algorithm.h"
 #include <assert.h>
+#include <string.h>
 #include <jansson.h>
 
 

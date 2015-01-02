@@ -14,6 +14,8 @@ else()
 		include_directories(${SDL2_INCLUDE_DIR})
 		find_package(SDL2_ttf REQUIRED)
 		include_directories(${SDL2TTF_INCLUDE_DIR})
+		find_package(SDL2_image REQUIRED)
+		include_directories(${SDL2IMAGE_INCLUDE_DIR})
 	endif()
 
 	if(NOT SDL2_FOUND)

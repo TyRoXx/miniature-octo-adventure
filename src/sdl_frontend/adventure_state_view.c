@@ -11,6 +11,7 @@
 #include <assert.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
+#include <stdlib.h>
 
 typedef struct AdventureGui
 {
