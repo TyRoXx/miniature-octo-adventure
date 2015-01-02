@@ -5,11 +5,11 @@
 #include <assert.h>
 #include <string.h>
 
-static SDL_Surface *load_bmp_texture(char const *file_name,
+static SDL_Surface *load_texture(char const *file_name,
 									 SDL_PixelFormat *format)
 {
 	SDL_Color const AlphaKey = {255, 0, 255, 0};
-	SDL_Surface * const bitmap = SDL_LoadBMP(file_name);
+	SDL_Surface * const bitmap = IMG_Load(file_name);
 	SDL_Surface * converted;
 
 	assert(format);
@@ -104,7 +104,7 @@ static Image *add_image(
 	}
 
 	image.name = name;
-	image.surface = load_bmp_texture(full_name, manager->format);
+	image.surface = load_texture(full_name, manager->format);
 	Deallocator_free(memory.deallocator, full_name);
 
 	if (!image.surface)
