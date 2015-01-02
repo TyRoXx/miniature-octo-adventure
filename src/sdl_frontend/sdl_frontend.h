@@ -2,7 +2,6 @@
 #define SDL_FRONTEND_H
 
 
-#include "frontend/frontend.h"
 #include "data.h"
 
 
@@ -19,7 +18,6 @@ SDLSettings;
 
 typedef struct SDLFrontend
 {
-	Frontend base;
 	struct Game *game;
 	SDL_Surface *screen;
 #if SDL_MAJOR_VERSION >= 2
@@ -33,8 +31,10 @@ typedef struct SDLFrontend
 SDLFrontend;
 
 
-MOA_USE_RESULT
-Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings);
+void SDLFrontend_destroy(SDLFrontend *sdl_front);
+Bool SDLFrontend_main_loop(SDLFrontend *sdl_front);
 
+MOA_USE_RESULT
+Bool SDLFrontEnd_create(SDLFrontend *front, struct Game *game, SDLSettings settings);
 
 #endif

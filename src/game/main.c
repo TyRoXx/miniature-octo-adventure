@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 
 	{
 		Game game;
-		Frontend *frontend;
+		SDLFrontend frontend;
 		SDLSettings settings;
 
 #if MOA_MEMORY_DEBUGGING
@@ -57,8 +57,7 @@ int main(int argc, char **argv)
 		settings.fullscreen = False;
 		settings.resolution = Vector2i_new(1024, 768);
 
-		frontend = SDLFrontEnd_create(&game, settings);
-		if (!frontend)
+		if (!SDLFrontEnd_create(&frontend, &game, settings))
 		{
 			result = 1;
 			goto fail_1;
@@ -70,13 +69,13 @@ int main(int argc, char **argv)
 			goto fail_0;
 		}
 
-		if (!frontend->type->main_loop(frontend))
+		if (!SDLFrontend_main_loop(&frontend))
 		{
 			result = 1;
 		}
 
 fail_0:
-		frontend->type->destroy(frontend);
+		SDLFrontend_destroy(&frontend);
 
 fail_1:
 		Game_free(&game);

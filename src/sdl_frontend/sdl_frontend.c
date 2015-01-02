@@ -7,9 +7,8 @@
 #include "SDL_main.h"
 #include <assert.h>
 
-static void SDLFrontend_destroy(Frontend *front)
+void SDLFrontend_destroy(SDLFrontend *sdl_front)
 {
-	SDLFrontend * const sdl_front = (SDLFrontend *)front;
 	assert(sdl_front);
 
 	if (sdl_front->state_view)
@@ -27,13 +26,10 @@ static void SDLFrontend_destroy(Frontend *front)
 	SDL_DestroyWindow(sdl_front->window);
 #endif
 	SDL_Quit();
-
-	Deallocator_free(sdl_front->game->memory.deallocator, front);
 }
 
-static Bool SDLFrontend_main_loop(Frontend *front)
+Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 {
-	SDLFrontend * const sdl_front = (SDLFrontend *)front;
 	SDL_Surface * const screen = sdl_front->screen;
 	Game * const game = sdl_front->game;
 	int is_running = 1;
@@ -101,13 +97,6 @@ static Bool SDLFrontend_main_loop(Frontend *front)
 	return True;
 }
 
-
-static FrontendType const SDLFrontendType =
-{
-	SDLFrontend_destroy,
-	SDLFrontend_main_loop
-};
-
 static char const * const WindowTitle = "SDL Test";
 
 static void on_enter_game_state(void *user_data, GameState *state)
@@ -127,14 +116,8 @@ static void on_enter_game_state(void *user_data, GameState *state)
 	sdl_front->state_view->type = &AdventureStateViewType;
 }
 
-Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings)
+Bool SDLFrontEnd_create(SDLFrontend *front, struct Game *game, SDLSettings settings)
 {
-	SDLFrontend * const front = Allocator_alloc(game->memory.allocator, sizeof(*front));
-	if (!front)
-	{
-		goto fail_0;
-	}
-
 	assert(game);
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -149,7 +132,6 @@ Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings)
 		goto fail_2;
 	}
 
-	front->base.type = &SDLFrontendType;
 	front->game = game;
 #if SDL_MAJOR_VERSION >= 2
 	front->window = SDL_CreateWindow(
@@ -204,7 +186,7 @@ Frontend *SDLFrontEnd_create(struct Game *game, SDLSettings settings)
 	SDL_WM_SetCaption(WindowTitle, WindowTitle);
 #endif
 
-	return (Frontend *)front;
+	return True;
 
 fail_3:
 	TTF_Quit();
@@ -217,7 +199,5 @@ fail_2:
 
 fail_1:
 	Deallocator_free(game->memory.deallocator, front);
-
-fail_0:
-	return NULL;
+	return False;
 }
