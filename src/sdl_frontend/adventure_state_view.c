@@ -63,9 +63,8 @@ static WidgetClass const adventure_gui_class =
 };
 
 MOA_USE_RESULT
-static Bool create_gui(AdventureGui *gui, MemoryManager memory)
+static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution)
 {
-	Vector2i screen_resolution = {1024, 768}; /*TODO use the actual resolution*/
 #if MOA_MEMORY_DEBUGGING
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
@@ -325,7 +324,7 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 		goto fail_2;
 	}
 
-	if (!create_gui(&adv_view->gui, adv_state->memory))
+	if (!create_gui(&adv_view->gui, adv_state->memory, Vector2i_new(front->screen->w, front->screen->h)))
 	{
 		goto fail_3;
 	}
