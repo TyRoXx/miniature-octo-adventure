@@ -199,7 +199,7 @@ static Bool draw_entities(
 
 	for (i = 0; begin != end; ++begin, ++i)
 	{
-		PtrVector_set(&entities_in_z_order, i, &begin->body);
+		PtrVector_set(&entities_in_z_order, i, (void *)(&begin->body));
 	}
 
 	qsort(PtrVector_begin(&entities_in_z_order), PtrVector_size(&entities_in_z_order), sizeof(Entity *), compare_entity_in_front);

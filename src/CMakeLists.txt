@@ -35,6 +35,7 @@ endif()
 if(MSVC)
 	add_definitions("/D_CRT_SECURE_NO_WARNINGS")
 	add_definitions("/MP")
+	add_definitions("/W4")
 endif()
 
 include_directories(".")

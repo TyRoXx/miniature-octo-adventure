@@ -39,7 +39,7 @@ void Vector2i_add_component(Vector2i *to, Direction2 component, int difference);
 void Vector2i_set_component(Vector2i *to, Direction2 component, int value);
 void Vector2i_add_xy(Vector2i *to, int x, int y);
 
-Vector2i const Vector2i_zero;
+extern Vector2i const Vector2i_zero;
 
 
 #endif

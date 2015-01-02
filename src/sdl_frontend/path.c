@@ -29,7 +29,7 @@ static Bool append_path(Vector *left, Allocator left_allocator, char const *righ
 
 	if (need_separator)
 	{
-		char const separator[1] = "/";
+		char const separator = '/';
 		if (!Vector_push_back(left, &separator, sizeof(separator), left_allocator))
 		{
 			return False;
