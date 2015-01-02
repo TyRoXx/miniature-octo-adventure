@@ -86,7 +86,6 @@ Layout make_vertical_layout(void)
 {
 	Layout layout;
 	layout.pack_children = pack_vertically;
-	layout.user = NULL;
 	return layout;
 }
 
@@ -94,7 +93,6 @@ Layout make_horizontal_layout(void)
 {
 	Layout layout;
 	layout.pack_children = pack_horizontally;
-	layout.user = NULL;
 	return layout;
 }
 
@@ -113,6 +111,5 @@ Layout make_absolute_layout(void)
 {
 	Layout layout;
 	layout.pack_children = pack_absolute;
-	layout.user = NULL;
 	return layout;
 }

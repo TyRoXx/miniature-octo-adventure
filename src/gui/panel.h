@@ -11,7 +11,6 @@ struct Panel;
 typedef struct Layout
 {
 	void (*pack_children)(struct Panel *);
-	void *user;
 }
 Layout;
 
