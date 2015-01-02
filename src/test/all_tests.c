@@ -101,7 +101,7 @@ static void test_gui_panel_vertical_layout(void)
 	Vector2i desired_size = Vector2i_new(100, 200);
 	Vector2i actual_size = Vector2i_new(80, 210);
 	MemoryManager memory = create_standard_memory_manager();
-	Panel panel = Panel_create(desired_size, make_vertical_layout(), memory.deallocator);
+	Panel panel = Panel_create(desired_size, pack_vertically, memory.deallocator);
 	Vector2i child_size = Vector2i_new(140, 200);
 	Label child = Label_create("text", make_text_style(TextAlignment_Left, TextAlignment_Right, make_color(1, 2, 3, 4)), child_size);
 	Vector2i child_actual_size = Vector2i_new(80, 200);

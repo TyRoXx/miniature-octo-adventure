@@ -8,11 +8,7 @@
 
 struct Panel;
 
-typedef struct Layout
-{
-	void (*pack_children)(struct Panel *);
-}
-Layout;
+typedef void (*Layout)(struct Panel *);
 
 typedef struct Panel
 {
@@ -27,13 +23,13 @@ MOA_USE_RESULT
 Panel Panel_create(Vector2i desired_size, Layout layout, Deallocator children_deallocator);
 
 MOA_USE_RESULT
-Layout make_vertical_layout(void);
+void pack_vertically(Panel *panel);
 
 MOA_USE_RESULT
-Layout make_horizontal_layout(void);
+void pack_horizontally(Panel *panel);
 
 MOA_USE_RESULT
-Layout make_absolute_layout(void);
+void pack_absolutely(Panel *panel);
 
 
 #endif

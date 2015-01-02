@@ -76,7 +76,7 @@ static Bool create_gui(AdventureGui *gui, MemoryManager memory)
 	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(root_width, screen_resolution.y));
 
 	gui->deallocator = memory.deallocator;
-	gui->root = Panel_create(Vector2i_new(root_width, screen_resolution.y), make_vertical_layout(), memory.deallocator);
+	gui->root = Panel_create(Vector2i_new(root_width, screen_resolution.y), pack_vertically, memory.deallocator);
 	gui->root.base.actual_size = gui->root.base.desired_size;
 	gui->root.base.absolute_position.x = screen_resolution.x - root_width;
 	gui->root.base.absolute_position.y = 0;

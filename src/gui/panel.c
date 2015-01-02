@@ -10,7 +10,7 @@ static void Panel_destroy(Widget *this_)
 static void Panel_pack(Widget *this_)
 {
 	Panel * const panel = (Panel *)this_;
-	panel->layout.pack_children(panel);
+	panel->layout(panel);
 }
 
 static void render_child(void *element, void *user)
@@ -72,31 +72,17 @@ static void generic_pack(Panel *panel, Direction2 direction)
 	}
 }
 
-static void pack_vertically(Panel *panel)
+void pack_vertically(Panel *panel)
 {
 	generic_pack(panel, Direction2_Down);
 }
 
-static void pack_horizontally(Panel *panel)
+void pack_horizontally(Panel *panel)
 {
 	generic_pack(panel, Direction2_Right);
 }
 
-Layout make_vertical_layout(void)
-{
-	Layout layout;
-	layout.pack_children = pack_vertically;
-	return layout;
-}
-
-Layout make_horizontal_layout(void)
-{
-	Layout layout;
-	layout.pack_children = pack_horizontally;
-	return layout;
-}
-
-static void pack_absolute(Panel *panel)
+void pack_absolutely(Panel *panel)
 {
 	size_t i, c;
 	for (i = 0, c = PtrVector_size(&panel->children); i < c; ++i)
@@ -105,11 +91,4 @@ static void pack_absolute(Panel *panel)
 		child->actual_size = child->desired_size;
 		Widget_pack(child);
 	}
-}
-
-Layout make_absolute_layout(void)
-{
-	Layout layout;
-	layout.pack_children = pack_absolute;
-	return layout;
 }
