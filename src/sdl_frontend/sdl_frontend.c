@@ -82,7 +82,10 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 
 		SDL_FillRect(screen, 0, 0);
 
-		sdl_front->state_view->type->draw(sdl_front->state_view);
+		if (!sdl_front->state_view->type->draw(sdl_front->state_view))
+		{
+			return False;
+		}
 
 #if SDL_MAJOR_VERSION >= 2
 		SDL_RenderClear(sdl_front->renderer);

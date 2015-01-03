@@ -192,7 +192,7 @@ static Bool draw_entities(
 	assert(appearances);
 
 	PtrVector_init(&entities_in_z_order);
-	if (!PtrVector_resize(&entities_in_z_order, (end - begin), memory.allocator))
+	if (!PtrVector_resize(&entities_in_z_order, (size_t)(end - begin), memory.allocator))
 	{
 		return False;
 	}
@@ -402,7 +402,7 @@ static void draw_user_interface(
 	Widget_render(root, &renderer.base);
 }
 
-static void AdventureStateView_draw(GameStateView *view)
+static Bool AdventureStateView_draw(GameStateView *view)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 	SDL_Surface * const screen = adv_view->front->screen;
@@ -436,14 +436,17 @@ static void AdventureStateView_draw(GameStateView *view)
 	    screen_resolution
 		);
 
-	draw_entities(
+	if (!draw_entities(
 		&adv_view->camera,
 		screen,
 		&adv_view->state->world,
 		&adv_view->front->data.appearances,
 	    screen_resolution,
 		adv_view->state->memory
-		);
+		))
+	{
+		return False;
+	}
 
 	/*draw layer 2*/
 	draw_tile_layers(
@@ -460,6 +463,7 @@ static void AdventureStateView_draw(GameStateView *view)
 	draw_user_interface(&adv_view->gui.base, screen, &adv_view->front->data.fonts);
 
 	adv_view->current_frame += 1;
+	return True;
 }
 
 static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const *event)

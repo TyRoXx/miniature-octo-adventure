@@ -18,8 +18,15 @@ void moa_test_run_all(void)
 	test_gui_padding();
 }
 
-#define TEST(x)   do { if (!(x)) { moa_test_on_message("TEST("   MOA_STRINGIZE(x) ") fail", __FILE__, __LINE__);         } } while (0,0) /*owl silences VC++ warning C4127*/
-#define ASSERT(x) do { if (!(x)) { moa_test_on_message("ASSERT(" MOA_STRINGIZE(x) ") fail", __FILE__, __LINE__); return; } } while (0,0) /*owl silences VC++ warning C4127*/
+#ifdef _MSC_VER
+/*owl silences VC++ warning C4127*/
+#	define MOA_COMPILE_TIME_FALSE (0,0)
+#else
+#	define MOA_COMPILE_TIME_FALSE 0
+#endif
+
+#define TEST(x)   do { if (!(x)) { moa_test_on_message("TEST("   MOA_STRINGIZE(x) ") fail", __FILE__, __LINE__);         } } while (MOA_COMPILE_TIME_FALSE)
+#define ASSERT(x) do { if (!(x)) { moa_test_on_message("ASSERT(" MOA_STRINGIZE(x) ") fail", __FILE__, __LINE__); return; } } while (MOA_COMPILE_TIME_FALSE)
 
 static void test_vector(void)
 {

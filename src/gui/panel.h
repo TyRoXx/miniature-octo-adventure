@@ -22,13 +22,8 @@ Panel;
 MOA_USE_RESULT
 Panel Panel_create(Vector2i desired_size, Layout layout, Deallocator children_deallocator);
 
-MOA_USE_RESULT
 void pack_vertically(Panel *panel);
-
-MOA_USE_RESULT
 void pack_horizontally(Panel *panel);
-
-MOA_USE_RESULT
 void pack_absolutely(Panel *panel);
 
 
