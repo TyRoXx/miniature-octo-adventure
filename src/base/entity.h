@@ -64,6 +64,14 @@ void Mover_init(Mover *m,
 				unsigned time_per_pixel,
 				Entity body);
 void Mover_free(Mover *m);
+
+
+int is_possible_step(
+	Entity const *entity,
+	Direction dir,
+	struct World const *world
+);
+
 void Mover_move(Mover *m, struct World const *world, size_t steps_to_go);
 void Mover_stop(Mover *m);
 void Mover_update(Mover *m, struct World const *world, unsigned delta);

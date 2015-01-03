@@ -49,7 +49,7 @@ void Mover_free(Mover *m)
 	Entity_free(&m->body);
 }
 
-static int is_possible_step(
+int is_possible_step(
 	Entity const *entity,
 	Direction dir,
 	World const *world

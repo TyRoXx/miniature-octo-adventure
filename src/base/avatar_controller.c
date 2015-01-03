@@ -88,15 +88,22 @@ void AvatarController_update(AvatarController *a, World const *world)
 		return;
 	}
 
-	int input_dir = a->pressed_direction_keys[0];
-	if (input_dir == not_pressed)
+	for (size_t i = 0; i < 2; ++i)
 	{
-		if (avatar->steps_to_go > 0)
+		int input_dir = a->pressed_direction_keys[i];
+		if (input_dir == not_pressed)
 		{
-			Mover_stop(avatar);
+			if (avatar->steps_to_go > 0)
+			{
+				Mover_stop(avatar);
+			}
+			break;
 		}
-		return;
+		avatar->body.direction = (Direction)input_dir;
+		if (is_possible_step(&avatar->body, avatar->body.direction, world))
+		{
+			Mover_move(avatar, world, (size_t)-1);
+			break;
+		}
 	}
-	avatar->body.direction = (Direction)input_dir;
-	Mover_move(avatar, world, (size_t)-1);
 }
