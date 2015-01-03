@@ -1,15 +1,21 @@
 #include "avatar_controller.h"
 #include "base/game.h"
+#include "base/algorithm.h"
 #include <assert.h>
 #include <string.h>
 
+
+static int const not_pressed = -1;
 
 Bool AvatarController_init(AvatarController *a, struct Mover *avatar)
 {
 	assert(a);
 	assert(avatar);
 	a->avatar = avatar;
-	memset(a->is_direction_key_down, 0, sizeof(a->is_direction_key_down));
+	for (size_t i = 0; i < MOA_ARRAY_SIZE(a->pressed_direction_keys); ++i)
+	{
+		a->pressed_direction_keys[i] = not_pressed;
+	}
 	return True;
 }
 
@@ -31,7 +37,25 @@ void AvatarController_handle_input(AvatarController *a,
 
 	if (is_down)
 	{
-		a->is_direction_key_down[dir] = 1;
+		memmove(
+			a->pressed_direction_keys + 1,
+			a->pressed_direction_keys,
+			sizeof(*a->pressed_direction_keys) * (MOA_ARRAY_SIZE(a->pressed_direction_keys) - 1)
+		);
+		a->pressed_direction_keys[0] = dir;
+		for (size_t i = 1; i < MOA_ARRAY_SIZE(a->pressed_direction_keys); ++i)
+		{
+			if (a->pressed_direction_keys[i] == (int)dir)
+			{
+				memmove(
+					a->pressed_direction_keys + i,
+					a->pressed_direction_keys + i + 1,
+					sizeof(*a->pressed_direction_keys) * (MOA_ARRAY_SIZE(a->pressed_direction_keys) - i - 1)
+				);
+				MOA_ARRAY_END(a->pressed_direction_keys)[-1] = not_pressed;
+				break;
+			}
+		}
 		if (avatar->steps_to_go == 0)
 		{
 			avatar->body.direction = dir;
@@ -40,15 +64,17 @@ void AvatarController_handle_input(AvatarController *a,
 	}
 	else
 	{
-		int * const previous = &a->is_direction_key_down[dir];
-		if (*previous)
+		for (size_t i = 0; i < MOA_ARRAY_SIZE(a->pressed_direction_keys); ++i)
 		{
-			*previous = 0;
-
-			if ((avatar->body.direction == dir) &&
-				(avatar->steps_to_go > 0))
+			if (a->pressed_direction_keys[i] == (int)dir)
 			{
-				Mover_stop(avatar);
+				memmove(
+					a->pressed_direction_keys + i,
+					a->pressed_direction_keys + i + 1,
+					sizeof(*a->pressed_direction_keys) * (MOA_ARRAY_SIZE(a->pressed_direction_keys) - i - 1)
+				);
+				MOA_ARRAY_END(a->pressed_direction_keys)[-1] = not_pressed;
+				break;
 			}
 		}
 	}
@@ -62,18 +88,15 @@ void AvatarController_update(AvatarController *a, World const *world)
 		return;
 	}
 
-	if (avatar->steps_to_go == 0)
+	int input_dir = a->pressed_direction_keys[0];
+	if (input_dir == not_pressed)
 	{
-		int input_dir = 0;
-		while ((input_dir < 4) &&
-			!a->is_direction_key_down[input_dir])
+		if (avatar->steps_to_go > 0)
 		{
-			++input_dir;
+			Mover_stop(avatar);
 		}
-		if (input_dir < 4)
-		{
-			avatar->body.direction = (Direction)input_dir;
-			Mover_move(avatar, world, (size_t)-1);
-		}
+		return;
 	}
+	avatar->body.direction = (Direction)input_dir;
+	Mover_move(avatar, world, (size_t)-1);
 }

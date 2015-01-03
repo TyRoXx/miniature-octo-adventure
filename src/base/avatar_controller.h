@@ -9,7 +9,7 @@ struct Mover;
 typedef struct AvatarController
 {
 	struct Mover *avatar;
-	int is_direction_key_down[4];
+	int pressed_direction_keys[4];
 }
 AvatarController;
 
