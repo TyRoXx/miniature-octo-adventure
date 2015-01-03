@@ -264,7 +264,6 @@ static void draw_tile_layers(
 	size_t layer_end,
 	Vector2i resolution)
 {
-	int y;
 	int visible_begin_idx = (camera->position.vector.x - resolution.x  / 2) / tile_width;
 	int visible_begin_idy = (camera->position.vector.y - resolution.y / 2) / tile_width;
 	int visible_end_idx   =  camera->position.vector.x + divide_ceil(resolution.x  / 2 + 1, tile_width);
@@ -275,7 +274,7 @@ static void draw_tile_layers(
 	visible_end_idx   = min_int(visible_end_idx,   (int)tiles->width);
 	visible_end_idy   = min_int(visible_end_idy,   (int)tiles->height);
 
-	for (y = visible_begin_idy; y < visible_end_idy; ++y)
+	for (int y = visible_begin_idy; y < visible_end_idy; ++y)
 	{
 		int x;
 		for (x = visible_begin_idx; x < visible_end_idx; ++x)

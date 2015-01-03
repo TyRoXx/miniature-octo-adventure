@@ -31,7 +31,7 @@ if(UNIX OR MINGW)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCC)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu89")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif()
 
 if(MSVC)
