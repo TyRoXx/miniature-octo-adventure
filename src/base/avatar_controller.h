@@ -20,7 +20,7 @@ void AvatarController_free(AvatarController *a);
 void AvatarController_handle_input(AvatarController *a,
 								   struct World const *world,
 								   Direction dir,
-								   int is_down);
+								   Bool is_down);
 void AvatarController_update(AvatarController *a, struct World const *world);
 
 #endif

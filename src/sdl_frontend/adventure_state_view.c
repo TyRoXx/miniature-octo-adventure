@@ -475,10 +475,10 @@ static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const
 	{
 		switch (event->key.keysym.sym)
 		{
-		case SDLK_w: AvatarController_handle_input(avatar_controller, world, Dir_North, 0); break;
-		case SDLK_a: AvatarController_handle_input(avatar_controller, world, Dir_West, 0); break;
-		case SDLK_s: AvatarController_handle_input(avatar_controller, world, Dir_South, 0); break;
-		case SDLK_d: AvatarController_handle_input(avatar_controller, world, Dir_East, 0); break;
+		case SDLK_w: AvatarController_handle_input(avatar_controller, world, Dir_North, False); break;
+		case SDLK_a: AvatarController_handle_input(avatar_controller, world, Dir_West, False); break;
+		case SDLK_s: AvatarController_handle_input(avatar_controller, world, Dir_South, False); break;
+		case SDLK_d: AvatarController_handle_input(avatar_controller, world, Dir_East, False); break;
 		default:
 			break;
 		}
@@ -487,10 +487,10 @@ static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const
 	{
 		switch (event->key.keysym.sym)
 		{
-		case SDLK_w: AvatarController_handle_input(avatar_controller, world, Dir_North, 1); break;
-		case SDLK_a: AvatarController_handle_input(avatar_controller, world, Dir_West, 1); break;
-		case SDLK_s: AvatarController_handle_input(avatar_controller, world, Dir_South, 1); break;
-		case SDLK_d: AvatarController_handle_input(avatar_controller, world, Dir_East, 1); break;
+		case SDLK_w: AvatarController_handle_input(avatar_controller, world, Dir_North, True); break;
+		case SDLK_a: AvatarController_handle_input(avatar_controller, world, Dir_West, True); break;
+		case SDLK_s: AvatarController_handle_input(avatar_controller, world, Dir_South, True); break;
+		case SDLK_d: AvatarController_handle_input(avatar_controller, world, Dir_East, True); break;
 		default:
 			break;
 		}

@@ -27,7 +27,7 @@ void AvatarController_free(AvatarController *a)
 void AvatarController_handle_input(AvatarController *a,
 								   World const *world,
 								   Direction dir,
-								   int is_down)
+								   Bool is_down)
 {
 	Mover * const avatar = a->avatar;
 	if (!avatar)
