@@ -50,12 +50,12 @@ void Mover_free(Mover *m)
 }
 
 int is_possible_step(
-	Entity const *entity,
+	PixelPosition const *from,
 	Direction dir,
 	World const *world
 	)
 {
-	return World_is_possible_move(world, &entity->position, dir);
+	return World_is_possible_move(world, from, dir);
 }
 
 void Mover_move(Mover *m, World const *world, size_t steps_to_go)
@@ -65,7 +65,7 @@ void Mover_move(Mover *m, World const *world, size_t steps_to_go)
 		return;
 	}
 
-	if (!is_possible_step(&m->body, m->body.direction, world))
+	if (!is_possible_step(&m->body.position, m->body.direction, world))
 	{
 		return;
 	}
@@ -106,7 +106,7 @@ void Mover_update(Mover *m, World const *world, unsigned delta)
 				}
 			}
 
-			if (!is_possible_step(&m->body, m->body.direction, world))
+			if (!is_possible_step(&m->body.position, m->body.direction, world))
 			{
 				m->steps_to_go = 0;
 				break;

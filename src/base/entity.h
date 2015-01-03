@@ -67,7 +67,7 @@ void Mover_free(Mover *m);
 
 
 int is_possible_step(
-	Entity const *entity,
+	PixelPosition const *from,
 	Direction dir,
 	struct World const *world
 );
