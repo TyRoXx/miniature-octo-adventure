@@ -94,13 +94,18 @@ static void test_saturating_int(void)
 	TEST(saturating_add(-1, -1) == -2);
 }
 
+static void handle_on_click(void *user)
+{
+	(void)user;
+}
+
 static void test_gui_labeled_button(void)
 {
 	Vector2i position = Vector2i_new(20, 30);
 	Vector2i desired_size = Vector2i_new(100, 200);
 	Vector2i actual_size = Vector2i_new(80, 210);
 	char const * const text = "text";
-	LabeledButton button = LabeledButton_create(text, make_text_style(TextAlignment_Left, TextAlignment_Right, make_color(1, 2, 3, 4)), desired_size, make_color(5, 6, 7, 8));
+	LabeledButton button = LabeledButton_create(text, make_text_style(TextAlignment_Left, TextAlignment_Right, make_color(1, 2, 3, 4)), desired_size, make_color(5, 6, 7, 8), handle_on_click, NULL);
 	button.base.absolute_position = position;
 	button.base.actual_size = actual_size;
 	Widget_pack(&button.base);

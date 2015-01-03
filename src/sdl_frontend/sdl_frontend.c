@@ -32,12 +32,11 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 {
 	SDL_Surface * const screen = sdl_front->screen;
 	Game * const game = sdl_front->game;
-	int is_running = 1;
 	unsigned last_time = SDL_GetTicks();
 
 	assert(sdl_front->state_view);
 
-	while (is_running)
+	while (sdl_front->is_running)
 	{
 		{
 			SDL_Event event;
@@ -45,7 +44,7 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 			{
 				if (event.type == SDL_QUIT)
 				{
-					is_running = 0;
+					sdl_front->is_running = 0;
 					break;
 				}
 
@@ -54,7 +53,7 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 					switch (event.key.keysym.sym)
 					{
 					case SDLK_ESCAPE:
-						is_running = 0;
+						sdl_front->is_running = 0;
 						break;
 					default:
 						break;
@@ -169,6 +168,7 @@ Bool SDLFrontEnd_create(SDLFrontend *front, struct Game *game, SDLSettings setti
 	                                 SDL_HWSURFACE | SDL_DOUBLEBUF | (settings.fullscreen ? SDL_FULLSCREEN : 0));
 #endif
 	front->state_view = 0;
+	front->is_running = True;
 
 	if (!front->screen)
 	{

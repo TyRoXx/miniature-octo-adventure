@@ -23,11 +23,18 @@ static void Padding_render(Widget *this_, Renderer *renderer)
 	Widget_render(instance->content, renderer);
 }
 
+static void Padding_handle_input(Widget *this_, GuiInput input)
+{
+	Padding * const instance = (Padding *)this_;
+	Widget_handle_input(instance->content, input);
+}
+
 static WidgetClass const padding_class =
 {
 	Padding_destroy,
 	Padding_pack,
-	Padding_render
+	Padding_render,
+	Padding_handle_input
 };
 
 Padding Padding_create(Vector2i desired_size, Widget *content, int amount)

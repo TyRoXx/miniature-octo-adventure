@@ -20,11 +20,18 @@ static void Label_render(Widget *this_, Renderer *renderer)
 	Renderer_text(renderer, dimensions, Vector2i_zero, instance->text, &instance->style);
 }
 
+static void Label_handle_input(Widget *this_, GuiInput input)
+{
+	(void)this_;
+	(void)input;
+}
+
 static WidgetClass const label_class =
 {
     Label_destroy,
     Label_pack,
-    Label_render
+    Label_render,
+	Label_handle_input
 };
 
 Label Label_create(char const *text, TextStyle style, Vector2i desired_size)

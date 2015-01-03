@@ -25,6 +25,7 @@ typedef struct AdventureGui
 	Label total_allocations;
 	Vector total_allocations_text;
 #endif
+	LabeledButton exit;
 	Deallocator deallocator;
 }
 AdventureGui;
@@ -32,6 +33,7 @@ AdventureGui;
 static void AdventureGui_destroy(Widget *this_)
 {
 	AdventureGui * const instance = (AdventureGui *)this_;
+	Widget_destroy(&instance->exit.base);
 #if MOA_MEMORY_DEBUGGING
 	Widget_destroy(&instance->active_allocations.base);
 	Vector_free(&instance->active_allocations_text, instance->deallocator);
@@ -55,15 +57,28 @@ static void AdventureGui_render(Widget *this_, Renderer *renderer)
 	Widget_render(&instance->root.base, renderer);
 }
 
+static void AdventureGui_handle_input(Widget *this_, GuiInput input)
+{
+	AdventureGui * const instance = (AdventureGui *)this_;
+	Widget_handle_input(&instance->root.base, input);
+}
+
 static WidgetClass const adventure_gui_class =
 {
 	AdventureGui_destroy,
 	AdventureGui_pack,
-	AdventureGui_render
+	AdventureGui_render,
+	AdventureGui_handle_input
 };
 
+static void stop_running(void *user)
+{
+	Bool *is_running = user;
+	*is_running = False;
+}
+
 MOA_USE_RESULT
-static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution)
+static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution, Bool *game_is_running)
 {
 #if MOA_MEMORY_DEBUGGING
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
@@ -71,7 +86,7 @@ static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_
 #endif
 	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
 
-	int root_width = 200;
+	int root_width = 120;
 	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(root_width, screen_resolution.y));
 
 	gui->deallocator = memory.deallocator;
@@ -81,22 +96,25 @@ static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_
 	gui->root.base.absolute_position.y = 0;
 
 #if MOA_MEMORY_DEBUGGING
-	gui->active_allocations = Label_create("", styleA, Vector2i_new(300, 30));
+	gui->active_allocations = Label_create("", styleA, Vector2i_new(300, 20));
 	Vector_init(&gui->active_allocations_text);
 
-	gui->total_allocations = Label_create("", styleB, Vector2i_new(300, 30));
+	gui->total_allocations = Label_create("", styleB, Vector2i_new(300, 20));
 	Vector_init(&gui->total_allocations_text);
 #endif
 
-	gui->frame_number = Label_create("", styleC, Vector2i_new(300, 30));
+	gui->frame_number = Label_create("", styleC, Vector2i_new(300, 20));
 	Vector_init(&gui->frame_number_text);
+
+	gui->exit = LabeledButton_create("Exit", styleA, Vector2i_new(300, 20), make_color(255, 0, 0, 255), stop_running, game_is_running);
 
 	if (
 #if MOA_MEMORY_DEBUGGING
 		PtrVector_push_back(&gui->root.children, &gui->active_allocations, memory.allocator) &&
 		PtrVector_push_back(&gui->root.children, &gui->total_allocations, memory.allocator) &&
 #endif
-		PtrVector_push_back(&gui->root.children, &gui->frame_number, memory.allocator))
+		PtrVector_push_back(&gui->root.children, &gui->frame_number, memory.allocator) &&
+		PtrVector_push_back(&gui->root.children, &gui->exit, memory.allocator))
 	{
 		return True;
 	}
@@ -323,7 +341,7 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 		goto fail_2;
 	}
 
-	if (!create_gui(&adv_view->gui, adv_state->memory, Vector2i_new(front->screen->w, front->screen->h)))
+	if (!create_gui(&adv_view->gui, adv_state->memory, Vector2i_new(front->screen->w, front->screen->h), &front->is_running))
 	{
 		goto fail_3;
 	}
@@ -494,6 +512,12 @@ static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const
 		default:
 			break;
 		}
+	}
+	else if (event->type == SDL_MOUSEBUTTONUP)
+	{
+		GuiInput input;
+		input.click_position = Vector2i_new(event->motion.x, event->motion.y);
+		Widget_handle_input(&adv_view->gui.base, input);
 	}
 }
 

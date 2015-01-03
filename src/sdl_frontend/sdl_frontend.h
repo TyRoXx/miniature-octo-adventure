@@ -27,6 +27,7 @@ typedef struct SDLFrontend
 #endif
 	Data data;
 	struct GameStateView *state_view;
+	Bool is_running;
 }
 SDLFrontend;
 

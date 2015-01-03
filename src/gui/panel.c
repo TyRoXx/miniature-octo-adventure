@@ -26,11 +26,25 @@ static void Panel_render(Widget *this_, Renderer *renderer)
 	PtrVector_for_each(&panel->children, render_child, renderer);
 }
 
+static void let_child_handle_input(void *element, void *user)
+{
+	Widget *child = element;
+	GuiInput const *input = user;
+	Widget_handle_input(child, *input);
+}
+
+static void Panel_handle_input(Widget *this_, GuiInput input)
+{
+	Panel * const panel = (Panel *)this_;
+	PtrVector_for_each(&panel->children, let_child_handle_input, &input);
+}
+
 static WidgetClass const panel_class =
 {
 	Panel_destroy,
     Panel_pack,
-	Panel_render
+	Panel_render,
+	Panel_handle_input
 };
 
 Panel Panel_create(Vector2i desired_size, Layout layout, Deallocator children_deallocator)

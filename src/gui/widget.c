@@ -19,6 +19,11 @@ void Widget_render(Widget *w, Renderer *renderer)
 	w->type->render(w, renderer);
 }
 
+void Widget_handle_input(Widget *w, GuiInput input)
+{
+	w->type->handle_input(w, input);
+}
+
 void Widget_destroy(Widget *w)
 {
 	w->type->destroy(w);
