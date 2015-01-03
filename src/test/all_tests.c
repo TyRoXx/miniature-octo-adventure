@@ -1,11 +1,13 @@
 #include "all_tests.h"
 #include "base/vector.h"
 #include "base/stringize.h"
+#include "base/saturating_int.h"
 #include "gui/labeled_button.h"
 #include "gui/padding.h"
 #include "gui/panel.h"
 
 static void test_vector(void);
+static void test_saturating_int(void);
 static void test_gui_labeled_button(void);
 static void test_gui_panel_vertical_layout(void);
 static void test_gui_padding(void);
@@ -13,6 +15,7 @@ static void test_gui_padding(void);
 void moa_test_run_all(void)
 {
 	test_vector();
+	test_saturating_int();
 	test_gui_labeled_button();
 	test_gui_panel_vertical_layout();
 	test_gui_padding();
@@ -77,6 +80,18 @@ static void test_vector(void)
 		}
 		Vector_free(&v, memory.deallocator);
 	}
+}
+
+static void test_saturating_int(void)
+{
+	TEST(saturating_add(0, 0) == 0);
+	TEST(saturating_add(INT_MAX, INT_MAX) == INT_MAX);
+	TEST(saturating_add(INT_MIN, INT_MIN) == INT_MIN);
+	TEST(saturating_add(INT_MAX, INT_MIN) == (INT_MAX + INT_MIN));
+	TEST(saturating_add(-1, 1) == 0);
+	TEST(saturating_add(-1, 0) == -1);
+	TEST(saturating_add(0, -1) == -1);
+	TEST(saturating_add(-1, -1) == -2);
 }
 
 static void test_gui_labeled_button(void)
