@@ -44,7 +44,7 @@ static void decide_next_objective(NPC *npc, TileGrid const *tiles, NumberGenerat
 			continue;
 		}
 		MotionToPoint motion = { direction_to_vector(tried_direction) };
-		int distance = rand() % (tile_size * 3) + tile_size / 2;
+		int distance = tile_size / 2 + (int)NumberGenerator_uniform_32(random, 0, ((uint32_t)tile_size * 3) - 1);
 		motion.destination = find_last_reachable_point(npc->mover.body.position.vector, tried_direction, distance, tiles);
 		npc->objective_state.motion_to_point = motion;
 		return;
