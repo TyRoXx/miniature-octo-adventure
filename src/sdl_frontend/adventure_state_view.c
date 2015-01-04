@@ -204,36 +204,49 @@ static void update_animation(Mover *m, TimePoint now)
 	m->body.current_animation_frame = current_frame % frame_count;
 }
 
+typedef struct AddMoverArgs
+{
+	PtrVector *added_to;
+	Bool success;
+	Allocator allocator;
+	TimePoint now;
+}
+AddMoverArgs;
+
+static ContinueFlag add_updated_mover(void *mover, void *user)
+{
+	AddMoverArgs *args = user;
+	update_animation(mover, args->now);
+	args->success = PtrVector_push_back(args->added_to, mover, args->allocator);
+	return (args->success ? Continue_Yes : Continue_No);
+}
+
 MOA_USE_RESULT
 static Bool draw_entities(
 	Camera const *camera,
 	SDL_Surface *screen,
-	World const *world,
+	SpacialFinder const *movers,
 	AppearanceManager const *appearances,
 	Vector2i resolution,
 	TimePoint now,
 	MemoryManager memory)
 {
-	Mover * begin = (Mover *)Vector_begin(&world->movers);
-	Mover * const end = (Mover *)Vector_end(&world->movers);
 	PtrVector entities_in_z_order;
 	size_t i;
 
-	assert(world);
 	assert(camera);
 	assert(screen);
 	assert(appearances);
 
-	PtrVector_init(&entities_in_z_order);
-	if (!PtrVector_resize(&entities_in_z_order, (size_t)(end - begin), memory.allocator))
-	{
-		return False;
-	}
+	Rectangle displayed_area;
 
-	for (i = 0; begin != end; ++begin, ++i)
+	PtrVector_init(&entities_in_z_order);
+	AddMoverArgs args = {&entities_in_z_order, True, memory.allocator, now};
+	SpacialFinder_enumerate_area(movers, displayed_area, add_updated_mover, &args);
+	if (!args.success)
 	{
-		update_animation(begin, now);
-		PtrVector_set(&entities_in_z_order, i, (void *)(&begin->body));
+		PtrVector_free(&entities_in_z_order, memory.deallocator);
+		return False;
 	}
 
 	qsort(PtrVector_begin(&entities_in_z_order), PtrVector_size(&entities_in_z_order), sizeof(Entity *), compare_entity_in_front);
@@ -251,7 +264,8 @@ static Bool draw_entities(
 			body->animation,
 			body->current_animation_frame,
 			appearances,
-			body->direction);
+			body->direction
+		);
 	}
 
 	PtrVector_free(&entities_in_z_order, memory.deallocator);
@@ -476,7 +490,7 @@ static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 	if (!draw_entities(
 		&adv_view->camera,
 		screen,
-		&adv_view->state->world,
+		&adv_view->state->movers,
 		&adv_view->front->data.appearances,
 	    screen_resolution,
 		now,

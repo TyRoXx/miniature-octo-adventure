@@ -2,7 +2,7 @@
 #define RENDERER_H
 
 
-#include "base/vector2i.h"
+#include "base/rectangle.h"
 
 
 typedef struct Color
@@ -13,25 +13,6 @@ Color;
 
 MOA_USE_RESULT
 Color make_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-
-typedef struct Rectangle
-{
-	Vector2i top_left;
-	Vector2i bottom_right;
-}
-Rectangle;
-
-static inline Bool Rectangle_is_inside(Rectangle const *area, Vector2i const *point)
-{
-	return
-		(point->x >= area->top_left.x) &&
-		(point->y >= area->top_left.y) &&
-		(point->x < area->bottom_right.x) &&
-		(point->y < area->bottom_right.y);
-}
-
-MOA_USE_RESULT
-Vector2i Rectangle_size(Rectangle rect);
 
 typedef enum TextAlignment
 {

@@ -11,12 +11,6 @@ Color make_color(unsigned char r, unsigned char g, unsigned char b, unsigned cha
 	return result;
 }
 
-Vector2i Rectangle_size(Rectangle rect)
-{
-	return Vector2i_new(rect.bottom_right.x - rect.top_left.x,
-	                    rect.bottom_right.y - rect.top_left.y);
-}
-
 TextStyle make_text_style(TextAlignment horizontal, TextAlignment vertical, Color color)
 {
 	TextStyle style;

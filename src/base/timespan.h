@@ -2,6 +2,7 @@
 #define TIMESPAN_H
 
 #include "base/unused.h"
+#include "base/bool.h"
 #include <assert.h>
 
 typedef struct TimeSpan
@@ -40,6 +41,12 @@ static inline TimeSpan TimePoint_between(TimePoint first, TimePoint second)
 {
 	assert(first.milliseconds <= second.milliseconds);
 	return TimeSpan_from_milliseconds(second.milliseconds - first.milliseconds);
+}
+
+MOA_USE_RESULT
+static inline Bool TimePoint_later(TimePoint first, TimePoint second)
+{
+	return (second.milliseconds > first.milliseconds);
 }
 
 #endif

@@ -49,6 +49,9 @@ static GameState *AdventureState_create(Game *game)
 		return NULL;
 	}
 
+	SpacialFinder_init(&adv_state->movers);
+	Fauna_init(&adv_state->fauna);
+
 	adv_state->memory = game->memory;
 #if MOA_MEMORY_DEBUGGING
 	adv_state->memory_statistics = &game->memory_statistics;
@@ -65,12 +68,27 @@ static GameState *AdventureState_create(Game *game)
 			{
 				adv_state->avatar = (Mover *)Vector_begin(&world->movers);
 
-				return (GameState *)adv_state;
+				Bool all_added = True;
+				for (Mover *m = (Mover *)Vector_begin(&world->movers), *end = (Mover *)Vector_end(&world->movers); m != end; ++m)
+				{
+					if (!SpacialFinder_add(&adv_state->movers, m, adv_state->memory.allocator))
+					{
+						all_added = False;
+						break;
+					}
+				}
+
+				if (all_added)
+				{
+					return (GameState *)adv_state;
+				}
 			}
 
 			World_free(world, adv_state->memory.deallocator);
 		}
 
+		Fauna_free(&adv_state->fauna, adv_state->memory.deallocator);
+		SpacialFinder_free(&adv_state->movers, adv_state->memory.deallocator);
 		return NULL;
 	}
 }
@@ -78,7 +96,9 @@ static GameState *AdventureState_create(Game *game)
 static void AdventureState_destroy(GameState *state)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
+	SpacialFinder_free(&adv_state->movers, adv_state->memory.deallocator);
 	World_free(&adv_state->world, adv_state->memory.deallocator);
+	Fauna_free(&adv_state->fauna, adv_state->memory.deallocator);
 	Deallocator_free(adv_state->memory.deallocator, state);
 }
 
