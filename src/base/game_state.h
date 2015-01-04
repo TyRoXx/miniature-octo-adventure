@@ -12,9 +12,10 @@ struct Game;
 
 typedef struct GameStateDefinition
 {
+	MOA_USE_RESULT
 	struct GameState *(*create)(struct Game *);
 	void (*destroy)(struct GameState *);
-	void (*update)(struct GameState *, TimeSpan delta);
+	void (*update)(struct GameState *, TimeSpan delta, TimePoint now);
 }
 GameStateDefinition;
 

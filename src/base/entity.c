@@ -93,12 +93,16 @@ static void add_step(
 	Vector2i_add(&dest->vector, &delta);
 }
 
-void Mover_update(Mover *m, World const *world, TimeSpan delta)
+void Mover_update(Mover *m, World const *world, TimeSpan delta, TimePoint now)
 {
 	Bool is_walking = m->steps_to_go > 0;
 	if (is_walking)
 	{
-		m->body.animation = Anim_Move;
+		if (m->body.animation != Anim_Move)
+		{
+			m->animation_start = now;
+			m->body.animation = Anim_Move;
+		}
 
 		TimeSpan_add(&m->remaining_time, delta);
 		while (m->remaining_time.milliseconds >= m->time_per_pixel.milliseconds)

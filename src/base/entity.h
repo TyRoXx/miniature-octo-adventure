@@ -86,7 +86,7 @@ int is_possible_step(
 
 void Mover_move(Mover *m, struct World const *world, size_t steps_to_go);
 void Mover_stop(Mover *m);
-void Mover_update(Mover *m, struct World const *world, TimeSpan delta);
+void Mover_update(Mover *m, struct World const *world, TimeSpan delta, TimePoint now);
 
 
 #endif

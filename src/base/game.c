@@ -16,9 +16,9 @@ void Game_free(Game *g)
 	}
 }
 
-void Game_update(Game *g, TimeSpan delta)
+void Game_update(Game *g, TimeSpan delta, TimePoint now)
 {
-	g->state->definition->update(g->state, delta);
+	g->state->definition->update(g->state, delta, now);
 }
 
 int Game_enter_state(Game *g, GameStateDefinition const *state)

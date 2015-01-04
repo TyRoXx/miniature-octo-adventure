@@ -67,7 +67,7 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 		}
 
 		TimePoint current_time = TimePoint_from_milliseconds(SDL_GetTicks());
-		Game_update(game, TimePoint_between(last_time, current_time));
+		Game_update(game, TimePoint_between(last_time, current_time), current_time);
 		last_time = current_time;
 
 		if (!sdl_front->state_view->type->update(sdl_front->state_view))

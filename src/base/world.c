@@ -11,6 +11,7 @@ void World_free(World *w, Deallocator deallocator)
 typedef struct MoverUpdateArgs
 {
 	TimeSpan delta_time;
+	TimePoint now;
 	World const *world;
 }
 MoverUpdateArgs;
@@ -18,14 +19,15 @@ MoverUpdateArgs;
 static void update_mover(void *element, void *user)
 {
 	MoverUpdateArgs *args = user;
-	Mover_update(element, args->world, args->delta_time);
+	Mover_update(element, args->world, args->delta_time, args->now);
 }
 
-void World_update(World *w, TimeSpan delta)
+void World_update(World *w, TimeSpan delta, TimePoint now)
 {
 	MoverUpdateArgs args;
 	args.delta_time = delta;
 	args.world = w;
+	args.now = now;
 	for_each(Vector_begin(&w->movers),
 			 Vector_end(&w->movers),
 			 sizeof(Mover),

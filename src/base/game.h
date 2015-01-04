@@ -30,7 +30,7 @@ MOA_USE_RESULT
 Bool Game_init(Game *g);
 void Game_free(Game *g);
 
-void Game_update(Game *g, TimeSpan delta);
+void Game_update(Game *g, TimeSpan delta, TimePoint now);
 
 MOA_USE_RESULT
 int Game_enter_state(Game *g, GameStateDefinition const *state);

@@ -82,10 +82,10 @@ static void AdventureState_destroy(GameState *state)
 	Deallocator_free(adv_state->memory.deallocator, state);
 }
 
-static void AdventureState_update(GameState *state, TimeSpan delta)
+static void AdventureState_update(GameState *state, TimeSpan delta, TimePoint now)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
-	World_update(&adv_state->world, delta);
+	World_update(&adv_state->world, delta, now);
 }
 
 GameStateDefinition const AdventureStateDef =
