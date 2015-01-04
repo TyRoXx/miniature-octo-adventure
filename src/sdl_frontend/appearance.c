@@ -401,6 +401,7 @@ Bool AppearanceManager_parse_file(
 void AppearanceManager_free(AppearanceManager *a, Deallocator deallocator)
 {
 	free_appearances(&a->appearances, deallocator);
+	AppearanceLayout_free(&a->dynamic_layout_2, deallocator);
 	AppearanceLayout_free(&a->dynamic_layout_1, deallocator);
 	AppearanceLayout_free(&a->static_layout, deallocator);
 }
