@@ -124,7 +124,7 @@ static void AdventureState_update(GameState *state, TimeSpan delta, TimePoint no
 {
 	AdventureState * const adv_state = (AdventureState *)state;
 	Mover_update(&adv_state->avatar, &adv_state->tiles, delta, now);
-	Fauna_update(&adv_state->fauna, &adv_state->tiles, now);
+	Fauna_update(&adv_state->fauna, &adv_state->tiles, delta, now);
 }
 
 GameStateDefinition const AdventureStateDef =

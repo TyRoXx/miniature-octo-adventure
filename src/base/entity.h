@@ -5,10 +5,9 @@
 #include "vector2i.h"
 #include "bool.h"
 #include "base/timespan.h"
-
+#include "base/unreachable.h"
 
 struct TileGrid;
-
 
 typedef size_t AppearanceId;
 
@@ -36,6 +35,19 @@ typedef enum Direction
 Direction;
 
 #define DIR_COUNT 4
+
+MOA_USE_RESULT
+static inline Direction2 Direction_to_direction2(Direction dir)
+{
+	switch (dir)
+	{
+	case Dir_North: return Direction2_Down;
+	case Dir_West: return Direction2_Right;
+	case Dir_South: return Direction2_Down;
+	case Dir_East: return Direction2_Right;
+	}
+	MOA_UNREACHABLE();
+}
 
 typedef enum AnimationType
 {

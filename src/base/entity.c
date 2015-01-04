@@ -107,15 +107,6 @@ void Mover_update(Mover *m, TileGrid const *world, TimeSpan delta, TimePoint now
 		TimeSpan_add(&m->remaining_time, delta);
 		while (m->remaining_time.milliseconds >= m->time_per_pixel.milliseconds)
 		{
-			if (m->steps_to_go != (size_t)-1)
-			{
-				--(m->steps_to_go);
-				if (m->steps_to_go == 0)
-				{
-					break;
-				}
-			}
-
 			if (!is_possible_step(&m->body.position, m->body.direction, world))
 			{
 				m->steps_to_go = 0;
@@ -125,6 +116,15 @@ void Mover_update(Mover *m, TileGrid const *world, TimeSpan delta, TimePoint now
 			add_step(&m->body.position, m->body.direction);
 
 			m->remaining_time.milliseconds -= m->time_per_pixel.milliseconds;
+
+			if (m->steps_to_go != (size_t)-1)
+			{
+				--(m->steps_to_go);
+				if (m->steps_to_go == 0)
+				{
+					break;
+				}
+			}
 		}
 	}
 	else

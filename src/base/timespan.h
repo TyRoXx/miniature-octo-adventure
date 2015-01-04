@@ -49,4 +49,10 @@ static inline Bool TimePoint_later(TimePoint first, TimePoint second)
 	return (second.milliseconds > first.milliseconds);
 }
 
+MOA_USE_RESULT
+static inline TimePoint TimePoint_add(TimePoint base, TimeSpan delta)
+{
+	return TimePoint_from_milliseconds(base.milliseconds + delta.milliseconds);
+}
+
 #endif

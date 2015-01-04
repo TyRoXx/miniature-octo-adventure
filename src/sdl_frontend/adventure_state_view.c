@@ -198,7 +198,7 @@ static int compare_entity_in_front(void const *left, void const *right)
 static void update_animation(Mover *m, TimePoint now)
 {
 	TimeSpan time_in_animation = TimePoint_between(m->animation_start, now);
-	TimeSpan time_per_frame = TimeSpan_from_milliseconds(250);
+	TimeSpan time_per_frame = TimeSpan_from_milliseconds(150);
 	unsigned current_frame = time_in_animation.milliseconds / time_per_frame.milliseconds;
 	unsigned frame_count = m->body.animation == Anim_Move ? 4 : 1;
 	m->body.current_animation_frame = current_frame % frame_count;
