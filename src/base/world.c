@@ -8,33 +8,6 @@ void World_free(World *w, Deallocator deallocator)
 	TileGrid_free(&w->tiles, deallocator);
 }
 
-typedef struct MoverUpdateArgs
-{
-	TimeSpan delta_time;
-	TimePoint now;
-	World const *world;
-}
-MoverUpdateArgs;
-
-static void update_mover(void *element, void *user)
-{
-	MoverUpdateArgs *args = user;
-	Mover_update(element, args->world, args->delta_time, args->now);
-}
-
-void World_update(World *w, TimeSpan delta, TimePoint now)
-{
-	MoverUpdateArgs args;
-	args.delta_time = delta;
-	args.world = w;
-	args.now = now;
-	for_each(Vector_begin(&w->movers),
-			 Vector_end(&w->movers),
-			 sizeof(Mover),
-			 update_mover,
-			 &args);
-}
-
 Bool World_add_mover(World *w, Mover mover, Allocator allocator)
 {
 	return Vector_push_back(&w->movers, &mover, sizeof(mover), allocator);

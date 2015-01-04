@@ -117,7 +117,6 @@ static void AdventureState_destroy(GameState *state)
 static void AdventureState_update(GameState *state, TimeSpan delta, TimePoint now)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
-	World_update(&adv_state->world, delta, now);
 	Mover_update(&adv_state->avatar, &adv_state->world, delta, now);
 	Fauna_update(&adv_state->fauna, &adv_state->world, now);
 }
