@@ -1,6 +1,7 @@
 #include "appearance.h"
 #include "image_manager.h"
 #include "base/algorithm.h"
+#include "base/world.h"
 #include <assert.h>
 #include <string.h>
 #include <jansson.h>
@@ -52,9 +53,6 @@ void Appearance_free(Appearance *appearance)
 {
 	(void)appearance;
 }
-
-
-static unsigned const tile_size = 32;
 
 static Bool init_animation(
 		Animation *anim,
@@ -137,7 +135,7 @@ static Bool init_dynamic_side_1(AnimationSide *side,
 	}
 
 	section.x = 0;
-	section.y = (Sint16)(((unsigned)anim_id * DIR_COUNT + (unsigned)side_id) * tile_size);
+	section.y = (Sint16)(((unsigned)anim_id * DIR_COUNT + (unsigned)side_id) * (unsigned)tile_size);
 	section.w = (Uint16)tile_size;
 	section.h = (Uint16)tile_size;
 
@@ -146,7 +144,7 @@ static Bool init_dynamic_side_1(AnimationSide *side,
 		AnimationFrame * const frame = side->frames + j;
 		frame->section = section;
 
-		section.x = (Sint16)((unsigned)section.x + tile_size);
+		section.x = (Sint16)((unsigned)section.x + (unsigned)tile_size);
 	}
 
 	return True;

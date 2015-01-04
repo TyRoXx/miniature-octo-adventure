@@ -135,8 +135,6 @@ Bool load_world_from_text(struct World *world, MemoryManager world_memory, struc
 	assert(world);
 	assert(in);
 
-	world->tile_width = 32;
-
 	if (!fgets(version, sizeof(version), in))
 	{
 		return False;

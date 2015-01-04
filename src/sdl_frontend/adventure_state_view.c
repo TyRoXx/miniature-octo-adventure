@@ -310,16 +310,15 @@ static void draw_tile_layers(
 	Camera const *camera,
 	SDL_Surface *screen,
 	TileGrid const *tiles,
-	int tile_width,
 	AppearanceManager const *appearances,
 	size_t layer_begin,
 	size_t layer_end,
 	Vector2i resolution)
 {
-	int visible_begin_idx = (camera->position.vector.x - resolution.x / 2) / tile_width;
-	int visible_begin_idy = (camera->position.vector.y - resolution.y / 2) / tile_width;
-	int visible_end_idx   =  camera->position.vector.x + divide_ceil(resolution.x / 2 + 1, tile_width);
-	int visible_end_idy   =  camera->position.vector.y + divide_ceil(resolution.y / 2 + 1, tile_width);
+	int visible_begin_idx = (camera->position.vector.x - resolution.x / 2) / tile_size;
+	int visible_begin_idy = (camera->position.vector.y - resolution.y / 2) / tile_size;
+	int visible_end_idx   =  camera->position.vector.x + divide_ceil(resolution.x / 2 + 1, tile_size);
+	int visible_end_idy   =  camera->position.vector.y + divide_ceil(resolution.y / 2 + 1, tile_size);
 
 	visible_begin_idx = max_int(visible_begin_idx, 0);
 	visible_begin_idy = max_int(visible_begin_idy, 0);
@@ -336,8 +335,8 @@ static void draw_tile_layers(
 
 			assert(tile);
 
-			pixel_pos.x = ((tile_width * x - camera->position.vector.x) + resolution.x / 2);
-			pixel_pos.y = ((tile_width * y - camera->position.vector.y) + resolution.y / 2);
+			pixel_pos.x = ((tile_size * x - camera->position.vector.x) + resolution.x / 2);
+			pixel_pos.y = ((tile_size * y - camera->position.vector.y) + resolution.y / 2);
 
 			draw_layered_tile(
 				pixel_pos,
@@ -457,8 +456,6 @@ static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 	SDL_Surface * const screen = adv_view->front->screen;
-	AdventureState * const adventure = adv_view->state;
-	World const * const world = &adventure->world;
 	Vector2i screen_resolution;
 	{
 		SDL_Rect screen_size;
@@ -468,7 +465,7 @@ static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 	}
 
 	{
-		Vector2i const avatar_size = Vector2i_new(world->tile_width, world->tile_width);
+		Vector2i const avatar_size = Vector2i_new(tile_size, tile_size);
 		Camera_focus_on(&adv_view->camera, &adv_view->state->avatar, avatar_size);
 	}
 
@@ -479,7 +476,6 @@ static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 		&adv_view->camera,
 		screen,
 		&adv_view->state->world.tiles,
-		world->tile_width,
 		&adv_view->front->data.appearances,
 		0,
 		2,
@@ -504,7 +500,6 @@ static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 		&adv_view->camera,
 		screen,
 		&adv_view->state->world.tiles,
-	    world->tile_width,
 		&adv_view->front->data.appearances,
 		2,
 		3,

@@ -47,8 +47,8 @@ MOA_USE_RESULT
 static Bool is_walkable_pixel(World const *world, Vector2i const *position)
 {
 	Vector2i next_tile;
-	next_tile.x = divide_floor(position->x, world->tile_width);
-	next_tile.y = divide_floor(position->y, world->tile_width);
+	next_tile.x = divide_floor(position->x, tile_size);
+	next_tile.y = divide_floor(position->y, tile_size);
 	return is_walkable_tile(&world->tiles, &next_tile);
 }
 
@@ -80,7 +80,7 @@ Bool World_is_possible_move(
 	for (i = 0; i < collision_vertex_count; ++i)
 	{
 		Vector2i vertex = collision_vertex_offsets_by_direction[i][direction];
-		Vector2i_scale(&vertex, world->tile_width - 1);
+		Vector2i_scale(&vertex, tile_size - 1);
 		Vector2i_add(&vertex, &from->vector);
 		Vector2i_add(&vertex, &pixel_delta);
 		if (!is_walkable_pixel(world, &vertex))

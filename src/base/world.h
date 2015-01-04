@@ -8,10 +8,11 @@
 #include "vector.h"
 
 
+static int const tile_size = 32;
+
 typedef struct World
 {
 	TileGrid tiles;
-	int tile_width;
 	Vector movers;
 }
 World;
