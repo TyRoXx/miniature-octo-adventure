@@ -44,7 +44,7 @@ void Mover_init(Mover *m,
 	m->body = body;
 	m->remaining_time.milliseconds = 0;
 	m->steps_to_go = 0;
-	m->since_animation_frame_change.milliseconds = 0;
+	m->animation_start.milliseconds = 0;
 }
 
 void Mover_free(Mover *m)
@@ -99,13 +99,6 @@ void Mover_update(Mover *m, World const *world, TimeSpan delta)
 	if (is_walking)
 	{
 		m->body.animation = Anim_Move;
-		TimeSpan_add(&m->since_animation_frame_change, delta);
-		unsigned const frame_duration = 300;
-		while (m->since_animation_frame_change.milliseconds >= frame_duration)
-		{
-			m->body.current_animation_frame = (m->body.current_animation_frame + 1) % 4;
-			m->since_animation_frame_change.milliseconds -= frame_duration;
-		}
 
 		TimeSpan_add(&m->remaining_time, delta);
 		while (m->remaining_time.milliseconds >= m->time_per_pixel.milliseconds)

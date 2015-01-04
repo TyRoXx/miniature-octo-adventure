@@ -195,6 +195,15 @@ static int compare_entity_in_front(void const *left, void const *right)
 	return 1;
 }
 
+static void update_animation(Mover *m, TimePoint now)
+{
+	TimeSpan time_in_animation = TimePoint_between(m->animation_start, now);
+	TimeSpan time_per_frame = TimeSpan_from_milliseconds(250);
+	unsigned current_frame = time_in_animation.milliseconds / time_per_frame.milliseconds;
+	unsigned frame_count = m->body.animation == Anim_Move ? 4 : 1;
+	m->body.current_animation_frame = current_frame % frame_count;
+}
+
 MOA_USE_RESULT
 static Bool draw_entities(
 	Camera const *camera,
@@ -202,10 +211,11 @@ static Bool draw_entities(
 	World const *world,
 	AppearanceManager const *appearances,
 	Vector2i resolution,
+	TimePoint now,
 	MemoryManager memory)
 {
-	Mover const * begin = (Mover *)Vector_begin(&world->movers);
-	Mover const * const end = (Mover *)Vector_end(&world->movers);
+	Mover * begin = (Mover *)Vector_begin(&world->movers);
+	Mover * const end = (Mover *)Vector_end(&world->movers);
 	PtrVector entities_in_z_order;
 	size_t i;
 
@@ -222,6 +232,7 @@ static Bool draw_entities(
 
 	for (i = 0; begin != end; ++begin, ++i)
 	{
+		update_animation(begin, now);
 		PtrVector_set(&entities_in_z_order, i, (void *)(&begin->body));
 	}
 
@@ -428,7 +439,7 @@ static void draw_user_interface(
 	Widget_render(root, &renderer.base);
 }
 
-static Bool AdventureStateView_draw(GameStateView *view)
+static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 	SDL_Surface * const screen = adv_view->front->screen;
@@ -468,6 +479,7 @@ static Bool AdventureStateView_draw(GameStateView *view)
 		&adv_view->state->world,
 		&adv_view->front->data.appearances,
 	    screen_resolution,
+		now,
 		adv_view->state->memory
 		))
 	{

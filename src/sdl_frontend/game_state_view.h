@@ -3,7 +3,7 @@
 
 
 #include "base/bool.h"
-#include "base/unused.h"
+#include "base/timespan.h"
 #include "SDL.h"
 
 
@@ -17,7 +17,7 @@ typedef struct GameStateViewType
 	MOA_USE_RESULT struct GameStateView *(*create)(struct GameState *, struct SDLFrontend *front);
 	void (*destroy)(struct GameStateView *);
 	MOA_USE_RESULT Bool (*update)(struct GameStateView *);
-	MOA_USE_RESULT Bool (*draw)(struct GameStateView *);
+	MOA_USE_RESULT Bool (*draw)(struct GameStateView *, TimePoint);
 	void (*handle_event)(struct GameStateView *, SDL_Event const *);
 }
 GameStateViewType;

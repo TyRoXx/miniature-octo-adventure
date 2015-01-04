@@ -11,7 +11,6 @@ struct World;
 
 
 typedef size_t AppearanceId;
-typedef unsigned TimePoint;
 
 typedef struct PixelPosition
 {
@@ -69,7 +68,7 @@ typedef struct Mover
 	size_t steps_to_go;
 	TimeSpan remaining_time;
 	TimeSpan time_per_pixel;
-	TimeSpan since_animation_frame_change;
+	TimePoint animation_start;
 }
 Mover;
 

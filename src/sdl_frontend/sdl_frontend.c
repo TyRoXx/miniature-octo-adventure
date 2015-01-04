@@ -32,7 +32,7 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 {
 	SDL_Surface * const screen = sdl_front->screen;
 	Game * const game = sdl_front->game;
-	unsigned last_time = SDL_GetTicks();
+	TimePoint last_time = TimePoint_from_milliseconds(SDL_GetTicks());
 
 	assert(sdl_front->state_view);
 
@@ -66,12 +66,9 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 			}
 		}
 
-		{
-			unsigned current_time = current_time = SDL_GetTicks();
-			assert(current_time >= last_time);
-			Game_update(game, TimeSpan_from_milliseconds(current_time - last_time));
-			last_time = current_time;
-		}
+		TimePoint current_time = TimePoint_from_milliseconds(SDL_GetTicks());
+		Game_update(game, TimePoint_between(last_time, current_time));
+		last_time = current_time;
 
 		if (!sdl_front->state_view->type->update(sdl_front->state_view))
 		{
@@ -80,7 +77,7 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 
 		SDL_FillRect(screen, 0, 0);
 
-		if (!sdl_front->state_view->type->draw(sdl_front->state_view))
+		if (!sdl_front->state_view->type->draw(sdl_front->state_view, current_time))
 		{
 			return False;
 		}
