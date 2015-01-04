@@ -16,18 +16,19 @@ typedef struct NPCUpdateArgs
 	struct TileGrid const *world;
 	TimeSpan delta;
 	TimePoint now;
+	NumberGenerator random;
 }
 NPCUpdateArgs;
 
 static void update_npc(void *element, void *user)
 {
 	NPCUpdateArgs *args = user;
-	NPC_update(element, args->world, args->delta, args->now);
+	NPC_update(element, args->world, args->delta, args->now, args->random);
 }
 
-void Fauna_update(Fauna *fauna, struct TileGrid const *world, TimeSpan delta, TimePoint now)
+void Fauna_update(Fauna *fauna, struct TileGrid const *world, TimeSpan delta, TimePoint now, NumberGenerator random)
 {
-	NPCUpdateArgs args = {world, delta, now};
+	NPCUpdateArgs args = {world, delta, now, random};
 	for_each(
 		Vector_begin(&fauna->npcs),
 		Vector_end(&fauna->npcs),

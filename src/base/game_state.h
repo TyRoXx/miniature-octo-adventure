@@ -3,6 +3,7 @@
 
 
 #include "base/timespan.h"
+#include "base/number_generator.h"
 #include <stdint.h>
 
 
@@ -15,7 +16,7 @@ typedef struct GameStateDefinition
 	MOA_USE_RESULT
 	struct GameState *(*create)(struct Game *);
 	void (*destroy)(struct GameState *);
-	void (*update)(struct GameState *, TimeSpan delta, TimePoint now);
+	void (*update)(struct GameState *, TimeSpan delta, TimePoint now, NumberGenerator random);
 }
 GameStateDefinition;
 

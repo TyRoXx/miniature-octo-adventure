@@ -13,9 +13,9 @@ NPC NPC_create(Mover mover)
 	return result;
 }
 
-static Direction random_direction(void)
+static Direction random_direction(NumberGenerator random)
 {
-	return (Direction)(rand() % 4);
+	return (Direction)NumberGenerator_uniform_8(random, 0, DIR_COUNT - 1);
 }
 
 static Vector2i find_last_reachable_point(Vector2i from, Direction direction, int distance, TileGrid const *tiles)
@@ -32,10 +32,10 @@ static Vector2i find_last_reachable_point(Vector2i from, Direction direction, in
 	return last_reachable;
 }
 
-static void decide_next_objective(NPC *npc, TileGrid const *tiles)
+static void decide_next_objective(NPC *npc, TileGrid const *tiles, NumberGenerator random)
 {
 	npc->objective = Objective_MotionToPoint;
-	Direction favored_direction = random_direction();
+	Direction favored_direction = random_direction(random);
 	for (int i = 0; i < DIR_COUNT; ++i)
 	{
 		Direction tried_direction = (Direction)(((int)favored_direction + i) % DIR_COUNT);
@@ -80,12 +80,12 @@ static Direction vector_to_direction(Vector2i vector)
 	}
 }
 
-static TimeSpan random_time_span(TimeSpan min, TimeSpan max)
+static TimeSpan random_time_span(TimeSpan min, TimeSpan max, NumberGenerator random)
 {
-	return TimeSpan_from_milliseconds(min.milliseconds + (unsigned)rand() % (max.milliseconds - min.milliseconds + 1));
+	return TimeSpan_from_milliseconds(min.milliseconds + NumberGenerator_uniform_32(random, min.milliseconds, max.milliseconds));
 }
 
-void NPC_update(NPC *npc, struct TileGrid const *world, TimeSpan delta, TimePoint now)
+void NPC_update(NPC *npc, struct TileGrid const *world, TimeSpan delta, TimePoint now, NumberGenerator random)
 {
 	switch (npc->objective)
 	{
@@ -97,7 +97,7 @@ void NPC_update(NPC *npc, struct TileGrid const *world, TimeSpan delta, TimePoin
 				{
 					Mover_stop(&npc->mover);
 				}
-				Wait wait = { TimePoint_add(now, random_time_span(TimeSpan_from_milliseconds(500), TimeSpan_from_milliseconds(2500))) };
+				Wait wait = { TimePoint_add(now, random_time_span(TimeSpan_from_milliseconds(500), TimeSpan_from_milliseconds(2500), random)) };
 				npc->objective = Objective_Wait;
 				npc->objective_state.wait = wait;
 				break;
@@ -129,7 +129,7 @@ void NPC_update(NPC *npc, struct TileGrid const *world, TimeSpan delta, TimePoin
 			{
 				break;
 			}
-			decide_next_objective(npc, world);
+			decide_next_objective(npc, world, random);
 			break;
 		}
 	}

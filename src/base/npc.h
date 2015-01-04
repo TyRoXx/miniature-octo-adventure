@@ -2,6 +2,7 @@
 #define NPC_H
 
 #include "base/entity.h"
+#include "base/number_generator.h"
 
 typedef struct Wait
 {
@@ -39,7 +40,7 @@ NPC;
 
 MOA_USE_RESULT
 NPC NPC_create(Mover mover);
-void NPC_update(NPC *npc, struct TileGrid const *world, TimeSpan delta, TimePoint now);
+void NPC_update(NPC *npc, struct TileGrid const *world, TimeSpan delta, TimePoint now, NumberGenerator random);
 void NPC_free(NPC *npc);
 
 #endif

@@ -120,11 +120,11 @@ static void AdventureState_destroy(GameState *state)
 	Deallocator_free(adv_state->memory.deallocator, state);
 }
 
-static void AdventureState_update(GameState *state, TimeSpan delta, TimePoint now)
+static void AdventureState_update(GameState *state, TimeSpan delta, TimePoint now, NumberGenerator random)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
 	Mover_update(&adv_state->avatar, &adv_state->tiles, delta, now);
-	Fauna_update(&adv_state->fauna, &adv_state->tiles, delta, now);
+	Fauna_update(&adv_state->fauna, &adv_state->tiles, delta, now, random);
 }
 
 GameStateDefinition const AdventureStateDef =

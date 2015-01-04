@@ -22,6 +22,8 @@ typedef struct Game
 #if MOA_MEMORY_DEBUGGING
 	MemoryStatistics memory_statistics;
 #endif
+	int random_file;
+	NumberGenerator random;
 }
 Game;
 
