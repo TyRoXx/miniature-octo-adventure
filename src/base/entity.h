@@ -18,6 +18,13 @@ typedef struct PixelPosition
 }
 PixelPosition;
 
+MOA_USE_RESULT
+static inline PixelPosition PixelPosition_new(Vector2i vector)
+{
+	PixelPosition result = {vector};
+	return result;
+}
+
 
 typedef enum Direction
 {

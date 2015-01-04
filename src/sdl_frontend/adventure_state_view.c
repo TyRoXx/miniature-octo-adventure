@@ -370,7 +370,7 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 		goto fail_1;
 	}
 
-	if (!AvatarController_init(&adv_view->avatar_controller, adv_state->avatar))
+	if (!AvatarController_init(&adv_view->avatar_controller, &adv_state->avatar))
 	{
 		goto fail_2;
 	}
@@ -467,10 +467,9 @@ static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 		screen_resolution.y = (int)screen_size.h;
 	}
 
-	if (adv_view->state->avatar)
 	{
 		Vector2i const avatar_size = Vector2i_new(world->tile_width, world->tile_width);
-		Camera_focus_on(&adv_view->camera, adv_view->state->avatar, avatar_size);
+		Camera_focus_on(&adv_view->camera, &adv_view->state->avatar, avatar_size);
 	}
 
 	assert(TILE_LAYER_COUNT == 3);

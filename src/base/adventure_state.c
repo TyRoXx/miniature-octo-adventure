@@ -63,10 +63,10 @@ static GameState *AdventureState_create(Game *game)
 
 		if (load_world(world_file_name, world, adv_state->memory))
 		{
-			/*if there is a mover, choose the first one as the avatar*/
-			if (!Vector_empty(&world->movers))
+			Entity avatar_entity;
+			if (Entity_init(&avatar_entity, PixelPosition_new(Vector2i_new(0, 0)), 11))
 			{
-				adv_state->avatar = (Mover *)Vector_begin(&world->movers);
+				Mover_init(&adv_state->avatar, TimeSpan_from_milliseconds(10), avatar_entity);
 
 				Bool all_added = True;
 				for (Mover *m = (Mover *)Vector_begin(&world->movers), *end = (Mover *)Vector_end(&world->movers); m != end; ++m)
@@ -78,10 +78,13 @@ static GameState *AdventureState_create(Game *game)
 					}
 				}
 
-				if (all_added)
+				if (all_added &&
+					SpacialFinder_add(&adv_state->movers, &adv_state->avatar, adv_state->memory.allocator))
 				{
 					return (GameState *)adv_state;
 				}
+
+				Mover_free(&adv_state->avatar);
 			}
 
 			World_free(world, adv_state->memory.deallocator);
@@ -99,6 +102,7 @@ static void AdventureState_destroy(GameState *state)
 	SpacialFinder_free(&adv_state->movers, adv_state->memory.deallocator);
 	World_free(&adv_state->world, adv_state->memory.deallocator);
 	Fauna_free(&adv_state->fauna, adv_state->memory.deallocator);
+	Mover_free(&adv_state->avatar);
 	Deallocator_free(adv_state->memory.deallocator, state);
 }
 
@@ -106,6 +110,7 @@ static void AdventureState_update(GameState *state, TimeSpan delta, TimePoint no
 {
 	AdventureState * const adv_state = (AdventureState *)state;
 	World_update(&adv_state->world, delta, now);
+	Mover_update(&adv_state->avatar, &adv_state->world, delta, now);
 }
 
 GameStateDefinition const AdventureStateDef =

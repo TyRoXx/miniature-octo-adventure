@@ -12,7 +12,7 @@ typedef struct AdventureState
 	World world;
 	Fauna fauna;
 	SpacialFinder movers;
-	Mover *avatar;
+	Mover avatar;
 	MemoryManager memory;
 #if MOA_MEMORY_DEBUGGING
 	MemoryStatistics const *memory_statistics;
