@@ -237,7 +237,7 @@ static Bool draw_entities(
 			pixel_pos,
 			screen,
 			body->appearance,
-			body->is_walking ? Anim_Move : Anim_Idle,
+			body->animation,
 			body->current_animation_frame,
 			appearances,
 			body->direction);

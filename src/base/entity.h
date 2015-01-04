@@ -31,6 +31,16 @@ Direction;
 
 #define DIR_COUNT 4
 
+typedef enum AnimationType
+{
+	Anim_Idle,
+	Anim_Move,
+	Anim_Die,
+	Anim_Dead,
+	Anim_COUNT
+}
+AnimationType;
+
 MOA_USE_RESULT
 Vector2i direction_to_vector(Direction dir);
 
@@ -39,7 +49,7 @@ typedef struct Entity
 	PixelPosition position;
 	Direction direction;
 	AppearanceId appearance;
-	Bool is_walking;
+	AnimationType animation;
 	size_t current_animation_frame;
 }
 Entity;

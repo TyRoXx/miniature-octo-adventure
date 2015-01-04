@@ -10,16 +10,6 @@
 
 struct ImageManager;
 
-typedef enum AnimationType
-{
-	Anim_Idle,
-	Anim_Move,
-	Anim_Die,
-	Anim_Dead,
-	Anim_COUNT
-}
-AnimationType;
-
 typedef struct AnimationFrame
 {
 	SDL_Rect section;
