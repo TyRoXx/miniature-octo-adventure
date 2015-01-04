@@ -80,8 +80,8 @@ static void stop_running(void *user)
 MOA_USE_RESULT
 static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution, Bool *game_is_running)
 {
-#if MOA_MEMORY_DEBUGGING
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
+#if MOA_MEMORY_DEBUGGING
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
 #endif
 	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
