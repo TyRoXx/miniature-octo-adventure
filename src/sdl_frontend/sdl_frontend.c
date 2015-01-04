@@ -125,7 +125,7 @@ Bool SDLFrontEnd_create(SDLFrontend *front, struct Game *game, SDLSettings setti
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
 		 fprintf(stderr, "SDL error: %s\n", SDL_GetError());
-		 goto fail_1;
+		 return False;
 	}
 
 	if (TTF_Init() == -1)
@@ -199,8 +199,5 @@ fail_2:
 	SDL_FreeSurface(front->screen);
 #endif
 	SDL_Quit();
-
-fail_1:
-	Deallocator_free(game->memory.deallocator, front);
 	return False;
 }
