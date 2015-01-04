@@ -23,7 +23,6 @@ AnimationType;
 typedef struct AnimationFrame
 {
 	SDL_Rect section;
-	unsigned duration;
 }
 AnimationFrame;
 

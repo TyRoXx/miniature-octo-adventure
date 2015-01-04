@@ -144,7 +144,6 @@ static Bool init_dynamic_side_1(AnimationSide *side,
 	for (j = 0; j < frame_count; ++j)
 	{
 		AnimationFrame * const frame = side->frames + j;
-		frame->duration = 200;
 		frame->section = section;
 
 		section.x = (Sint16)((unsigned)section.x + tile_size);
@@ -173,7 +172,6 @@ static Bool init_static_side(AnimationSide *side,
 	section.w = (Uint16)tile_size;
 	section.h = (Uint16)tile_size;
 
-	side->frames->duration = 0;
 	side->frames->section = section;
 	return True;
 }
