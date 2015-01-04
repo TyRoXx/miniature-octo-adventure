@@ -139,11 +139,13 @@ static void draw_animation(
 	Vector2i pixel_pos,
 	SDL_Surface *screen,
 	Animation const *animation,
+	size_t frame,
 	SDL_Surface *image,
 	Direction direction)
 {
 	AnimationSide const *side = &animation->sides[direction];
-	AnimationFrame * const current_frame = side->frames + 0;
+	assert(frame < side->frame_count);
+	AnimationFrame * const current_frame = side->frames + frame;
 	SDL_Rect * const source = &current_frame->section;
 	SDL_Rect dest;
 	dest.x = (Sint16)pixel_pos.x;
@@ -155,6 +157,8 @@ static void draw_appearance(
 	Vector2i pixel_pos,
 	SDL_Surface *screen,
 	AppearanceId appearance_id,
+	AnimationType animation_id,
+	size_t animation_frame,
 	AppearanceManager const *appearances,
 	Direction direction)
 {
@@ -167,11 +171,11 @@ static void draw_appearance(
 		return;
 	}
 
-	animation = &appearance->layout->animations[Anim_Idle];
+	animation = &appearance->layout->animations[animation_id];
 	assert(animation);
 
 	Vector2i_add(&pixel_pos, &appearance->layout->offset);
-	draw_animation(pixel_pos, screen, animation, appearance->image, direction);
+	draw_animation(pixel_pos, screen, animation, animation_frame, appearance->image, direction);
 }
 
 static int compare_entity_in_front(void const *left, void const *right)
@@ -233,6 +237,8 @@ static Bool draw_entities(
 			pixel_pos,
 			screen,
 			body->appearance,
+			body->is_walking ? Anim_Move : Anim_Idle,
+			body->current_animation_frame,
 			appearances,
 			body->direction);
 	}
@@ -259,6 +265,8 @@ static void draw_layered_tile(
 			draw_appearance(pixel_pos,
 							screen,
 							layer->image_id,
+							Anim_Idle,
+							0,
 							appearances,
 							Dir_North);
 		}

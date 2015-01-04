@@ -39,6 +39,8 @@ typedef struct Entity
 	PixelPosition position;
 	Direction direction;
 	AppearanceId appearance;
+	Bool is_walking;
+	size_t current_animation_frame;
 }
 Entity;
 
@@ -57,6 +59,7 @@ typedef struct Mover
 	size_t steps_to_go;
 	unsigned remaining_time;
 	unsigned time_per_pixel;
+	unsigned since_animation_frame_change;
 }
 Mover;
 

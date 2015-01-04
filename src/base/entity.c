@@ -25,6 +25,8 @@ Bool Entity_init(
 	e->position = position;
 	e->direction = Dir_South;
 	e->appearance = appearance;
+	e->is_walking = False;
+	e->current_animation_frame = 0;
 	return True;
 }
 
@@ -42,6 +44,7 @@ void Mover_init(Mover *m,
 	m->body = body;
 	m->remaining_time = 0;
 	m->steps_to_go = 0;
+	m->since_animation_frame_change = 0;
 }
 
 void Mover_free(Mover *m)
@@ -92,8 +95,17 @@ static void add_step(
 
 void Mover_update(Mover *m, World const *world, unsigned delta)
 {
-	if (m->steps_to_go > 0)
+	m->body.is_walking = m->steps_to_go > 0;
+	if (m->body.is_walking)
 	{
+		m->since_animation_frame_change += delta;
+		unsigned const frame_duration = 300;
+		while (m->since_animation_frame_change >= frame_duration)
+		{
+			m->body.current_animation_frame = (m->body.current_animation_frame + 1) % 4;
+			m->since_animation_frame_change -= frame_duration;
+		}
+
 		m->remaining_time += delta;
 		while (m->remaining_time >= m->time_per_pixel)
 		{
@@ -116,5 +128,9 @@ void Mover_update(Mover *m, World const *world, unsigned delta)
 
 			m->remaining_time -= m->time_per_pixel;
 		}
+	}
+	else
+	{
+		m->body.current_animation_frame = 0;
 	}
 }

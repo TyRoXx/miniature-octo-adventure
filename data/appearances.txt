@@ -9,5 +9,5 @@
 	{"id": 7, "type": "static", "file": "sw_dirt_on_grass_32.bmp"},
 	{"id": 8, "type": "dynamic1", "file": "dyn_test_1.bmp"},
 	{"id": 9, "type": "static", "file": "grey_rock_0.bmp"},
-	{"id": 10, "type": "dynamic2", "file": "untamed.wild-refuge.net/character/11sprite.png"}
+	{"id": 10, "type": "dynamic2", "file": "untamed.wild-refuge.net/character/austria_nyo.png"}
 ]
