@@ -67,10 +67,9 @@ Bool SDLFrontend_main_loop(SDLFrontend *sdl_front)
 		}
 
 		{
-			unsigned current_time;
-			current_time = SDL_GetTicks();
+			unsigned current_time = current_time = SDL_GetTicks();
 			assert(current_time >= last_time);
-			Game_update(game, (current_time - last_time));
+			Game_update(game, TimeSpan_from_milliseconds(current_time - last_time));
 			last_time = current_time;
 		}
 

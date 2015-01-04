@@ -17,7 +17,7 @@ typedef struct World
 World;
 
 void World_free(World *w, Deallocator deallocator);
-void World_update(World *w, unsigned delta);
+void World_update(World *w, TimeSpan delta);
 
 MOA_USE_RESULT
 Bool World_add_entity(World *w, Entity const *entity);

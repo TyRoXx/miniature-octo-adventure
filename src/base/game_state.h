@@ -2,6 +2,7 @@
 #define GAME_STATE_H
 
 
+#include "base/timespan.h"
 #include <stdint.h>
 
 
@@ -13,7 +14,7 @@ typedef struct GameStateDefinition
 {
 	struct GameState *(*create)(struct Game *);
 	void (*destroy)(struct GameState *);
-	void (*update)(struct GameState *, unsigned delta);
+	void (*update)(struct GameState *, TimeSpan delta);
 }
 GameStateDefinition;
 

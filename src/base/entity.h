@@ -4,14 +4,14 @@
 
 #include "vector2i.h"
 #include "bool.h"
-#include "base/unused.h"
+#include "base/timespan.h"
 
 
 struct World;
 
 
 typedef size_t AppearanceId;
-
+typedef unsigned TimePoint;
 
 typedef struct PixelPosition
 {
@@ -67,14 +67,14 @@ typedef struct Mover
 {
 	Entity body;
 	size_t steps_to_go;
-	unsigned remaining_time;
-	unsigned time_per_pixel;
-	unsigned since_animation_frame_change;
+	TimeSpan remaining_time;
+	TimeSpan time_per_pixel;
+	TimeSpan since_animation_frame_change;
 }
 Mover;
 
 void Mover_init(Mover *m,
-				unsigned time_per_pixel,
+				TimeSpan time_per_pixel,
 				Entity body);
 void Mover_free(Mover *m);
 
@@ -87,7 +87,7 @@ int is_possible_step(
 
 void Mover_move(Mover *m, struct World const *world, size_t steps_to_go);
 void Mover_stop(Mover *m);
-void Mover_update(Mover *m, struct World const *world, unsigned delta);
+void Mover_update(Mover *m, struct World const *world, TimeSpan delta);
 
 
 #endif

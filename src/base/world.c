@@ -10,7 +10,7 @@ void World_free(World *w, Deallocator deallocator)
 
 typedef struct MoverUpdateArgs
 {
-	unsigned delta_time;
+	TimeSpan delta_time;
 	World const *world;
 }
 MoverUpdateArgs;
@@ -21,7 +21,7 @@ static void update_mover(void *element, void *user)
 	Mover_update(element, args->world, args->delta_time);
 }
 
-void World_update(World *w, unsigned delta)
+void World_update(World *w, TimeSpan delta)
 {
 	MoverUpdateArgs args;
 	args.delta_time = delta;

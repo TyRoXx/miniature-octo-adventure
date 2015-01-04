@@ -37,14 +37,14 @@ void Entity_free(Entity *e)
 
 
 void Mover_init(Mover *m,
-				unsigned time_per_pixel,
+				TimeSpan time_per_pixel,
 				Entity body)
 {
 	m->time_per_pixel = time_per_pixel;
 	m->body = body;
-	m->remaining_time = 0;
+	m->remaining_time.milliseconds = 0;
 	m->steps_to_go = 0;
-	m->since_animation_frame_change = 0;
+	m->since_animation_frame_change.milliseconds = 0;
 }
 
 void Mover_free(Mover *m)
@@ -74,7 +74,7 @@ void Mover_move(Mover *m, World const *world, size_t steps_to_go)
 	}
 
 	m->steps_to_go = steps_to_go;
-	m->remaining_time = 0;
+	m->remaining_time.milliseconds = 0;
 }
 
 void Mover_stop(Mover *m)
@@ -93,22 +93,22 @@ static void add_step(
 	Vector2i_add(&dest->vector, &delta);
 }
 
-void Mover_update(Mover *m, World const *world, unsigned delta)
+void Mover_update(Mover *m, World const *world, TimeSpan delta)
 {
 	Bool is_walking = m->steps_to_go > 0;
 	if (is_walking)
 	{
 		m->body.animation = Anim_Move;
-		m->since_animation_frame_change += delta;
+		TimeSpan_add(&m->since_animation_frame_change, delta);
 		unsigned const frame_duration = 300;
-		while (m->since_animation_frame_change >= frame_duration)
+		while (m->since_animation_frame_change.milliseconds >= frame_duration)
 		{
 			m->body.current_animation_frame = (m->body.current_animation_frame + 1) % 4;
-			m->since_animation_frame_change -= frame_duration;
+			m->since_animation_frame_change.milliseconds -= frame_duration;
 		}
 
-		m->remaining_time += delta;
-		while (m->remaining_time >= m->time_per_pixel)
+		TimeSpan_add(&m->remaining_time, delta);
+		while (m->remaining_time.milliseconds >= m->time_per_pixel.milliseconds)
 		{
 			if (m->steps_to_go != (size_t)-1)
 			{
@@ -127,7 +127,7 @@ void Mover_update(Mover *m, World const *world, unsigned delta)
 
 			add_step(&m->body.position, m->body.direction);
 
-			m->remaining_time -= m->time_per_pixel;
+			m->remaining_time.milliseconds -= m->time_per_pixel.milliseconds;
 		}
 	}
 	else

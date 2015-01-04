@@ -16,7 +16,7 @@ void Game_free(Game *g)
 	}
 }
 
-void Game_update(Game *g, unsigned delta)
+void Game_update(Game *g, TimeSpan delta)
 {
 	g->state->definition->update(g->state, delta);
 }
