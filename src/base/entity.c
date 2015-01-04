@@ -53,7 +53,7 @@ void Mover_free(Mover *m)
 }
 
 int is_possible_step(
-	PixelPosition const *from,
+	Vector2i const *from,
 	Direction dir,
 	TileGrid const *world
 	)
@@ -68,7 +68,7 @@ void Mover_move(Mover *m, TileGrid const *world, size_t steps_to_go)
 		return;
 	}
 
-	if (!is_possible_step(&m->body.position, m->body.direction, world))
+	if (!is_possible_step(&m->body.position.vector, m->body.direction, world))
 	{
 		return;
 	}
@@ -107,7 +107,7 @@ void Mover_update(Mover *m, TileGrid const *world, TimeSpan delta, TimePoint now
 		TimeSpan_add(&m->remaining_time, delta);
 		while (m->remaining_time.milliseconds >= m->time_per_pixel.milliseconds)
 		{
-			if (!is_possible_step(&m->body.position, m->body.direction, world))
+			if (!is_possible_step(&m->body.position.vector, m->body.direction, world))
 			{
 				m->steps_to_go = 0;
 				break;

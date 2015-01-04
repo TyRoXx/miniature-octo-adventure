@@ -28,7 +28,7 @@ Bool World_add_mover(World *w, Mover mover, Allocator allocator);
 MOA_USE_RESULT
 Bool TileGrid_is_possible_move(
 	TileGrid const *world,
-	PixelPosition const *from,
+	Vector2i const *from,
 	Direction direction
 	);
 

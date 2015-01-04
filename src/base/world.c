@@ -71,7 +71,7 @@ static Vector2i const collision_vertex_offsets_by_direction[2][DIR_COUNT] =
 
 Bool TileGrid_is_possible_move(
 	TileGrid const *world,
-	PixelPosition const *from,
+	Vector2i const *from,
 	Direction direction
 	)
 {
@@ -81,7 +81,7 @@ Bool TileGrid_is_possible_move(
 	{
 		Vector2i vertex = collision_vertex_offsets_by_direction[i][direction];
 		Vector2i_scale(&vertex, tile_size - 1);
-		Vector2i_add(&vertex, &from->vector);
+		Vector2i_add(&vertex, from);
 		Vector2i_add(&vertex, &pixel_delta);
 		if (!is_walkable_pixel(world, &vertex))
 		{

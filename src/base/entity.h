@@ -98,7 +98,7 @@ void Mover_free(Mover *m);
 
 
 int is_possible_step(
-	PixelPosition const *from,
+	Vector2i const *from,
 	Direction dir,
 	struct TileGrid const *world
 );

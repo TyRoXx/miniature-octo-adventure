@@ -100,7 +100,7 @@ void AvatarController_update(AvatarController *a, TileGrid const *world)
 			break;
 		}
 		avatar->body.direction = (Direction)input_dir;
-		if (is_possible_step(&avatar->body.position, avatar->body.direction, world))
+		if (is_possible_step(&avatar->body.position.vector, avatar->body.direction, world))
 		{
 			Mover_move(avatar, world, (size_t)-1);
 			break;
