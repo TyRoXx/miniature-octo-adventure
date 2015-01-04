@@ -69,12 +69,20 @@ static GameState *AdventureState_create(Game *game)
 				Mover_init(&adv_state->avatar, TimeSpan_from_milliseconds(10), avatar_entity);
 
 				Bool all_added = True;
-				for (Mover *m = (Mover *)Vector_begin(&world->movers), *end = (Mover *)Vector_end(&world->movers); m != end; ++m)
+				for (Mover *m = (Mover *)Vector_begin(&world->movers), *end = (Mover *)Vector_end(&world->movers); all_added && m != end; ++m)
 				{
-					if (!SpacialFinder_add(&adv_state->movers, m, adv_state->memory.allocator))
+					NPC npc = NPC_create(*m);
+					if (!Fauna_add_npc(&adv_state->fauna, npc, adv_state->memory.allocator))
 					{
 						all_added = False;
-						break;
+					}
+				}
+
+				for (NPC *n = (NPC *)Vector_begin(&adv_state->fauna.npcs); all_added && n != (NPC *)Vector_end(&adv_state->fauna.npcs); ++n)
+				{
+					if (!SpacialFinder_add(&adv_state->movers, &n->mover, adv_state->memory.allocator))
+					{
+						all_added = False;
 					}
 				}
 
@@ -111,6 +119,7 @@ static void AdventureState_update(GameState *state, TimeSpan delta, TimePoint no
 	AdventureState * const adv_state = (AdventureState *)state;
 	World_update(&adv_state->world, delta, now);
 	Mover_update(&adv_state->avatar, &adv_state->world, delta, now);
+	Fauna_update(&adv_state->fauna, &adv_state->world, now);
 }
 
 GameStateDefinition const AdventureStateDef =
