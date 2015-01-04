@@ -7,7 +7,7 @@
 #include "base/timespan.h"
 
 
-struct World;
+struct TileGrid;
 
 
 typedef size_t AppearanceId;
@@ -88,12 +88,12 @@ void Mover_free(Mover *m);
 int is_possible_step(
 	PixelPosition const *from,
 	Direction dir,
-	struct World const *world
+	struct TileGrid const *world
 );
 
-void Mover_move(Mover *m, struct World const *world, size_t steps_to_go);
+void Mover_move(Mover *m, struct TileGrid const *world, size_t steps_to_go);
 void Mover_stop(Mover *m);
-void Mover_update(Mover *m, struct World const *world, TimeSpan delta, TimePoint now);
+void Mover_update(Mover *m, struct TileGrid const *world, TimeSpan delta, TimePoint now);
 
 
 #endif

@@ -13,7 +13,7 @@ void Fauna_free(Fauna *fauna, Deallocator deallocator)
 
 typedef struct NPCUpdateArgs
 {
-	struct World const *world;
+	struct TileGrid const *world;
 	TimePoint now;
 }
 NPCUpdateArgs;
@@ -24,7 +24,7 @@ static void update_npc(void *element, void *user)
 	NPC_update(element, args->world, args->now);
 }
 
-void Fauna_update(Fauna *fauna, struct World const *world, TimePoint now)
+void Fauna_update(Fauna *fauna, struct TileGrid const *world, TimePoint now)
 {
 	NPCUpdateArgs args = {world, now};
 	for_each(

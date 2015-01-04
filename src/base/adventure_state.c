@@ -58,10 +58,11 @@ static GameState *AdventureState_create(Game *game)
 #endif
 
 	{
-		char const * const world_file_name = "data/world.txt";
-		World * const world = &adv_state->world;
+		TileGrid_init_empty(&adv_state->tiles);
 
-		if (load_world(world_file_name, world, adv_state->memory))
+		World world;
+		char const * const world_file_name = "data/world.txt";
+		if (load_world(world_file_name, &world, adv_state->memory))
 		{
 			Entity avatar_entity;
 			if (Entity_init(&avatar_entity, PixelPosition_new(Vector2i_new(0, 0)), 11))
@@ -69,7 +70,7 @@ static GameState *AdventureState_create(Game *game)
 				Mover_init(&adv_state->avatar, TimeSpan_from_milliseconds(10), avatar_entity);
 
 				Bool all_added = True;
-				for (Mover *m = (Mover *)Vector_begin(&world->movers), *end = (Mover *)Vector_end(&world->movers); all_added && m != end; ++m)
+				for (Mover *m = (Mover *)Vector_begin(&world.movers), *end = (Mover *)Vector_end(&world.movers); all_added && m != end; ++m)
 				{
 					NPC npc = NPC_create(*m);
 					if (!Fauna_add_npc(&adv_state->fauna, npc, adv_state->memory.allocator))
@@ -89,13 +90,18 @@ static GameState *AdventureState_create(Game *game)
 				if (all_added &&
 					SpacialFinder_add(&adv_state->movers, &adv_state->avatar, adv_state->memory.allocator))
 				{
+					TileGrid_free(&adv_state->tiles, adv_state->memory.deallocator);
+					adv_state->tiles = world.tiles;
+					TileGrid_init_empty(&world.tiles);
+					World_free(&world, adv_state->memory.deallocator);
 					return (GameState *)adv_state;
 				}
 
 				Mover_free(&adv_state->avatar);
 			}
 
-			World_free(world, adv_state->memory.deallocator);
+			World_free(&world, adv_state->memory.deallocator);
+			TileGrid_free(&adv_state->tiles, adv_state->memory.deallocator);
 		}
 
 		Fauna_free(&adv_state->fauna, adv_state->memory.deallocator);
@@ -108,7 +114,7 @@ static void AdventureState_destroy(GameState *state)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
 	SpacialFinder_free(&adv_state->movers, adv_state->memory.deallocator);
-	World_free(&adv_state->world, adv_state->memory.deallocator);
+	TileGrid_free(&adv_state->tiles, adv_state->memory.deallocator);
 	Fauna_free(&adv_state->fauna, adv_state->memory.deallocator);
 	Mover_free(&adv_state->avatar);
 	Deallocator_free(adv_state->memory.deallocator, state);
@@ -117,8 +123,8 @@ static void AdventureState_destroy(GameState *state)
 static void AdventureState_update(GameState *state, TimeSpan delta, TimePoint now)
 {
 	AdventureState * const adv_state = (AdventureState *)state;
-	Mover_update(&adv_state->avatar, &adv_state->world, delta, now);
-	Fauna_update(&adv_state->fauna, &adv_state->world, now);
+	Mover_update(&adv_state->avatar, &adv_state->tiles, delta, now);
+	Fauna_update(&adv_state->fauna, &adv_state->tiles, now);
 }
 
 GameStateDefinition const AdventureStateDef =

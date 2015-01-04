@@ -17,7 +17,7 @@ static void decide_next_objective(NPC *npc)
 	npc->objective_state.motion_to_point = motion;
 }
 
-void NPC_update(NPC *npc, struct World const *world, TimePoint now)
+void NPC_update(NPC *npc, struct TileGrid const *world, TimePoint now)
 {
 	switch (npc->objective)
 	{

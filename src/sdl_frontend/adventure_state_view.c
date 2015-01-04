@@ -412,7 +412,7 @@ static Bool AdventureStateView_update(GameStateView *view)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 
-	AvatarController_update(&adv_view->avatar_controller, &adv_view->state->world);
+	AvatarController_update(&adv_view->avatar_controller, &adv_view->state->tiles);
 
 #if MOA_MEMORY_DEBUGGING
 	{
@@ -475,7 +475,7 @@ static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 	draw_tile_layers(
 		&adv_view->camera,
 		screen,
-		&adv_view->state->world.tiles,
+		&adv_view->state->tiles,
 		&adv_view->front->data.appearances,
 		0,
 		2,
@@ -499,7 +499,7 @@ static Bool AdventureStateView_draw(GameStateView *view, TimePoint now)
 	draw_tile_layers(
 		&adv_view->camera,
 		screen,
-		&adv_view->state->world.tiles,
+		&adv_view->state->tiles,
 		&adv_view->front->data.appearances,
 		2,
 		3,
@@ -516,7 +516,7 @@ static void AdventureStateView_handle_event(GameStateView *view, SDL_Event const
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
 	AvatarController * const avatar_controller = &adv_view->avatar_controller;
-	World const * const world = &adv_view->state->world;
+	TileGrid const * const world = &adv_view->state->tiles;
 
 	if (event->type == SDL_KEYUP)
 	{

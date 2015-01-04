@@ -9,7 +9,7 @@
 typedef struct AdventureState
 {
 	GameState base;
-	World world;
+	TileGrid tiles;
 	Fauna fauna;
 	SpacialFinder movers;
 	Mover avatar;

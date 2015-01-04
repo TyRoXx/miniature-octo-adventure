@@ -55,13 +55,13 @@ void Mover_free(Mover *m)
 int is_possible_step(
 	PixelPosition const *from,
 	Direction dir,
-	World const *world
+	TileGrid const *world
 	)
 {
-	return World_is_possible_move(world, from, dir);
+	return TileGrid_is_possible_move(world, from, dir);
 }
 
-void Mover_move(Mover *m, World const *world, size_t steps_to_go)
+void Mover_move(Mover *m, TileGrid const *world, size_t steps_to_go)
 {
 	if (m->steps_to_go > 0)
 	{
@@ -93,7 +93,7 @@ static void add_step(
 	Vector2i_add(&dest->vector, &delta);
 }
 
-void Mover_update(Mover *m, World const *world, TimeSpan delta, TimePoint now)
+void Mover_update(Mover *m, TileGrid const *world, TimeSpan delta, TimePoint now)
 {
 	Bool is_walking = m->steps_to_go > 0;
 	if (is_walking)

@@ -18,9 +18,9 @@ Bool AvatarController_init(AvatarController *a, struct Mover *avatar);
 
 void AvatarController_free(AvatarController *a);
 void AvatarController_handle_input(AvatarController *a,
-								   struct World const *world,
+								   struct TileGrid const *world,
 								   Direction dir,
 								   Bool is_down);
-void AvatarController_update(AvatarController *a, struct World const *world);
+void AvatarController_update(AvatarController *a, struct TileGrid const *world);
 
 #endif

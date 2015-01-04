@@ -33,6 +33,7 @@ TileGrid;
 
 MOA_USE_RESULT
 Bool TileGrid_init(TileGrid *g, size_t width, size_t height, Allocator allocator);
+void TileGrid_init_empty(TileGrid *g);
 void TileGrid_free(TileGrid *g, Deallocator deallocator);
 
 MOA_USE_RESULT

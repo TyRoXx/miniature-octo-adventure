@@ -44,12 +44,12 @@ static int divide_floor(int x, int y)
 }
 
 MOA_USE_RESULT
-static Bool is_walkable_pixel(World const *world, Vector2i const *position)
+static Bool is_walkable_pixel(TileGrid const *world, Vector2i const *position)
 {
 	Vector2i next_tile;
 	next_tile.x = divide_floor(position->x, tile_size);
 	next_tile.y = divide_floor(position->y, tile_size);
-	return is_walkable_tile(&world->tiles, &next_tile);
+	return is_walkable_tile(world, &next_tile);
 }
 
 static size_t const collision_vertex_count = 2;
@@ -69,8 +69,8 @@ static Vector2i const collision_vertex_offsets_by_direction[2][DIR_COUNT] =
 	}
 };
 
-Bool World_is_possible_move(
-	World const *world,
+Bool TileGrid_is_possible_move(
+	TileGrid const *world,
 	PixelPosition const *from,
 	Direction direction
 	)

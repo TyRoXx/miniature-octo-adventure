@@ -25,7 +25,7 @@ void AvatarController_free(AvatarController *a)
 }
 
 void AvatarController_handle_input(AvatarController *a,
-								   World const *world,
+								   TileGrid const *world,
 								   Direction dir,
 								   Bool is_down)
 {
@@ -80,7 +80,7 @@ void AvatarController_handle_input(AvatarController *a,
 	}
 }
 
-void AvatarController_update(AvatarController *a, World const *world)
+void AvatarController_update(AvatarController *a, TileGrid const *world)
 {
 	Mover * const avatar = a->avatar;
 	if (!avatar)

@@ -32,6 +32,13 @@ Bool TileGrid_init(TileGrid *g, size_t width, size_t height, Allocator allocator
 	return (g->tiles != 0);
 }
 
+void TileGrid_init_empty(TileGrid *g)
+{
+	g->tiles = NULL;
+	g->width = 0;
+	g->height = 0;
+}
+
 void TileGrid_free(TileGrid *g, Deallocator deallocator)
 {
 	assert(g);
