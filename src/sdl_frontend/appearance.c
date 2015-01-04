@@ -178,11 +178,52 @@ static Bool init_static_side(AnimationSide *side,
 
 static Bool init_dynamic_layout_1(AppearanceLayout *layout, MemoryManager memory)
 {
+	layout->offset = Vector2i_new(0, 0);
 	return init_layout(layout, &init_dynamic_side_1, memory);
+}
+
+static Bool init_dynamic_side_2(AnimationSide *side,
+								AnimationType anim_id,
+								Direction side_id,
+								Allocator allocator)
+{
+	size_t const frame_count = (anim_id == Anim_Move) ? 4 : 1;
+
+	if (!AnimationSide_init(side, frame_count, allocator))
+	{
+		return False;
+	}
+
+	static unsigned const direction_to_line[DIR_COUNT] =
+	{
+		3,
+		1,
+		0,
+		2
+	};
+
+	for (size_t j = 0; j < frame_count; ++j)
+	{
+		SDL_Rect section;
+		section.x = (Sint16)(j * 32);
+		section.y = (Sint16)(direction_to_line[side_id] * 48);
+		section.w = 32;
+		section.h = 48;
+		side->frames[j].section = section;
+	}
+
+	return True;
+}
+
+static Bool init_dynamic_layout_2(AppearanceLayout *layout, MemoryManager memory)
+{
+	layout->offset = Vector2i_new(0, 32 - 48);
+	return init_layout(layout, &init_dynamic_side_2, memory);
 }
 
 static Bool init_static_layout(AppearanceLayout *layout, MemoryManager memory)
 {
+	layout->offset = Vector2i_new(0, 0);
 	return init_layout(layout, &init_static_side, memory);
 }
 
@@ -232,8 +273,12 @@ Bool AppearanceManager_init(AppearanceManager *a, MemoryManager appearances_memo
 	{
 		if (init_dynamic_layout_1(&a->dynamic_layout_1, appearances_memory))
 		{
-			Vector_init(&a->appearances);
-			return True;
+			if (init_dynamic_layout_2(&a->dynamic_layout_2, appearances_memory))
+			{
+				Vector_init(&a->appearances);
+				return True;
+			}
+			AppearanceLayout_free(&a->dynamic_layout_1, appearances_memory.deallocator);
 		}
 		AppearanceLayout_free(&a->static_layout, appearances_memory.deallocator);
 	}
@@ -305,6 +350,10 @@ static Bool on_appearance(size_t index, char const *type, char const *file, void
 	else if (!strcmp("dynamic1", type))
 	{
 		layout = &a->dynamic_layout_1;
+	}
+	else if (!strcmp("dynamic2", type))
+	{
+		layout = &a->dynamic_layout_2;
 	}
 	if (!layout)
 	{

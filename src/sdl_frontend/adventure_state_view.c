@@ -170,6 +170,7 @@ static void draw_appearance(
 	animation = &appearance->layout->animations[Anim_Idle];
 	assert(animation);
 
+	Vector2i_add(&pixel_pos, &appearance->layout->offset);
 	draw_animation(pixel_pos, screen, animation, appearance->image, direction);
 }
 

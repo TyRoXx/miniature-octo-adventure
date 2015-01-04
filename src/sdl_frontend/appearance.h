@@ -50,6 +50,7 @@ void Animation_free(Animation *a, Deallocator deallocator);
 typedef struct AppearanceLayout
 {
 	Animation animations[Anim_COUNT];
+	Vector2i offset;
 }
 AppearanceLayout;
 
@@ -73,6 +74,7 @@ typedef struct AppearanceManager
 {
 	AppearanceLayout static_layout;
 	AppearanceLayout dynamic_layout_1;
+	AppearanceLayout dynamic_layout_2;
 	Vector appearances;
 }
 AppearanceManager;
