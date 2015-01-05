@@ -2,20 +2,6 @@
 #include "world.h"
 #include <assert.h>
 
-
-Vector2i direction_to_vector(Direction dir)
-{
-	Vector2i v = {0, 0};
-	switch (dir)
-	{
-	case Dir_North: v.y = -1; break;
-	case Dir_West : v.x = -1; break;
-	case Dir_South: v.y =  1; break;
-	case Dir_East : v.x =  1; break;
-	}
-	return v;
-}
-
 void Entity_init(
 	Entity *e,
 	PixelPosition position,

@@ -2,16 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-Allocation Allocator_alloc(Allocator allocator, size_t size)
-{
-	return allocator.realloc(NULL, size, allocator.state);
-}
-
-Allocation Allocator_realloc(Allocator allocator, Allocation allocation, size_t size)
-{
-	return allocator.realloc(allocation, size, allocator.state);
-}
-
 Allocation Allocator_calloc(Allocator allocator, size_t a, size_t b)
 {
 	size_t total = a * b;

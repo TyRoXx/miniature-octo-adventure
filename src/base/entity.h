@@ -60,7 +60,18 @@ typedef enum AnimationType
 AnimationType;
 
 MOA_USE_RESULT
-Vector2i direction_to_vector(Direction dir);
+static inline Vector2i direction_to_vector(Direction dir)
+{
+	Vector2i v = {0, 0};
+	switch (dir)
+	{
+	case Dir_North: v.y = -1; break;
+	case Dir_West : v.x = -1; break;
+	case Dir_South: v.y =  1; break;
+	case Dir_East : v.x =  1; break;
+	}
+	return v;
+}
 
 typedef struct Entity
 {
@@ -77,7 +88,6 @@ void Entity_init(
 	PixelPosition position,
 	AppearanceId appearance
 	);
-
 
 typedef struct Mover
 {

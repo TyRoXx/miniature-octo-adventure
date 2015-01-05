@@ -12,7 +12,15 @@ typedef struct Color
 Color;
 
 MOA_USE_RESULT
-Color make_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+static inline Color make_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+{
+	Color result;
+	result.r = r;
+	result.g = g;
+	result.b = b;
+	result.a = a;
+	return result;
+}
 
 typedef enum TextAlignment
 {
@@ -31,7 +39,14 @@ typedef struct TextStyle
 TextStyle;
 
 MOA_USE_RESULT
-TextStyle make_text_style(TextAlignment horizontal, TextAlignment vertical, Color color);
+static inline TextStyle make_text_style(TextAlignment horizontal, TextAlignment vertical, Color color)
+{
+	TextStyle style;
+	style.horizontal = horizontal;
+	style.vertical = vertical;
+	style.color = color;
+	return style;
+}
 
 struct RendererClass;
 

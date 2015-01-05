@@ -15,10 +15,16 @@ typedef struct Allocator
 Allocator;
 
 MOA_USE_RESULT
-Allocation Allocator_alloc(Allocator allocator, size_t size);
+static inline Allocation Allocator_alloc(Allocator allocator, size_t size)
+{
+	return allocator.realloc(NULL, size, allocator.state);
+}
 
 MOA_USE_RESULT
-Allocation Allocator_realloc(Allocator allocator, Allocation allocation, size_t size);
+static inline Allocation Allocator_realloc(Allocator allocator, Allocation allocation, size_t size)
+{
+	return allocator.realloc(allocation, size, allocator.state);
+}
 
 MOA_USE_RESULT
 Allocation Allocator_calloc(Allocator allocator, size_t a, size_t b);
