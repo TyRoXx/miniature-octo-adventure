@@ -127,8 +127,7 @@ static void test_gui_panel_vertical_layout(void)
 	Vector2i position = Vector2i_new(20, 30);
 	Vector2i desired_size = Vector2i_new(100, 200);
 	Vector2i actual_size = Vector2i_new(80, 210);
-	MemoryManager memory = create_standard_memory_manager();
-	Panel panel = Panel_create(desired_size, pack_vertically, memory.deallocator);
+	Panel panel = Panel_create(desired_size, pack_vertically);
 	Vector2i child_size = Vector2i_new(140, 200);
 	Label child = Label_create("text", make_text_style(TextAlignment_Left, TextAlignment_Right, make_color(1, 2, 3, 4)), child_size);
 	Vector2i child_actual_size = Vector2i_new(80, 200);
@@ -140,7 +139,9 @@ static void test_gui_panel_vertical_layout(void)
 	TEST(Vector2i_equal(&panel.base.actual_size, &actual_size));
 	TEST(Vector2i_equal(&panel.base.desired_size, &desired_size));
 
-	ASSERT(PtrVector_push_back(&panel.children, &child, memory.allocator));
+	Widget *child_ptr = &child.base;
+	panel.children.begin = &child_ptr;
+	panel.children.end = &child_ptr + 1;
 	Widget_pack(&panel.base);
 	TEST(Vector2i_equal(&panel.base.absolute_position, &position));
 	TEST(Vector2i_equal(&panel.base.actual_size, &actual_size));

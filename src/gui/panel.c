@@ -3,8 +3,7 @@
 
 static void Panel_destroy(Widget *this_)
 {
-	Panel * const panel = (Panel *)this_;
-	PtrVector_free(&panel->children, panel->children_deallocator);
+	(void)this_;
 }
 
 static void Panel_pack(Widget *this_)
@@ -13,30 +12,22 @@ static void Panel_pack(Widget *this_)
 	panel->layout(panel);
 }
 
-static void render_child(void *element, void *user)
-{
-	Widget * const child = element;
-	Renderer * const renderer = user;
-	Widget_render(child, renderer);
-}
-
 static void Panel_render(Widget *this_, Renderer *renderer)
 {
 	Panel * const panel = (Panel *)this_;
-	PtrVector_for_each(&panel->children, render_child, renderer);
-}
-
-static void let_child_handle_input(void *element, void *user)
-{
-	Widget *child = element;
-	GuiInput const *input = user;
-	Widget_handle_input(child, *input);
+	for (Widget **i = panel->children.begin; i != panel->children.end; ++i)
+	{
+		Widget_render(*i, renderer);
+	}
 }
 
 static void Panel_handle_input(Widget *this_, GuiInput input)
 {
 	Panel * const panel = (Panel *)this_;
-	PtrVector_for_each(&panel->children, let_child_handle_input, &input);
+	for (Widget **i = panel->children.begin; i != panel->children.end; ++i)
+	{
+		Widget_handle_input(*i, input);
+	}
 }
 
 static WidgetClass const panel_class =
@@ -47,13 +38,12 @@ static WidgetClass const panel_class =
 	Panel_handle_input
 };
 
-Panel Panel_create(Vector2i desired_size, Layout layout, Deallocator children_deallocator)
+Panel Panel_create(Vector2i desired_size, Layout layout)
 {
 	Panel panel;
 	Widget_init(&panel.base, &panel_class, desired_size);
-	PtrVector_init(&panel.children);
 	panel.layout = layout;
-	panel.children_deallocator = children_deallocator;
+	panel.children.begin = panel.children.end = NULL;
 	return panel;
 }
 
@@ -62,16 +52,14 @@ static void generic_pack(Panel *panel, Direction2 direction)
 	Direction2 const opposite_direction = Direction2_opposite(direction);
 	Vector2i const panel_size = panel->base.actual_size;
 	int desired_dimension = 0;
-	size_t i, c;
 	Vector2i current_child_pos = panel->base.absolute_position;
-	for (i = 0, c = PtrVector_size(&panel->children); i < c; ++i)
+	for (Widget **i = panel->children.begin; i != panel->children.end; ++i)
 	{
-		Widget const * const child = PtrVector_get(&panel->children, i);
-		desired_dimension += Vector2i_get_component(&child->desired_size, direction);
+		desired_dimension += Vector2i_get_component(&(*i)->desired_size, direction);
 	}
-	for (i = 0; i < c; ++i)
+	for (Widget **i = panel->children.begin; i != panel->children.end; ++i)
 	{
-		Widget * const child = PtrVector_get(&panel->children, i);
+		Widget * const child = *i;
 		int const child_desired = Vector2i_get_component(&child->desired_size, direction);
 		int const child_actual = (desired_dimension > Vector2i_get_component(&panel_size, direction)) ? (child_desired * Vector2i_get_component(&panel_size, direction) / desired_dimension) : child_desired;
 		child->absolute_position = current_child_pos;
@@ -98,10 +86,9 @@ void pack_horizontally(Panel *panel)
 
 void pack_absolutely(Panel *panel)
 {
-	size_t i, c;
-	for (i = 0, c = PtrVector_size(&panel->children); i < c; ++i)
+	for (Widget **i = panel->children.begin; i != panel->children.end; ++i)
 	{
-		Widget * const child = PtrVector_get(&panel->children, i);
+		Widget * const child = *i;
 		child->actual_size = child->desired_size;
 		Widget_pack(child);
 	}

@@ -6,6 +6,7 @@
 #include "gui/labeled_button.h"
 #include "base/adventure_state.h"
 #include "base/camera.h"
+#include "base/algorithm.h"
 #include "base/avatar_controller.h"
 #include "base/min_max.h"
 #include <assert.h>
@@ -17,6 +18,7 @@ typedef struct AdventureGui
 {
 	Widget base;
 	Panel root;
+	Widget *root_children[4];
 	Label frame_number;
 	Vector frame_number_text;
 #if MOA_MEMORY_DEBUGGING
@@ -90,7 +92,7 @@ static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_
 	Widget_init(&gui->base, &adventure_gui_class, Vector2i_new(root_width, screen_resolution.y));
 
 	gui->deallocator = memory.deallocator;
-	gui->root = Panel_create(Vector2i_new(root_width, screen_resolution.y), pack_vertically, memory.deallocator);
+	gui->root = Panel_create(Vector2i_new(root_width, screen_resolution.y), pack_vertically);
 	gui->root.base.actual_size = gui->root.base.desired_size;
 	gui->root.base.absolute_position.x = screen_resolution.x - root_width;
 	gui->root.base.absolute_position.y = 0;
@@ -108,19 +110,18 @@ static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_
 
 	gui->exit = LabeledButton_create("Exit", styleA, Vector2i_new(300, 20), make_color(255, 0, 0, 255), stop_running, game_is_running);
 
-	if (
+	Widget **first_child = &gui->root_children[2];
+	Widget **end_of_children = MOA_ARRAY_END(gui->root_children);
 #if MOA_MEMORY_DEBUGGING
-		PtrVector_push_back(&gui->root.children, &gui->active_allocations, memory.allocator) &&
-		PtrVector_push_back(&gui->root.children, &gui->total_allocations, memory.allocator) &&
+	gui->root_children[0] = &gui->active_allocations.base;
+	gui->root_children[1] = &gui->total_allocations.base;
+	first_child -= 2;
 #endif
-		PtrVector_push_back(&gui->root.children, &gui->frame_number, memory.allocator) &&
-		PtrVector_push_back(&gui->root.children, &gui->exit, memory.allocator))
-	{
-		return True;
-	}
+	gui->root_children[2] = &gui->frame_number.base;
+	gui->root_children[3] = &gui->exit.base;
 
-	AdventureGui_destroy(&gui->base);
-	return False;
+	gui->root.children = WidgetPtrRange_new(first_child, end_of_children);
+	return True;
 }
 
 typedef struct AdventureStateView
