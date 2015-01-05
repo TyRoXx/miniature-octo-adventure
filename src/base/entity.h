@@ -72,13 +72,11 @@ typedef struct Entity
 }
 Entity;
 
-MOA_USE_RESULT
-Bool Entity_init(
+void Entity_init(
 	Entity *e,
 	PixelPosition position,
 	AppearanceId appearance
 	);
-void Entity_free(Entity *e);
 
 
 typedef struct Mover
@@ -94,8 +92,6 @@ Mover;
 void Mover_init(Mover *m,
 				TimeSpan time_per_pixel,
 				Entity body);
-void Mover_free(Mover *m);
-
 
 int is_possible_step(
 	Vector2i const *from,

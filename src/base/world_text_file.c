@@ -101,17 +101,13 @@ static Bool load_world_from_text_v1(struct World *world, MemoryManager world_mem
 
 			position.vector.x = x;
 			position.vector.y = y;
-			if (Entity_init(&entity, position, app))
+			Entity_init(&entity, position, app);
+			entity.direction = (Direction)(direction % DIR_COUNT);
+			Mover_init(&mover, TimeSpan_from_milliseconds(10), entity);
+
+			if (Vector_push_back(&world->movers, &mover, sizeof(mover), world_memory.allocator))
 			{
-				entity.direction = (Direction)(direction % DIR_COUNT);
-				Mover_init(&mover, TimeSpan_from_milliseconds(10), entity);
-
-				if (Vector_push_back(&world->movers, &mover, sizeof(mover), world_memory.allocator))
-				{
-					continue;
-				}
-
-				Mover_free(&mover);
+				continue;
 			}
 
 			goto fail_0;

@@ -16,7 +16,7 @@ Vector2i direction_to_vector(Direction dir)
 	return v;
 }
 
-Bool Entity_init(
+void Entity_init(
 	Entity *e,
 	PixelPosition position,
 	AppearanceId appearance
@@ -27,14 +27,7 @@ Bool Entity_init(
 	e->appearance = appearance;
 	e->animation = Anim_Idle;
 	e->current_animation_frame = 0;
-	return True;
 }
-
-void Entity_free(Entity *e)
-{
-	(void)e;
-}
-
 
 void Mover_init(Mover *m,
 				TimeSpan time_per_pixel,
@@ -45,11 +38,6 @@ void Mover_init(Mover *m,
 	m->remaining_time.milliseconds = 0;
 	m->steps_to_go = 0;
 	m->animation_start.milliseconds = 0;
-}
-
-void Mover_free(Mover *m)
-{
-	Entity_free(&m->body);
 }
 
 int is_possible_step(

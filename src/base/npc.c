@@ -136,8 +136,3 @@ void NPC_update(NPC *npc, struct TileGrid const *world, TimeSpan delta, TimePoin
 
 	Mover_update(&npc->mover, world, delta, now);
 }
-
-void NPC_free(NPC *npc)
-{
-	Mover_free(&npc->mover);
-}

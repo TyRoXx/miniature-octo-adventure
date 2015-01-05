@@ -1,5 +1,4 @@
 #include "world.h"
-#include "algorithm.h"
 #include <assert.h>
 
 void World_free(World *w, Deallocator deallocator)
@@ -91,18 +90,7 @@ Bool TileGrid_is_possible_move(
 	return True;
 }
 
-static void free_mover(void *element, void *user)
-{
-	(void)user;
-	Mover_free(element);
-}
-
 void free_movers(Vector *movers, Deallocator movers_deallocator)
 {
-	for_each(Vector_begin(movers),
-			 Vector_end(movers),
-			 sizeof(Mover),
-			 free_mover,
-			 NULL);
 	Vector_free(movers, movers_deallocator);
 }
