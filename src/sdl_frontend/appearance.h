@@ -58,7 +58,6 @@ Appearance;
 void Appearance_init(Appearance *appearance,
 					 SDL_Surface *image,
 					 AppearanceLayout const *layout);
-void Appearance_free(Appearance *appearance);
 
 typedef struct AppearanceManager
 {
