@@ -1,24 +1,7 @@
 #include "vector.h"
 #include <string.h>
-#include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
-
-void Vector_init(Vector *v)
-{
-	v->data = 0;
-	v->capacity = v->size = 0;
-}
-
-void Vector_free(Vector *v, Deallocator deallocator)
-{
-	Deallocator_free(deallocator, v->data);
-}
-
-char *Vector_release(Vector *v)
-{
-	return v->data;
-}
 
 Bool Vector_push_back(Vector *v, void const *element, size_t size, Allocator allocator)
 {
@@ -29,21 +12,6 @@ Bool Vector_push_back(Vector *v, void const *element, size_t size, Allocator all
 	memcpy(v->data + v->size, element, size);
 	v->size += size;
 	return True;
-}
-
-size_t Vector_size(Vector const *v)
-{
-	return v->size;
-}
-
-Bool Vector_empty(Vector const *v)
-{
-	return v->size == 0;
-}
-
-char *Vector_data(Vector const *v)
-{
-	return v->data;
 }
 
 Bool Vector_reserve(Vector *v, size_t capacity, Allocator allocator)
@@ -81,22 +49,6 @@ Bool Vector_resize(Vector *v, size_t size, Allocator allocator)
 		return True;
 	}
 	return False;
-}
-
-void Vector_resize_smaller(Vector *v, size_t size)
-{
-	assert(size <= v->size);
-	v->size = size;
-}
-
-char *Vector_begin(Vector const *v)
-{
-	return Vector_data(v);
-}
-
-char *Vector_end(Vector const *v)
-{
-	return Vector_data(v) + Vector_size(v);
 }
 
 Bool Vector_append_binary_file(Vector *v, Allocator v_allocator, FILE *in)
