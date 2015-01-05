@@ -1,12 +1,10 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-
 #include "entity.h"
 #include "tile_grid.h"
 #include "bool.h"
 #include "vector.h"
-
 
 static int const tile_size = 32;
 
@@ -31,8 +29,5 @@ Bool TileGrid_is_possible_move(
 	Vector2i const *from,
 	Direction direction
 	);
-
-void free_movers(Vector *movers, Deallocator movers_deallocator);
-
 
 #endif

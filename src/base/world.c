@@ -3,7 +3,7 @@
 
 void World_free(World *w, Deallocator deallocator)
 {
-	free_movers(&w->movers, deallocator);
+	Vector_free(&w->movers, deallocator);
 	TileGrid_free(&w->tiles, deallocator);
 }
 
@@ -88,9 +88,4 @@ Bool TileGrid_is_possible_move(
 		}
 	}
 	return True;
-}
-
-void free_movers(Vector *movers, Deallocator movers_deallocator)
-{
-	Vector_free(movers, movers_deallocator);
 }

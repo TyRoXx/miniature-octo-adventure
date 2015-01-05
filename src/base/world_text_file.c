@@ -117,7 +117,7 @@ static Bool load_world_from_text_v1(struct World *world, MemoryManager world_mem
 	return True;
 
 fail_0:
-	free_movers(&world->movers, world_memory.deallocator);
+	Vector_free(&world->movers, world_memory.deallocator);
 
 fail_1:
 	TileGrid_free(&world->tiles, world_memory.deallocator);
