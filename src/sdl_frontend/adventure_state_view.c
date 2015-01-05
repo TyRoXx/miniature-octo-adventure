@@ -79,8 +79,7 @@ static void stop_running(void *user)
 	*is_running = False;
 }
 
-MOA_USE_RESULT
-static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution, Bool *game_is_running)
+static void create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution, Bool *game_is_running)
 {
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
 #if MOA_MEMORY_DEBUGGING
@@ -121,7 +120,6 @@ static Bool create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_
 	gui->root_children[3] = &gui->exit.base;
 
 	gui->root.children = WidgetPtrRange_new(first_child, end_of_children);
-	return True;
 }
 
 typedef struct AdventureStateView
@@ -362,28 +360,18 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 
 	if (!adv_view)
 	{
-		goto fail_0;
+		return NULL;
 	}
 
 	Camera_init(&adv_view->camera);
 	AvatarController_init(&adv_view->avatar_controller, &adv_state->avatar);
-
-	if (!create_gui(&adv_view->gui, adv_state->memory, Vector2i_new(front->screen->w, front->screen->h), &front->is_running))
-	{
-		goto fail_2;
-	}
+	create_gui(&adv_view->gui, adv_state->memory, Vector2i_new(front->screen->w, front->screen->h), &front->is_running);
 	Widget_pack(&adv_view->gui.base);
 
 	adv_view->current_frame = 0;
 	adv_view->front = front;
 	adv_view->state = adv_state;
 	return (GameStateView *)adv_view;
-
-fail_2:
-	Deallocator_free(adv_state->memory.deallocator, adv_view);
-
-fail_0:
-	return NULL;
 }
 
 static void AdventureStateView_destroy(GameStateView *view)
