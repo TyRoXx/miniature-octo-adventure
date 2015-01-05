@@ -32,19 +32,13 @@ typedef struct AdventureGui
 }
 AdventureGui;
 
-static void AdventureGui_destroy(Widget *this_)
+static void AdventureGui_destroy(AdventureGui *instance)
 {
-	AdventureGui * const instance = (AdventureGui *)this_;
-	Widget_destroy(&instance->exit.base);
 #if MOA_MEMORY_DEBUGGING
-	Widget_destroy(&instance->active_allocations.base);
 	Vector_free(&instance->active_allocations_text, instance->deallocator);
-	Widget_destroy(&instance->total_allocations.base);
 	Vector_free(&instance->total_allocations_text, instance->deallocator);
 #endif
-	Widget_destroy(&instance->frame_number.base);
 	Vector_free(&instance->frame_number_text, instance->deallocator);
-	Widget_destroy(&instance->root.base);
 }
 
 static void AdventureGui_pack(Widget *this_)
@@ -67,7 +61,6 @@ static void AdventureGui_handle_input(Widget *this_, GuiInput input)
 
 static WidgetClass const adventure_gui_class =
 {
-	AdventureGui_destroy,
 	AdventureGui_pack,
 	AdventureGui_render,
 	AdventureGui_handle_input
@@ -377,7 +370,7 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 static void AdventureStateView_destroy(GameStateView *view)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
-	Widget_destroy(&adv_view->gui.base);
+	AdventureGui_destroy(&adv_view->gui);
 	Deallocator_free(adv_view->state->memory.deallocator, view);
 }
 

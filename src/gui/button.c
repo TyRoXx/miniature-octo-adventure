@@ -1,11 +1,6 @@
 #include "button.h"
 #include <assert.h>
 
-static void Button_destroy(Widget *this_)
-{
-	(void)this_;
-}
-
 static void Button_pack(Widget *this_)
 {
 	Button * const button = (Button *)this_;
@@ -47,7 +42,6 @@ static void Button_handle_input(Widget *this_, GuiInput input)
 
 static WidgetClass const button_class =
 {
-	Button_destroy,
 	Button_pack,
 	Button_render,
 	Button_handle_input

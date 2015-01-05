@@ -1,12 +1,5 @@
 #include "labeled_button.h"
 
-static void LabeledButton_destroy(Widget *this_)
-{
-	LabeledButton * const instance = (LabeledButton *)this_;
-	Widget_destroy(&instance->button.base);
-	Widget_destroy(&instance->label.base);
-}
-
 static void LabeledButton_pack(Widget *this_)
 {
 	LabeledButton * const instance = (LabeledButton *)this_;
@@ -30,7 +23,6 @@ static void LabeledButton_handle_input(Widget *this_, GuiInput input)
 
 static WidgetClass const labeled_button_class =
 {
-	LabeledButton_destroy,
 	LabeledButton_pack,
 	LabeledButton_render,
 	LabeledButton_handle_input

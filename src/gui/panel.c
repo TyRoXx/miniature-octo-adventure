@@ -1,11 +1,6 @@
 #include "panel.h"
 #include "base/min_max.h"
 
-static void Panel_destroy(Widget *this_)
-{
-	(void)this_;
-}
-
 static void Panel_pack(Widget *this_)
 {
 	Panel * const panel = (Panel *)this_;
@@ -32,7 +27,6 @@ static void Panel_handle_input(Widget *this_, GuiInput input)
 
 static WidgetClass const panel_class =
 {
-	Panel_destroy,
     Panel_pack,
 	Panel_render,
 	Panel_handle_input

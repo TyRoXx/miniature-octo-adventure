@@ -119,7 +119,6 @@ static void test_gui_labeled_button(void)
 	TEST(Vector2i_equal(&button.label.base.actual_size, &actual_size));
 	TEST(Vector2i_equal(&button.label.base.desired_size, &desired_size));
 	TEST(text == button.label.text);
-	Widget_destroy(&button.base);
 }
 
 static void test_gui_panel_vertical_layout(void)
@@ -149,9 +148,6 @@ static void test_gui_panel_vertical_layout(void)
 	TEST(Vector2i_equal(&child.base.absolute_position, &position));
 	TEST(Vector2i_equal(&child.base.actual_size, &child_actual_size));
 	TEST(Vector2i_equal(&child.base.desired_size, &child_size));
-
-	Widget_destroy(&panel.base);
-	Widget_destroy(&child.base);
 }
 
 static void test_gui_padding(void)

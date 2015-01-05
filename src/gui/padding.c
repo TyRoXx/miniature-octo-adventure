@@ -1,11 +1,6 @@
 #include "padding.h"
 #include "base/min_max.h"
 
-static void Padding_destroy(Widget *this_)
-{
-	(void)this_;
-}
-
 static void Padding_pack(Widget *this_)
 {
 	Padding * const instance = (Padding *)this_;
@@ -31,7 +26,6 @@ static void Padding_handle_input(Widget *this_, GuiInput input)
 
 static WidgetClass const padding_class =
 {
-	Padding_destroy,
 	Padding_pack,
 	Padding_render,
 	Padding_handle_input

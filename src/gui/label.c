@@ -1,10 +1,5 @@
 #include "label.h"
 
-static void Label_destroy(Widget *this_)
-{
-	(void)this_;
-}
-
 static void Label_pack(Widget *this_)
 {
 	(void)this_;
@@ -28,7 +23,6 @@ static void Label_handle_input(Widget *this_, GuiInput input)
 
 static WidgetClass const label_class =
 {
-    Label_destroy,
     Label_pack,
     Label_render,
 	Label_handle_input
