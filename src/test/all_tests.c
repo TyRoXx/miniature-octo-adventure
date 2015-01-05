@@ -1,17 +1,21 @@
 #include "all_tests.h"
 #include "base/vector.h"
 #include "base/stringize.h"
+#include "base/algorithm.h"
 #include "base/saturating_int.h"
 #include "gui/labeled_button.h"
 #include "gui/padding.h"
 #include "gui/panel.h"
 #include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
 
 static void test_vector(void);
 static void test_saturating_int(void);
 static void test_gui_labeled_button(void);
 static void test_gui_panel_vertical_layout(void);
 static void test_gui_padding(void);
+static void test_serialization(void);
 
 void moa_test_run_all(void)
 {
@@ -20,6 +24,7 @@ void moa_test_run_all(void)
 	test_gui_labeled_button();
 	test_gui_panel_vertical_layout();
 	test_gui_padding();
+	test_serialization();
 }
 
 #ifdef _MSC_VER
@@ -191,4 +196,123 @@ static void test_gui_padding(void)
 	TEST(Vector2i_equal(&content.base.absolute_position, &content_position));
 	TEST(Vector2i_equal(&content.base.actual_size, &content_actual_size));
 	TEST(Vector2i_equal(&content.base.desired_size, &desired_size));
+}
+
+typedef struct SerializationStruct1
+{
+	uint32_t a, b, c;
+	uint16_t d;
+	uint8_t e;
+}
+SerializationStruct1;
+
+typedef enum DataType
+{
+	DataType_UInt32,
+	DataType_UInt16,
+	DataType_UInt8
+}
+DataType;
+
+static size_t data_type_sizeof(DataType type)
+{
+	switch (type)
+	{
+	case DataType_UInt32: return 4;
+	case DataType_UInt16: return 2;
+	case DataType_UInt8: return 1;
+	}
+	MOA_UNREACHABLE();
+}
+
+static unsigned char *data_type_serialize(
+	unsigned char *destination,
+	void const *original,
+	DataType type)
+{
+	switch (type)
+	{
+	case DataType_UInt8:
+		destination[0] = ((unsigned char const *)original)[0];
+		return destination + 1;
+
+	case DataType_UInt16:
+		{
+			uint16_t const *value = original;
+			destination[0] = (unsigned char)(*value >> 8);
+			destination[1] = (unsigned char)(*value);
+			return destination + 2;
+		}
+
+	case DataType_UInt32:
+		{
+			uint32_t const *value = original;
+			destination[0] = (unsigned char)(*value >> 24);
+			destination[1] = (unsigned char)(*value >> 16);
+			destination[2] = (unsigned char)(*value >> 8);
+			destination[3] = (unsigned char)(*value);
+			return destination + 4;
+		}
+	}
+	MOA_UNREACHABLE();
+}
+
+typedef struct StructElement
+{
+	DataType type;
+	size_t offset;
+}
+StructElement;
+
+static size_t struct_sizeof(StructElement const *begin, StructElement const *end)
+{
+	size_t size = 0;
+	for (; begin != end; ++begin)
+	{
+		size += data_type_sizeof(begin->type);
+	}
+	return size;
+}
+
+static void struct_serialize(
+	unsigned char *destination,
+	void const *instance,
+	StructElement const *begin,
+	StructElement const *end)
+{
+	for (; begin != end; ++begin)
+	{
+		destination = data_type_serialize(destination, (char const *)instance + begin->offset, begin->type);
+	}
+}
+
+static void test_serialization(void)
+{
+	SerializationStruct1 s;
+	s.a = 0x11223344;
+	s.b = 0x55667788;
+	s.c = 0x99aabbcc;
+	s.d = 0xddee;
+	s.e = 0xff;
+	StructElement const s_type[] =
+	{
+		{DataType_UInt32, offsetof(SerializationStruct1, a)},
+		{DataType_UInt32, offsetof(SerializationStruct1, b)},
+		{DataType_UInt32, offsetof(SerializationStruct1, c)},
+		{DataType_UInt16, offsetof(SerializationStruct1, d)},
+		{DataType_UInt8, offsetof(SerializationStruct1, e)},
+	};
+	size_t size = struct_sizeof(s_type, MOA_ARRAY_END(s_type));
+	TEST(size == 12 + 2 + 1);
+	unsigned char serialized[12 + 2 + 1] = {0};
+	struct_serialize(serialized, &s, s_type, MOA_ARRAY_END(s_type));
+	unsigned char const expected[12 + 2 + 1] =
+	{
+		0x11, 0x22, 0x33, 0x44,
+		0x55, 0x66, 0x77, 0x88,
+		0x99, 0xaa, 0xbb, 0xcc,
+		0xdd, 0xee,
+		0xff
+	};
+	TEST(memcmp(expected, serialized, sizeof(expected)) == 0);
 }
