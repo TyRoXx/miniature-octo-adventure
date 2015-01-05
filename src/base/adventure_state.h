@@ -14,9 +14,7 @@ typedef struct AdventureState
 	SpacialFinder movers;
 	Mover avatar;
 	MemoryManager memory;
-#if MOA_MEMORY_DEBUGGING
 	MemoryStatistics const *memory_statistics;
-#endif
 }
 AdventureState;
 

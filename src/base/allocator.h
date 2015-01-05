@@ -45,7 +45,4 @@ typedef struct MemoryManager
 }
 MemoryManager;
 
-MOA_USE_RESULT
-MemoryManager create_standard_memory_manager(void);
-
 #endif

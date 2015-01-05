@@ -21,12 +21,10 @@ typedef struct AdventureGui
 	Widget *root_children[4];
 	Label frame_number;
 	Vector frame_number_text;
-#if MOA_MEMORY_DEBUGGING
 	Label active_allocations;
 	Vector active_allocations_text;
 	Label total_allocations;
 	Vector total_allocations_text;
-#endif
 	LabeledButton exit;
 	Deallocator deallocator;
 }
@@ -34,10 +32,8 @@ AdventureGui;
 
 static void AdventureGui_destroy(AdventureGui *instance)
 {
-#if MOA_MEMORY_DEBUGGING
 	Vector_free(&instance->active_allocations_text, instance->deallocator);
 	Vector_free(&instance->total_allocations_text, instance->deallocator);
-#endif
 	Vector_free(&instance->frame_number_text, instance->deallocator);
 }
 
@@ -75,9 +71,7 @@ static void stop_running(void *user)
 static void create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution, Bool *game_is_running)
 {
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
-#if MOA_MEMORY_DEBUGGING
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
-#endif
 	TextStyle const styleC = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 0, 255, 255));
 
 	int root_width = 120;
@@ -89,26 +83,21 @@ static void create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_
 	gui->root.base.absolute_position.x = screen_resolution.x - root_width;
 	gui->root.base.absolute_position.y = 0;
 
-#if MOA_MEMORY_DEBUGGING
 	gui->active_allocations = Label_create("", styleA, Vector2i_new(300, 20));
 	Vector_init(&gui->active_allocations_text);
 
 	gui->total_allocations = Label_create("", styleB, Vector2i_new(300, 20));
 	Vector_init(&gui->total_allocations_text);
-#endif
 
 	gui->frame_number = Label_create("", styleC, Vector2i_new(300, 20));
 	Vector_init(&gui->frame_number_text);
 
 	gui->exit = LabeledButton_create("Exit", styleA, Vector2i_new(300, 20), make_color(255, 0, 0, 255), stop_running, game_is_running);
 
-	Widget **first_child = &gui->root_children[2];
+	Widget **first_child = &gui->root_children[0];
 	Widget **end_of_children = MOA_ARRAY_END(gui->root_children);
-#if MOA_MEMORY_DEBUGGING
 	gui->root_children[0] = &gui->active_allocations.base;
 	gui->root_children[1] = &gui->total_allocations.base;
-	first_child -= 2;
-#endif
 	gui->root_children[2] = &gui->frame_number.base;
 	gui->root_children[3] = &gui->exit.base;
 
@@ -380,7 +369,6 @@ static Bool AdventureStateView_update(GameStateView *view)
 
 	AvatarController_update(&adv_view->avatar_controller, &adv_view->state->tiles);
 
-#if MOA_MEMORY_DEBUGGING
 	{
 		MemoryStatistics const *stats = adv_view->state->memory_statistics;
 
@@ -396,7 +384,6 @@ static Bool AdventureStateView_update(GameStateView *view)
 		}
 		adv_view->gui.total_allocations.text = adv_view->gui.total_allocations_text.data;
 	}
-#endif
 
 	if (!Vector_printf(&adv_view->gui.frame_number_text, adv_view->state->memory.allocator, "Frame: %" PRIu64, adv_view->current_frame))
 	{

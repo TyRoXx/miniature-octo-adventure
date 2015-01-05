@@ -5,6 +5,7 @@
 #include "gui/labeled_button.h"
 #include "gui/padding.h"
 #include "gui/panel.h"
+#include <stdlib.h>
 
 static void test_vector(void);
 static void test_saturating_int(void);
@@ -30,6 +31,24 @@ void moa_test_run_all(void)
 
 #define TEST(x)   do { if (!(x)) { moa_test_on_message("TEST("   MOA_STRINGIZE(x) ") fail", __FILE__, __LINE__);         } } while (MOA_COMPILE_TIME_FALSE)
 #define ASSERT(x) do { if (!(x)) { moa_test_on_message("ASSERT(" MOA_STRINGIZE(x) ") fail", __FILE__, __LINE__); return; } } while (MOA_COMPILE_TIME_FALSE)
+
+static Allocation wrapped_realloc(Allocation allocation, size_t size, PrivateAllocatorState state)
+{
+	(void)state;
+	return realloc(allocation, size);
+}
+
+static void wrapped_free(Allocation allocation, PrivateAllocatorState state)
+{
+	(void)state;
+	free(allocation);
+}
+
+static MemoryManager create_standard_memory_manager(void)
+{
+	MemoryManager manager = {{wrapped_realloc, NULL}, {wrapped_free, NULL}};
+	return manager;
+}
 
 static void test_vector(void)
 {

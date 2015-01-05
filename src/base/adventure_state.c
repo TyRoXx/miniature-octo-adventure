@@ -53,9 +53,7 @@ static GameState *AdventureState_create(Game *game)
 	Fauna_init(&adv_state->fauna);
 
 	adv_state->memory = game->memory;
-#if MOA_MEMORY_DEBUGGING
 	adv_state->memory_statistics = &game->memory_statistics;
-#endif
 
 	{
 		TileGrid_init_empty(&adv_state->tiles);

@@ -28,21 +28,12 @@ typedef struct GameState
 GameState;
 
 
-#ifdef NDEBUG
-#	define MOA_MEMORY_DEBUGGING 0
-#else
-#	define MOA_MEMORY_DEBUGGING 1
-#endif
-
-
-#if MOA_MEMORY_DEBUGGING
 typedef struct MemoryStatistics
 {
 	uint64_t active_allocations;
 	uint64_t total_allocations;
 }
 MemoryStatistics;
-#endif
 
 
 #endif
