@@ -13,10 +13,8 @@ typedef struct AvatarController
 }
 AvatarController;
 
-MOA_USE_RESULT
-Bool AvatarController_init(AvatarController *a, struct Mover *avatar);
+void AvatarController_init(AvatarController *a, struct Mover *avatar);
 
-void AvatarController_free(AvatarController *a);
 void AvatarController_handle_input(AvatarController *a,
 								   struct TileGrid const *world,
 								   Direction dir,

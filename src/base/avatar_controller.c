@@ -7,7 +7,7 @@
 
 static int const not_pressed = -1;
 
-Bool AvatarController_init(AvatarController *a, struct Mover *avatar)
+void AvatarController_init(AvatarController *a, struct Mover *avatar)
 {
 	assert(a);
 	assert(avatar);
@@ -16,12 +16,6 @@ Bool AvatarController_init(AvatarController *a, struct Mover *avatar)
 	{
 		a->pressed_direction_keys[i] = not_pressed;
 	}
-	return True;
-}
-
-void AvatarController_free(AvatarController *a)
-{
-	(void)a;
 }
 
 void AvatarController_handle_input(AvatarController *a,
