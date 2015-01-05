@@ -49,11 +49,6 @@ void Appearance_init(Appearance *appearance,
 	appearance->layout = layout;
 }
 
-void Appearance_free(Appearance *appearance)
-{
-	(void)appearance;
-}
-
 static Bool init_animation(
 		Animation *anim,
 		AnimationType anim_id,
@@ -245,23 +240,11 @@ static Bool add_appearance(AppearanceManager *a,
 	{
 		return True;
 	}
-	Appearance_free(&appearance);
 	return False;
-}
-
-static void free_appearance(void *appearance, void *user)
-{
-	(void)user;
-	Appearance_free(appearance);
 }
 
 static void free_appearances(Vector *appearances, Deallocator deallocator)
 {
-	for_each(Vector_begin(appearances),
-			 Vector_end(appearances),
-			 sizeof(Appearance),
-			 free_appearance,
-			 NULL);
 	Vector_free(appearances, deallocator);
 }
 

@@ -364,11 +364,7 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 		goto fail_0;
 	}
 
-	if (!Camera_init(&adv_view->camera))
-	{
-		goto fail_1;
-	}
-
+	Camera_init(&adv_view->camera);
 	AvatarController_init(&adv_view->avatar_controller, &adv_state->avatar);
 
 	if (!create_gui(&adv_view->gui, adv_state->memory, Vector2i_new(front->screen->w, front->screen->h), &front->is_running))
@@ -383,9 +379,6 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 	return (GameStateView *)adv_view;
 
 fail_2:
-	Camera_free(&adv_view->camera);
-
-fail_1:
 	Deallocator_free(adv_state->memory.deallocator, adv_view);
 
 fail_0:
@@ -395,7 +388,6 @@ fail_0:
 static void AdventureStateView_destroy(GameStateView *view)
 {
 	AdventureStateView * const adv_view = (AdventureStateView *)view;
-	Camera_free(&adv_view->camera);
 	Widget_destroy(&adv_view->gui.base);
 	Deallocator_free(adv_view->state->memory.deallocator, view);
 }

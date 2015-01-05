@@ -2,17 +2,10 @@
 #include "base/entity.h"
 #include <assert.h>
 
-Bool Camera_init(Camera *cam)
+void Camera_init(Camera *cam)
 {
 	assert(cam);
 	cam->position.vector = Vector2i_zero;
-	return True;
-}
-
-void Camera_free(Camera *cam)
-{
-	assert(cam);
-	(void)cam;
 }
 
 void Camera_focus_on(Camera *cam, struct Mover const *target, Vector2i target_size)
