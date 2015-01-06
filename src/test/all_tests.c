@@ -252,7 +252,7 @@ static bit_size data_type_size_in_bits(DataType type, void const *data)
 	case DataType_String:
 		{
 			StringRef const *str = data;
-			return 32 + (size_t)(str->end - str->begin) * 8;
+			return 64 + (size_t)(str->end - str->begin) * 8;
 		}
 	case DataType_Bool: return 1;
 	}
@@ -359,9 +359,9 @@ static bit_writer data_type_serialize(
 		{
 			StringRef const *value = original;
 			size_t length = (size_t)(value->end - value->begin);
-			assert(length <= UINT32_MAX);
-			uint32_t writeable_length = (uint32_t)length;
-			destination = data_type_serialize(destination, &writeable_length, DataType_UInt32);
+			assert(length <= UINT64_MAX);
+			uint64_t writeable_length = (uint64_t)length;
+			destination = data_type_serialize(destination, &writeable_length, DataType_UInt64);
 			for (char const *i = value->begin; i != value->end; ++i)
 			{
 				destination = write_byte(destination, (byte)*i);
@@ -437,7 +437,7 @@ static void test_serialization_1(void)
 		0x99, 0xaa, 0xbb, 0xcc, 0x12, 0x34, 0x56, 0x78,
 		0xdd, 0xee,
 		0xff,
-		0x00, 0x00, 0x00, 0x03,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
 		'a', 'b', 'c',
 		0x01 | 0x12, 0x34, 0x56, 0x78, 0x00
 	};
