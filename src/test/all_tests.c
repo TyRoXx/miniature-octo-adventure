@@ -214,6 +214,18 @@ static StringRef StringRef_from_c_str(char const *str)
 	return ref;
 }
 
+MOA_USE_RESULT
+static Bool StringRef_equal_content(StringRef first, StringRef second)
+{
+	size_t first_length  = (size_t)(first.end - first.begin);
+	size_t second_length = (size_t)(second.end - second.begin);
+	if (first_length != second_length)
+	{
+		return False;
+	}
+	return memcmp(first.begin, second.begin, first_length) == 0;
+}
+
 typedef struct SerializationStruct1
 {
 	uint32_t a, b;
@@ -407,6 +419,140 @@ static bit_writer struct_serialize(
 	return destination;
 }
 
+typedef struct bit_reader
+{
+	byte const *current_byte;
+	bit_size used_bits_in_byte;
+}
+bit_reader;
+
+MOA_USE_RESULT
+static bit_reader read_byte(bit_reader source, byte *to)
+{
+	if (source.used_bits_in_byte)
+	{
+		byte mask = (byte)((1U << source.used_bits_in_byte) - 1U);
+		*to = (byte)(*source.current_byte & ~mask);
+		source.current_byte += 1;
+		*to |= (byte)(*source.current_byte & mask);
+	}
+	else
+	{
+		*to = *source.current_byte;
+		source.current_byte += 1;
+	}
+	return source;
+}
+
+MOA_USE_RESULT
+static bit_reader read_bytes(bit_reader source, byte *begin, byte *end)
+{
+	if (source.used_bits_in_byte)
+	{
+		for (; begin != end; ++begin)
+		{
+			source = read_byte(source, begin);
+		}
+	}
+	else
+	{
+		memmove(begin, source.current_byte, (size_t)(end - begin));
+		source.current_byte += (end - begin);
+	}
+	return source;
+}
+
+MOA_USE_RESULT
+static bit_reader read_bit(bit_reader source, Bool *to)
+{
+	*to = (*source.current_byte & (1U << source.used_bits_in_byte)) != 0;
+	if (source.used_bits_in_byte == 7)
+	{
+		source.current_byte += 1;
+		source.used_bits_in_byte = 0;
+	}
+	else
+	{
+		source.used_bits_in_byte += 1;
+	}
+	return source;
+}
+
+MOA_USE_RESULT
+static bit_reader data_type_deserialize(
+	bit_reader source,
+	void *instance,
+	DataType type)
+{
+	switch (type)
+	{
+	case DataType_UInt8:
+		return read_byte(source, instance);
+
+	case DataType_UInt16:
+		{
+			source = read_bytes(source, instance, (byte *)instance + sizeof(uint16_t));
+			*(uint16_t *)instance = ntohs(*(uint16_t const *)instance);
+			return source;
+		}
+
+	case DataType_UInt32:
+		{
+			source = read_bytes(source, instance, (byte *)instance + sizeof(uint32_t));
+			*(uint32_t *)instance = ntohl(*(uint32_t const *)instance);
+			return source;
+		}
+
+	case DataType_UInt64:
+		{
+			byte buffer[sizeof(uint64_t)];
+			source = read_bytes(source, buffer, MOA_ARRAY_END(buffer));
+			*(uint64_t *)instance =
+				((uint64_t)(buffer[0]) << 56ULL) |
+				((uint64_t)(buffer[1]) << 48ULL) |
+				((uint64_t)(buffer[2]) << 40ULL) |
+				((uint64_t)(buffer[3]) << 32ULL) |
+				((uint64_t)(buffer[4]) << 24ULL) |
+				((uint64_t)(buffer[5]) << 16ULL) |
+				((uint64_t)(buffer[6]) <<  8ULL) |
+				((uint64_t)(buffer[7]));
+			return source;
+		}
+
+	case DataType_String:
+		{
+			uint64_t length;
+			source = data_type_deserialize(source, &length, DataType_UInt64);
+			StringRef *destination = instance;
+			assert(source.used_bits_in_byte == 0); //TODO: make this work somehow with bit offsets
+			destination->begin = (char const *)source.current_byte;
+			source.current_byte += length;
+			destination->end = (char const *)source.current_byte;
+			return source;
+		}
+
+	case DataType_Bool:
+		{
+			return read_bit(source, instance);
+		}
+	}
+	MOA_UNREACHABLE();
+}
+
+MOA_USE_RESULT
+static bit_reader struct_deserialize(
+	bit_reader source,
+	void *instance,
+	StructElement const *begin,
+	StructElement const *end)
+{
+	for (; begin != end; ++begin)
+	{
+		source = data_type_deserialize(source, (char *)instance + begin->offset, begin->type);
+	}
+	return source;
+}
+
 static void test_serialization_1(void)
 {
 	SerializationStruct1 s;
@@ -448,6 +594,20 @@ static void test_serialization_1(void)
 	TEST(writer.current_byte == MOA_ARRAY_END(serialized) - 1);
 	TEST(writer.used_bits_in_byte == 1);
 	TEST(memcmp(expected, serialized, sizeof(expected)) == 0);
+
+	SerializationStruct1 deserialized = {0};
+	bit_reader reader = {&expected[0], 0};
+	reader = struct_deserialize(reader, &deserialized, s_type, MOA_ARRAY_END(s_type));
+	TEST(reader.current_byte == MOA_ARRAY_END(expected) - 1);
+	TEST(reader.used_bits_in_byte == 1);
+	TEST(s.a == deserialized.a);
+	TEST(s.b == deserialized.b);
+	TEST(s.c == deserialized.c);
+	TEST(s.d == deserialized.d);
+	TEST(s.e == deserialized.e);
+	TEST(StringRef_equal_content(s.f, deserialized.f));
+	TEST(s.g == deserialized.g);
+	TEST(s.h == deserialized.h);
 }
 
 static void test_serialization_2(void)
