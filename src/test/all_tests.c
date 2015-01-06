@@ -15,7 +15,8 @@ static void test_saturating_int(void);
 static void test_gui_labeled_button(void);
 static void test_gui_panel_vertical_layout(void);
 static void test_gui_padding(void);
-static void test_serialization(void);
+static void test_serialization_1(void);
+static void test_serialization_2(void);
 
 void moa_test_run_all(void)
 {
@@ -24,7 +25,8 @@ void moa_test_run_all(void)
 	test_gui_labeled_button();
 	test_gui_panel_vertical_layout();
 	test_gui_padding();
-	test_serialization();
+	test_serialization_1();
+	test_serialization_2();
 }
 
 #ifdef _MSC_VER
@@ -217,6 +219,7 @@ typedef struct SerializationStruct1
 	uint16_t d;
 	uint8_t e;
 	StringRef f;
+	Bool g;
 }
 SerializationStruct1;
 
@@ -225,28 +228,31 @@ typedef enum DataType
 	DataType_UInt32,
 	DataType_UInt16,
 	DataType_UInt8,
-	DataType_String
+	DataType_String,
+	DataType_Bool
 }
 DataType;
 
-static size_t data_type_sizeof(DataType type, void const *data)
+typedef unsigned char byte;
+typedef uint64_t bit_size;
+
+MOA_USE_RESULT
+static bit_size data_type_sizeof(DataType type, void const *data)
 {
 	switch (type)
 	{
-	case DataType_UInt32: return 4;
-	case DataType_UInt16: return 2;
-	case DataType_UInt8: return 1;
+	case DataType_UInt32: return 32;
+	case DataType_UInt16: return 16;
+	case DataType_UInt8: return 8;
 	case DataType_String:
 		{
 			StringRef const *str = data;
-			return 4 + (size_t)(str->end - str->begin);
+			return 32 + (size_t)(str->end - str->begin) * 8;
 		}
+	case DataType_Bool: return 1;
 	}
 	MOA_UNREACHABLE();
 }
-
-typedef unsigned char byte;
-typedef uint64_t bit_size;
 
 typedef struct bit_writer
 {
@@ -260,7 +266,7 @@ static bit_writer write_byte(bit_writer destination, byte value)
 {
 	if (destination.used_bits_in_byte)
 	{
-		*destination.current_byte |= (byte)((value >> destination.used_bits_in_byte) << (8U - destination.used_bits_in_byte));
+		*destination.current_byte |= (byte)((value >> destination.used_bits_in_byte) << destination.used_bits_in_byte);
 		++destination.current_byte;
 		*destination.current_byte = (byte)(value & ((1U << destination.used_bits_in_byte) - 1U));
 	}
@@ -268,6 +274,22 @@ static bit_writer write_byte(bit_writer destination, byte value)
 	{
 		*destination.current_byte = value;
 		++destination.current_byte;
+	}
+	return destination;
+}
+
+MOA_USE_RESULT
+static bit_writer write_bit(bit_writer destination, Bool value)
+{
+	*destination.current_byte |= (byte)(value << destination.used_bits_in_byte);
+	if (destination.used_bits_in_byte == 7)
+	{
+		destination.current_byte += 1;
+		destination.used_bits_in_byte = 0;
+	}
+	else
+	{
+		destination.used_bits_in_byte += 1;
 	}
 	return destination;
 }
@@ -311,6 +333,9 @@ static bit_writer data_type_serialize(
 			}
 			return destination;
 		}
+
+	case DataType_Bool:
+		return write_bit(destination, *(Bool const *)original);
 	}
 	MOA_UNREACHABLE();
 }
@@ -323,9 +348,9 @@ typedef struct StructElement
 StructElement;
 
 MOA_USE_RESULT
-static size_t struct_sizeof(StructElement const *begin, StructElement const *end, void const *instance)
+static bit_size struct_sizeof(StructElement const *begin, StructElement const *end, void const *instance)
 {
-	size_t size = 0;
+	bit_size size = 0;
 	for (; begin != end; ++begin)
 	{
 		size += data_type_sizeof(begin->type, (char const *)instance + begin->offset);
@@ -347,7 +372,7 @@ static bit_writer struct_serialize(
 	return destination;
 }
 
-static void test_serialization(void)
+static void test_serialization_1(void)
 {
 	SerializationStruct1 s;
 	s.a = 0x11223344;
@@ -356,6 +381,7 @@ static void test_serialization(void)
 	s.d = 0xddee;
 	s.e = 0xff;
 	s.f = StringRef_from_c_str("abc");
+	s.g = 1;
 	StructElement const s_type[] =
 	{
 		{DataType_UInt32, offsetof(SerializationStruct1, a)},
@@ -363,10 +389,11 @@ static void test_serialization(void)
 		{DataType_UInt32, offsetof(SerializationStruct1, c)},
 		{DataType_UInt16, offsetof(SerializationStruct1, d)},
 		{DataType_UInt8, offsetof(SerializationStruct1, e)},
-		{DataType_String, offsetof(SerializationStruct1, f)}
+		{DataType_String, offsetof(SerializationStruct1, f)},
+		{DataType_Bool, offsetof(SerializationStruct1, g)}
 	};
-	size_t size = struct_sizeof(s_type, MOA_ARRAY_END(s_type), &s);
-	unsigned char const expected[22] =
+	bit_size size = struct_sizeof(s_type, MOA_ARRAY_END(s_type), &s);
+	unsigned char const expected[] =
 	{
 		0x11, 0x22, 0x33, 0x44,
 		0x55, 0x66, 0x77, 0x88,
@@ -374,12 +401,31 @@ static void test_serialization(void)
 		0xdd, 0xee,
 		0xff,
 		0x00, 0x00, 0x00, 0x03,
-		'a', 'b', 'c'
+		'a', 'b', 'c',
+		0x01
 	};
-	TEST(size == sizeof(expected));
+	TEST(size == sizeof(expected) * 8 - 7);
 	byte serialized[sizeof(expected)] = {0};
 	bit_writer writer = {&serialized[0], 0};
 	writer = struct_serialize(writer, &s, s_type, MOA_ARRAY_END(s_type));
-	TEST(writer.current_byte == MOA_ARRAY_END(serialized));
+	TEST(writer.current_byte == MOA_ARRAY_END(serialized) - 1);
+	TEST(writer.used_bits_in_byte == 1);
+	TEST(memcmp(expected, serialized, sizeof(expected)) == 0);
+}
+
+static void test_serialization_2(void)
+{
+	byte serialized[2] = {0};
+	byte const expected[2] =
+	{
+		0xfe,
+		0x05
+	};
+	bit_writer writer = {&serialized[0], 1};
+	writer = write_byte(writer, 0xff);
+	writer = write_bit(writer, 0);
+	writer = write_bit(writer, 1);
+	TEST(writer.current_byte == &serialized[1]);
+	TEST(writer.used_bits_in_byte == 3);
 	TEST(memcmp(expected, serialized, sizeof(expected)) == 0);
 }
