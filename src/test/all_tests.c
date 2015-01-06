@@ -215,7 +215,8 @@ static StringRef StringRef_from_c_str(char const *str)
 
 typedef struct SerializationStruct1
 {
-	uint32_t a, b, c;
+	uint32_t a, b;
+	uint64_t c;
 	uint16_t d;
 	uint8_t e;
 	StringRef f;
@@ -225,6 +226,7 @@ SerializationStruct1;
 
 typedef enum DataType
 {
+	DataType_UInt64,
 	DataType_UInt32,
 	DataType_UInt16,
 	DataType_UInt8,
@@ -241,6 +243,7 @@ static bit_size data_type_sizeof(DataType type, void const *data)
 {
 	switch (type)
 	{
+	case DataType_UInt64: return 64;
 	case DataType_UInt32: return 32;
 	case DataType_UInt16: return 16;
 	case DataType_UInt8: return 8;
@@ -316,7 +319,20 @@ static bit_writer data_type_serialize(
 			uint32_t const *value = original;
 			destination = write_byte(destination, (byte)(*value >> 24));
 			destination = write_byte(destination, (byte)(*value >> 16));
-			destination = write_byte(destination, (byte)(*value >> 8));
+			destination = write_byte(destination, (byte)(*value >>  8));
+			return write_byte(destination, (byte)*value);
+		}
+
+	case DataType_UInt64:
+		{
+			uint64_t const *value = original;
+			destination = write_byte(destination, (byte)(*value >> 56ULL));
+			destination = write_byte(destination, (byte)(*value >> 48ULL));
+			destination = write_byte(destination, (byte)(*value >> 40ULL));
+			destination = write_byte(destination, (byte)(*value >> 32ULL));
+			destination = write_byte(destination, (byte)(*value >> 24ULL));
+			destination = write_byte(destination, (byte)(*value >> 16ULL));
+			destination = write_byte(destination, (byte)(*value >>  8ULL));
 			return write_byte(destination, (byte)*value);
 		}
 
@@ -377,7 +393,7 @@ static void test_serialization_1(void)
 	SerializationStruct1 s;
 	s.a = 0x11223344;
 	s.b = 0x55667788;
-	s.c = 0x99aabbcc;
+	s.c = 0x99aabbcc12345678;
 	s.d = 0xddee;
 	s.e = 0xff;
 	s.f = StringRef_from_c_str("abc");
@@ -386,7 +402,7 @@ static void test_serialization_1(void)
 	{
 		{DataType_UInt32, offsetof(SerializationStruct1, a)},
 		{DataType_UInt32, offsetof(SerializationStruct1, b)},
-		{DataType_UInt32, offsetof(SerializationStruct1, c)},
+		{DataType_UInt64, offsetof(SerializationStruct1, c)},
 		{DataType_UInt16, offsetof(SerializationStruct1, d)},
 		{DataType_UInt8, offsetof(SerializationStruct1, e)},
 		{DataType_String, offsetof(SerializationStruct1, f)},
@@ -397,7 +413,7 @@ static void test_serialization_1(void)
 	{
 		0x11, 0x22, 0x33, 0x44,
 		0x55, 0x66, 0x77, 0x88,
-		0x99, 0xaa, 0xbb, 0xcc,
+		0x99, 0xaa, 0xbb, 0xcc, 0x12, 0x34, 0x56, 0x78,
 		0xdd, 0xee,
 		0xff,
 		0x00, 0x00, 0x00, 0x03,
