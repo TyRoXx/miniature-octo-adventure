@@ -241,7 +241,7 @@ typedef unsigned char byte;
 typedef uint64_t bit_size;
 
 MOA_USE_RESULT
-static bit_size data_type_sizeof(DataType type, void const *data)
+static bit_size data_type_size_in_bits(DataType type, void const *data)
 {
 	switch (type)
 	{
@@ -383,12 +383,12 @@ typedef struct StructElement
 StructElement;
 
 MOA_USE_RESULT
-static bit_size struct_sizeof(StructElement const *begin, StructElement const *end, void const *instance)
+static bit_size struct_size_in_bits(StructElement const *begin, StructElement const *end, void const *instance)
 {
 	bit_size size = 0;
 	for (; begin != end; ++begin)
 	{
-		size += data_type_sizeof(begin->type, (char const *)instance + begin->offset);
+		size += data_type_size_in_bits(begin->type, (char const *)instance + begin->offset);
 	}
 	return size;
 }
@@ -429,7 +429,7 @@ static void test_serialization_1(void)
 		{DataType_Bool, offsetof(SerializationStruct1, g)},
 		{DataType_UInt32, offsetof(SerializationStruct1, h)}
 	};
-	bit_size size = struct_sizeof(s_type, MOA_ARRAY_END(s_type), &s);
+	bit_size size = struct_size_in_bits(s_type, MOA_ARRAY_END(s_type), &s);
 	unsigned char const expected[] =
 	{
 		0x11, 0x22, 0x33, 0x44,
