@@ -137,7 +137,7 @@ Bool SDLFrontEnd_create(SDLFrontend *front, struct Game *game, SDLSettings setti
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		settings.resolution.x, settings.resolution.y,
-		SDL_WINDOW_SHOWN
+		SDL_WINDOW_SHOWN | (settings.fullscreen ? SDL_WINDOW_FULLSCREEN : 0)
 	);
 	assert(front->window); /*TODO error handling*/
 
