@@ -245,33 +245,57 @@ static size_t data_type_sizeof(DataType type, void const *data)
 	MOA_UNREACHABLE();
 }
 
-static unsigned char *data_type_serialize(
-	unsigned char *destination,
+typedef unsigned char byte;
+typedef uint64_t bit_size;
+
+typedef struct bit_writer
+{
+	byte *current_byte;
+	bit_size used_bits_in_byte;
+}
+bit_writer;
+
+MOA_USE_RESULT
+static bit_writer write_byte(bit_writer destination, byte value)
+{
+	if (destination.used_bits_in_byte)
+	{
+		*destination.current_byte |= (byte)((value >> destination.used_bits_in_byte) << (8U - destination.used_bits_in_byte));
+		++destination.current_byte;
+		*destination.current_byte = (byte)(value & ((1U << destination.used_bits_in_byte) - 1U));
+	}
+	else
+	{
+		*destination.current_byte = value;
+		++destination.current_byte;
+	}
+	return destination;
+}
+
+static bit_writer data_type_serialize(
+	bit_writer destination,
 	void const *original,
 	DataType type)
 {
 	switch (type)
 	{
 	case DataType_UInt8:
-		destination[0] = ((unsigned char const *)original)[0];
-		return destination + 1;
+		return write_byte(destination, *(byte const *)original);
 
 	case DataType_UInt16:
 		{
 			uint16_t const *value = original;
-			destination[0] = (unsigned char)(*value >> 8);
-			destination[1] = (unsigned char)(*value);
-			return destination + 2;
+			destination = write_byte(destination, (byte)(*value >> 8));
+			return write_byte(destination, (byte)*value);
 		}
 
 	case DataType_UInt32:
 		{
 			uint32_t const *value = original;
-			destination[0] = (unsigned char)(*value >> 24);
-			destination[1] = (unsigned char)(*value >> 16);
-			destination[2] = (unsigned char)(*value >> 8);
-			destination[3] = (unsigned char)(*value);
-			return destination + 4;
+			destination = write_byte(destination, (byte)(*value >> 24));
+			destination = write_byte(destination, (byte)(*value >> 16));
+			destination = write_byte(destination, (byte)(*value >> 8));
+			return write_byte(destination, (byte)*value);
 		}
 
 	case DataType_String:
@@ -281,8 +305,11 @@ static unsigned char *data_type_serialize(
 			assert(length <= UINT32_MAX);
 			uint32_t writeable_length = (uint32_t)length;
 			destination = data_type_serialize(destination, &writeable_length, DataType_UInt32);
-			memmove(destination, value->begin, length);
-			return destination + length;
+			for (char const *i = value->begin; i != value->end; ++i)
+			{
+				destination = write_byte(destination, (byte)*i);
+			}
+			return destination;
 		}
 	}
 	MOA_UNREACHABLE();
@@ -295,6 +322,7 @@ typedef struct StructElement
 }
 StructElement;
 
+MOA_USE_RESULT
 static size_t struct_sizeof(StructElement const *begin, StructElement const *end, void const *instance)
 {
 	size_t size = 0;
@@ -305,8 +333,9 @@ static size_t struct_sizeof(StructElement const *begin, StructElement const *end
 	return size;
 }
 
-static void struct_serialize(
-	unsigned char *destination,
+MOA_USE_RESULT
+static bit_writer struct_serialize(
+	bit_writer destination,
 	void const *instance,
 	StructElement const *begin,
 	StructElement const *end)
@@ -315,6 +344,7 @@ static void struct_serialize(
 	{
 		destination = data_type_serialize(destination, (char const *)instance + begin->offset, begin->type);
 	}
+	return destination;
 }
 
 static void test_serialization(void)
@@ -347,7 +377,9 @@ static void test_serialization(void)
 		'a', 'b', 'c'
 	};
 	TEST(size == sizeof(expected));
-	unsigned char serialized[sizeof(expected)] = {0};
-	struct_serialize(serialized, &s, s_type, MOA_ARRAY_END(s_type));
+	byte serialized[sizeof(expected)] = {0};
+	bit_writer writer = {&serialized[0], 0};
+	writer = struct_serialize(writer, &s, s_type, MOA_ARRAY_END(s_type));
+	TEST(writer.current_byte == MOA_ARRAY_END(serialized));
 	TEST(memcmp(expected, serialized, sizeof(expected)) == 0);
 }
