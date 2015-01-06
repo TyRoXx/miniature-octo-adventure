@@ -198,11 +198,25 @@ static void test_gui_padding(void)
 	TEST(Vector2i_equal(&content.base.desired_size, &desired_size));
 }
 
+typedef struct StringRef
+{
+	char const *begin, *end;
+}
+StringRef;
+
+MOA_USE_RESULT
+static StringRef StringRef_from_c_str(char const *str)
+{
+	StringRef ref = {str, str + strlen(str)};
+	return ref;
+}
+
 typedef struct SerializationStruct1
 {
 	uint32_t a, b, c;
 	uint16_t d;
 	uint8_t e;
+	StringRef f;
 }
 SerializationStruct1;
 
@@ -210,17 +224,23 @@ typedef enum DataType
 {
 	DataType_UInt32,
 	DataType_UInt16,
-	DataType_UInt8
+	DataType_UInt8,
+	DataType_String
 }
 DataType;
 
-static size_t data_type_sizeof(DataType type)
+static size_t data_type_sizeof(DataType type, void const *data)
 {
 	switch (type)
 	{
 	case DataType_UInt32: return 4;
 	case DataType_UInt16: return 2;
 	case DataType_UInt8: return 1;
+	case DataType_String:
+		{
+			StringRef const *str = data;
+			return 4 + (size_t)(str->end - str->begin);
+		}
 	}
 	MOA_UNREACHABLE();
 }
@@ -253,6 +273,17 @@ static unsigned char *data_type_serialize(
 			destination[3] = (unsigned char)(*value);
 			return destination + 4;
 		}
+
+	case DataType_String:
+		{
+			StringRef const *value = original;
+			size_t length = (size_t)(value->end - value->begin);
+			assert(length <= UINT32_MAX);
+			uint32_t writeable_length = (uint32_t)length;
+			destination = data_type_serialize(destination, &writeable_length, DataType_UInt32);
+			memmove(destination, value->begin, length);
+			return destination + length;
+		}
 	}
 	MOA_UNREACHABLE();
 }
@@ -264,12 +295,12 @@ typedef struct StructElement
 }
 StructElement;
 
-static size_t struct_sizeof(StructElement const *begin, StructElement const *end)
+static size_t struct_sizeof(StructElement const *begin, StructElement const *end, void const *instance)
 {
 	size_t size = 0;
 	for (; begin != end; ++begin)
 	{
-		size += data_type_sizeof(begin->type);
+		size += data_type_sizeof(begin->type, (char const *)instance + begin->offset);
 	}
 	return size;
 }
@@ -294,6 +325,7 @@ static void test_serialization(void)
 	s.c = 0x99aabbcc;
 	s.d = 0xddee;
 	s.e = 0xff;
+	s.f = StringRef_from_c_str("abc");
 	StructElement const s_type[] =
 	{
 		{DataType_UInt32, offsetof(SerializationStruct1, a)},
@@ -301,18 +333,21 @@ static void test_serialization(void)
 		{DataType_UInt32, offsetof(SerializationStruct1, c)},
 		{DataType_UInt16, offsetof(SerializationStruct1, d)},
 		{DataType_UInt8, offsetof(SerializationStruct1, e)},
+		{DataType_String, offsetof(SerializationStruct1, f)}
 	};
-	size_t size = struct_sizeof(s_type, MOA_ARRAY_END(s_type));
-	TEST(size == 12 + 2 + 1);
-	unsigned char serialized[12 + 2 + 1] = {0};
-	struct_serialize(serialized, &s, s_type, MOA_ARRAY_END(s_type));
-	unsigned char const expected[12 + 2 + 1] =
+	size_t size = struct_sizeof(s_type, MOA_ARRAY_END(s_type), &s);
+	unsigned char const expected[22] =
 	{
 		0x11, 0x22, 0x33, 0x44,
 		0x55, 0x66, 0x77, 0x88,
 		0x99, 0xaa, 0xbb, 0xcc,
 		0xdd, 0xee,
-		0xff
+		0xff,
+		0x00, 0x00, 0x00, 0x03,
+		'a', 'b', 'c'
 	};
+	TEST(size == sizeof(expected));
+	unsigned char serialized[sizeof(expected)] = {0};
+	struct_serialize(serialized, &s, s_type, MOA_ARRAY_END(s_type));
 	TEST(memcmp(expected, serialized, sizeof(expected)) == 0);
 }
