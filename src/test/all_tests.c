@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <arpa/inet.h>
 
 static void test_vector(void);
 static void test_saturating_int(void);
@@ -221,6 +222,7 @@ typedef struct SerializationStruct1
 	uint8_t e;
 	StringRef f;
 	Bool g;
+	uint32_t h;
 }
 SerializationStruct1;
 
@@ -282,6 +284,24 @@ static bit_writer write_byte(bit_writer destination, byte value)
 }
 
 MOA_USE_RESULT
+static bit_writer write_bytes(bit_writer destination, byte const *begin, byte const *end)
+{
+	if (destination.used_bits_in_byte)
+	{
+		for (; begin != end; ++begin)
+		{
+			destination = write_byte(destination, *begin);
+		}
+	}
+	else
+	{
+		memmove(destination.current_byte, begin, (size_t)(end - begin));
+		destination.current_byte += (end - begin);
+	}
+	return destination;
+}
+
+MOA_USE_RESULT
 static bit_writer write_bit(bit_writer destination, Bool value)
 {
 	*destination.current_byte |= (byte)(value << destination.used_bits_in_byte);
@@ -317,10 +337,9 @@ static bit_writer data_type_serialize(
 	case DataType_UInt32:
 		{
 			uint32_t const *value = original;
-			destination = write_byte(destination, (byte)(*value >> 24));
-			destination = write_byte(destination, (byte)(*value >> 16));
-			destination = write_byte(destination, (byte)(*value >>  8));
-			return write_byte(destination, (byte)*value);
+			uint32_t value_big_endian = htonl(*value);
+			byte const *begin = (byte const *)&value_big_endian;
+			return write_bytes(destination, begin, begin + sizeof(value_big_endian));
 		}
 
 	case DataType_UInt64:
@@ -398,6 +417,7 @@ static void test_serialization_1(void)
 	s.e = 0xff;
 	s.f = StringRef_from_c_str("abc");
 	s.g = 1;
+	s.h = 0x12345678;
 	StructElement const s_type[] =
 	{
 		{DataType_UInt32, offsetof(SerializationStruct1, a)},
@@ -406,7 +426,8 @@ static void test_serialization_1(void)
 		{DataType_UInt16, offsetof(SerializationStruct1, d)},
 		{DataType_UInt8, offsetof(SerializationStruct1, e)},
 		{DataType_String, offsetof(SerializationStruct1, f)},
-		{DataType_Bool, offsetof(SerializationStruct1, g)}
+		{DataType_Bool, offsetof(SerializationStruct1, g)},
+		{DataType_UInt32, offsetof(SerializationStruct1, h)}
 	};
 	bit_size size = struct_sizeof(s_type, MOA_ARRAY_END(s_type), &s);
 	unsigned char const expected[] =
@@ -418,7 +439,7 @@ static void test_serialization_1(void)
 		0xff,
 		0x00, 0x00, 0x00, 0x03,
 		'a', 'b', 'c',
-		0x01
+		0x01 | 0x12, 0x34, 0x56, 0x78, 0x00
 	};
 	TEST(size == sizeof(expected) * 8 - 7);
 	byte serialized[sizeof(expected)] = {0};
