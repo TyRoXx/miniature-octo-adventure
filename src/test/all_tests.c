@@ -214,14 +214,14 @@ static void test_serialization_1(void)
 	s.h = 0x12345678;
 	StructElement const s_type[] =
 	{
-		{DataType_UInt32, offsetof(SerializationStruct1, a)},
-		{DataType_UInt32, offsetof(SerializationStruct1, b)},
-		{DataType_UInt64, offsetof(SerializationStruct1, c)},
-		{DataType_UInt16, offsetof(SerializationStruct1, d)},
-		{DataType_UInt8, offsetof(SerializationStruct1, e)},
-		{DataType_String, offsetof(SerializationStruct1, f)},
-		{DataType_Bool, offsetof(SerializationStruct1, g)},
-		{DataType_UInt32, offsetof(SerializationStruct1, h)}
+		{&uint32, offsetof(SerializationStruct1, a)},
+		{&uint32, offsetof(SerializationStruct1, b)},
+		{&uint64, offsetof(SerializationStruct1, c)},
+		{&uint16, offsetof(SerializationStruct1, d)},
+		{&uint8, offsetof(SerializationStruct1, e)},
+		{&string_type, offsetof(SerializationStruct1, f)},
+		{&bool_type, offsetof(SerializationStruct1, g)},
+		{&uint32, offsetof(SerializationStruct1, h)}
 	};
 	bit_size size = struct_size_in_bits(StructDefinition_new(s_type, MOA_ARRAY_END(s_type)), &s);
 	unsigned char const expected[] =

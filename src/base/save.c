@@ -32,10 +32,10 @@ static StructDefinition mover_v1_definition(void)
 {
 	static StructElement const elements[] =
 	{
-		{DataType_UInt32, offsetof(Mover_v1, x)},
-		{DataType_UInt32, offsetof(Mover_v1, y)},
-		{DataType_UInt64, offsetof(Mover_v1, appearance)},
-		{DataType_UInt8, offsetof(Mover_v1, direction)}
+		{&uint32, offsetof(Mover_v1, x)},
+		{&uint32, offsetof(Mover_v1, y)},
+		{&uint64, offsetof(Mover_v1, appearance)},
+		{&uint8, offsetof(Mover_v1, direction)}
 	};
 	StructDefinition result = {&elements[0], MOA_ARRAY_END(elements)};
 	return result;
@@ -95,7 +95,7 @@ Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *
 	{
 		byte npc_count_buffer[sizeof(npc_count)];
 		bit_writer writer = {&npc_count_buffer[0], 0};
-		writer = data_type_serialize(writer, &npc_count, DataType_UInt64);
+		writer = data_type_serialize(writer, &npc_count, uint64);
 		ssize_t const written = write(file, npc_count_buffer, sizeof(npc_count_buffer));
 		if ((written < 0) || ((size_t)written != sizeof(npc_count_buffer)))
 		{
