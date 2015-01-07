@@ -83,5 +83,11 @@ Bool Vector_append_binary_file(Vector *v, Allocator v_allocator, FILE *in);
 MOA_USE_RESULT
 Bool Vector_printf(Vector *v, Allocator allocator, char const *format, ...);
 
+MOA_USE_RESULT
+static inline void *Vector_at(Vector const *v, size_t index, size_t element_size)
+{
+	return Vector_data(v) + (index * element_size);
+}
+
 
 #endif

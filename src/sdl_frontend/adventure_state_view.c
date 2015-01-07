@@ -5,6 +5,7 @@
 #include "gui/button.h"
 #include "gui/labeled_button.h"
 #include "base/adventure_state.h"
+#include "base/save.h"
 #include "base/camera.h"
 #include "base/algorithm.h"
 #include "base/avatar_controller.h"
@@ -18,7 +19,7 @@ typedef struct AdventureGui
 {
 	Widget base;
 	Panel root;
-	Widget *root_children[4];
+	Widget *root_children[5];
 	Label frame_number;
 	Vector frame_number_text;
 	Label active_allocations;
@@ -26,6 +27,7 @@ typedef struct AdventureGui
 	Label total_allocations;
 	Vector total_allocations_text;
 	LabeledButton exit;
+	LabeledButton save;
 	Deallocator deallocator;
 }
 AdventureGui;
@@ -68,7 +70,9 @@ static void stop_running(void *user)
 	*is_running = False;
 }
 
-static void create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution, Bool *game_is_running)
+static void create_gui(
+	AdventureGui *gui, MemoryManager memory, Vector2i screen_resolution, Bool *game_is_running,
+	void (*save_game)(void *), void *save_game_argument)
 {
 	TextStyle const styleA = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(0, 255, 0, 255));
 	TextStyle const styleB = make_text_style(TextAlignment_Left, TextAlignment_Left, make_color(255, 0, 0, 255));
@@ -94,12 +98,15 @@ static void create_gui(AdventureGui *gui, MemoryManager memory, Vector2i screen_
 
 	gui->exit = LabeledButton_create("Exit", styleA, Vector2i_new(300, 20), make_color(255, 0, 0, 255), stop_running, game_is_running);
 
+	gui->save = LabeledButton_create("Save", styleB, Vector2i_new(300, 20), make_color(255, 255, 255, 128), save_game, save_game_argument);
+
 	Widget **first_child = &gui->root_children[0];
 	Widget **end_of_children = MOA_ARRAY_END(gui->root_children);
 	gui->root_children[0] = &gui->active_allocations.base;
 	gui->root_children[1] = &gui->total_allocations.base;
 	gui->root_children[2] = &gui->frame_number.base;
 	gui->root_children[3] = &gui->exit.base;
+	gui->root_children[4] = &gui->save.base;
 
 	gui->root.children = WidgetPtrRange_new(first_child, end_of_children);
 }
@@ -331,6 +338,12 @@ static void draw_tile_layers(
 	}
 }
 
+static void save_game(void *user)
+{
+	AdventureState const *state = user;
+	Bool success = save_game_to_file("save.bin", &state->avatar, &state->fauna, state->memory);
+	(void)success;
+}
 
 static GameStateView *AdventureStateView_create(GameState *state, struct SDLFrontend *front)
 {
@@ -347,7 +360,7 @@ static GameStateView *AdventureStateView_create(GameState *state, struct SDLFron
 
 	Camera_init(&adv_view->camera);
 	AvatarController_init(&adv_view->avatar_controller, &adv_state->avatar);
-	create_gui(&adv_view->gui, adv_state->memory, Vector2i_new(front->screen->w, front->screen->h), &front->is_running);
+	create_gui(&adv_view->gui, adv_state->memory, Vector2i_new(front->screen->w, front->screen->h), &front->is_running, save_game, adv_state);
 	Widget_pack(&adv_view->gui.base);
 
 	adv_view->current_frame = 0;
