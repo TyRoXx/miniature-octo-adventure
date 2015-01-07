@@ -204,13 +204,26 @@ typedef struct StructElement
 }
 StructElement;
 
+typedef struct StructDefinition
+{
+	StructElement const *begin, *end;
+}
+StructDefinition;
+
 MOA_USE_RESULT
-static inline bit_size struct_size_in_bits(StructElement const *begin, StructElement const *end, void const *instance)
+static inline StructDefinition StructDefinition_new(StructElement const *begin, StructElement const *end)
+{
+	StructDefinition result = {begin, end};
+	return result;
+}
+
+MOA_USE_RESULT
+static inline bit_size struct_size_in_bits(StructDefinition type, void const *instance)
 {
 	bit_size size = 0;
-	for (; begin != end; ++begin)
+	for (; type.begin != type.end; ++type.begin)
 	{
-		size += data_type_size_in_bits(begin->type, (char const *)instance + begin->offset);
+		size += data_type_size_in_bits(type.begin->type, (char const *)instance + type.begin->offset);
 	}
 	return size;
 }
@@ -219,12 +232,11 @@ MOA_USE_RESULT
 static inline bit_writer struct_serialize(
 	bit_writer destination,
 	void const *instance,
-	StructElement const *begin,
-	StructElement const *end)
+	StructDefinition type)
 {
-	for (; begin != end; ++begin)
+	for (; type.begin != type.end; ++type.begin)
 	{
-		destination = data_type_serialize(destination, (char const *)instance + begin->offset, begin->type);
+		destination = data_type_serialize(destination, (char const *)instance + type.begin->offset, type.begin->type);
 	}
 	return destination;
 }
@@ -353,12 +365,11 @@ MOA_USE_RESULT
 static inline bit_reader struct_deserialize(
 	bit_reader source,
 	void *instance,
-	StructElement const *begin,
-	StructElement const *end)
+	StructDefinition type)
 {
-	for (; begin != end; ++begin)
+	for (; type.begin != type.end; ++type.begin)
 	{
-		source = data_type_deserialize(source, (char *)instance + begin->offset, begin->type);
+		source = data_type_deserialize(source, (char *)instance + type.begin->offset, type.begin->type);
 	}
 	return source;
 }

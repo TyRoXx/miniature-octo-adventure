@@ -223,7 +223,7 @@ static void test_serialization_1(void)
 		{DataType_Bool, offsetof(SerializationStruct1, g)},
 		{DataType_UInt32, offsetof(SerializationStruct1, h)}
 	};
-	bit_size size = struct_size_in_bits(s_type, MOA_ARRAY_END(s_type), &s);
+	bit_size size = struct_size_in_bits(StructDefinition_new(s_type, MOA_ARRAY_END(s_type)), &s);
 	unsigned char const expected[] =
 	{
 		0x11, 0x22, 0x33, 0x44,
@@ -238,14 +238,14 @@ static void test_serialization_1(void)
 	TEST(size == sizeof(expected) * 8 - 7);
 	byte serialized[sizeof(expected)] = {0};
 	bit_writer writer = {&serialized[0], 0};
-	writer = struct_serialize(writer, &s, s_type, MOA_ARRAY_END(s_type));
+	writer = struct_serialize(writer, &s, StructDefinition_new(s_type, MOA_ARRAY_END(s_type)));
 	TEST(writer.current_byte == MOA_ARRAY_END(serialized) - 1);
 	TEST(writer.used_bits_in_byte == 1);
 	TEST(memcmp(expected, serialized, sizeof(expected)) == 0);
 
 	SerializationStruct1 deserialized = {0};
 	bit_reader reader = {&expected[0], 0};
-	reader = struct_deserialize(reader, &deserialized, s_type, MOA_ARRAY_END(s_type));
+	reader = struct_deserialize(reader, &deserialized, StructDefinition_new(s_type, MOA_ARRAY_END(s_type)));
 	TEST(reader.current_byte == MOA_ARRAY_END(expected) - 1);
 	TEST(reader.used_bits_in_byte == 1);
 	TEST(s.a == deserialized.a);

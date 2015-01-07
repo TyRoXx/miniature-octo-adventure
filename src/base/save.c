@@ -27,12 +27,6 @@ static Mover_v1 describe_mover_v1(Mover const *original)
 	return description;
 }
 
-typedef struct StructDefinition
-{
-	StructElement const *begin, *end;
-}
-StructDefinition;
-
 MOA_USE_RESULT
 static StructDefinition mover_v1_definition(void)
 {
@@ -56,14 +50,14 @@ static byte_size round_bits_up_to_bytes(bit_size bits)
 MOA_USE_RESULT
 static Bool write_struct_buffered(int file, Vector *initialized_buffer, void const *instance, StructDefinition structure, Allocator allocator)
 {
-	bit_size const instance_bit_size = struct_size_in_bits(structure.begin, structure.end, instance);
+	bit_size const instance_bit_size = struct_size_in_bits(structure, instance);
 	byte_size const instance_size = round_bits_up_to_bytes(instance_bit_size);
 	if (!Vector_resize(initialized_buffer, instance_size, allocator))
 	{
 		return False;
 	}
 	bit_writer writer = {(byte *)Vector_data(initialized_buffer), 0};
-	writer = struct_serialize(writer, instance, structure.begin, structure.end);
+	writer = struct_serialize(writer, instance, structure);
 	ssize_t const written = write(file, Vector_data(initialized_buffer), Vector_size(initialized_buffer));
 	return (written == (ssize_t)Vector_size(initialized_buffer));
 }
