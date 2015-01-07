@@ -73,6 +73,8 @@ fail_0:
 
 fail_1:
 		Game_free(&game);
+
+		assert(game.memory_statistics.active_allocations == 0);
 	}
 
 	return result;
