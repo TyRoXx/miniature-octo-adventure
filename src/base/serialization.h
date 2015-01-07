@@ -169,16 +169,17 @@ static bit_reader read_bit(bit_reader source, Bool *to)
 
 typedef struct DataType
 {
-	MOA_USE_RESULT bit_size (*size_in_bits)(void const *);
-	MOA_USE_RESULT bit_writer (*write)(bit_writer, void const *);
-	MOA_USE_RESULT bit_reader (*read)(bit_reader, void *);
+	MOA_USE_RESULT bit_size (*size_in_bits)(void const *, void const *);
+	MOA_USE_RESULT bit_writer (*write)(bit_writer, void const *, void const *);
+	MOA_USE_RESULT bit_reader (*read)(bit_reader, void *, void const *);
+	void const *state;
 }
 DataType;
 
 MOA_USE_RESULT
 static bit_size data_type_size_in_bits(DataType type, void const *instance)
 {
-	return type.size_in_bits(instance);
+	return type.size_in_bits(instance, type.state);
 }
 
 MOA_USE_RESULT
@@ -187,7 +188,7 @@ static bit_writer data_type_serialize(
 	void const *instance,
 	DataType type)
 {
-	return type.write(destination, instance);
+	return type.write(destination, instance, type.state);
 }
 
 MOA_USE_RESULT
@@ -196,40 +197,45 @@ static bit_reader data_type_deserialize(
 	void *instance,
 	DataType type)
 {
-	return type.read(source, instance);
+	return type.read(source, instance, type.state);
 }
 
 MOA_USE_RESULT
-static bit_size uint8_size_in_bits(void const *instance)
+static bit_size uint8_size_in_bits(void const *instance, void const *state)
 {
+	(void)state;
 	(void)instance;
 	return 8;
 }
 
 MOA_USE_RESULT
-static bit_writer uint8_write(bit_writer destination, void const *instance)
+static bit_writer uint8_write(bit_writer destination, void const *instance, void const *state)
 {
+	(void)state;
 	return write_byte(destination, *(byte const *)instance);
 }
 
 MOA_USE_RESULT
-static bit_reader uint8_read(bit_reader source, void *instance)
+static bit_reader uint8_read(bit_reader source, void *instance, void const *state)
 {
+	(void)state;
 	return read_byte(source, instance);
 }
 
-static DataType const uint8 = {uint8_size_in_bits, uint8_write, uint8_read};
+static DataType const uint8 = {uint8_size_in_bits, uint8_write, uint8_read, NULL};
 
 MOA_USE_RESULT
-static bit_size uint16_size_in_bits(void const *instance)
+static bit_size uint16_size_in_bits(void const *instance, void const *state)
 {
+	(void)state;
 	(void)instance;
 	return 16;
 }
 
 MOA_USE_RESULT
-static bit_writer uint16_write(bit_writer destination, void const *instance)
+static bit_writer uint16_write(bit_writer destination, void const *instance, void const *state)
 {
+	(void)state;
 	uint16_t const *value = instance;
 	uint16_t value_big_endian = htons(*value);
 	byte const *begin = (byte const *)&value_big_endian;
@@ -237,25 +243,28 @@ static bit_writer uint16_write(bit_writer destination, void const *instance)
 }
 
 MOA_USE_RESULT
-static bit_reader uint16_read(bit_reader source, void *instance)
+static bit_reader uint16_read(bit_reader source, void *instance, void const *state)
 {
+	(void)state;
 	source = read_bytes(source, instance, (byte *)instance + sizeof(uint16_t));
 	*(uint16_t *)instance = ntohs(*(uint16_t const *)instance);
 	return source;
 }
 
-static DataType const uint16 = {uint16_size_in_bits, uint16_write, uint16_read};
+static DataType const uint16 = {uint16_size_in_bits, uint16_write, uint16_read, NULL};
 
 MOA_USE_RESULT
-static bit_size uint32_size_in_bits(void const *instance)
+static bit_size uint32_size_in_bits(void const *instance, void const *state)
 {
+	(void)state;
 	(void)instance;
 	return 32;
 }
 
 MOA_USE_RESULT
-static bit_writer uint32_write(bit_writer destination, void const *instance)
+static bit_writer uint32_write(bit_writer destination, void const *instance, void const *state)
 {
+	(void)state;
 	uint32_t const *value = instance;
 	uint32_t value_big_endian = htonl(*value);
 	byte const *begin = (byte const *)&value_big_endian;
@@ -263,25 +272,28 @@ static bit_writer uint32_write(bit_writer destination, void const *instance)
 }
 
 MOA_USE_RESULT
-static bit_reader uint32_read(bit_reader source, void *instance)
+static bit_reader uint32_read(bit_reader source, void *instance, void const *state)
 {
+	(void)state;
 	source = read_bytes(source, instance, (byte *)instance + sizeof(uint32_t));
 	*(uint32_t *)instance = ntohl(*(uint32_t const *)instance);
 	return source;
 }
 
-static DataType const uint32 = {uint32_size_in_bits, uint32_write, uint32_read};
+static DataType const uint32 = {uint32_size_in_bits, uint32_write, uint32_read, NULL};
 
 MOA_USE_RESULT
-static bit_size uint64_size_in_bits(void const *instance)
+static bit_size uint64_size_in_bits(void const *instance, void const *state)
 {
+	(void)state;
 	(void)instance;
 	return 64;
 }
 
 MOA_USE_RESULT
-static bit_writer uint64_write(bit_writer destination, void const *instance)
+static bit_writer uint64_write(bit_writer destination, void const *instance, void const *state)
 {
+	(void)state;
 	uint64_t const *value = instance;
 	destination = write_byte(destination, (byte)(*value >> 56ULL));
 	destination = write_byte(destination, (byte)(*value >> 48ULL));
@@ -294,8 +306,9 @@ static bit_writer uint64_write(bit_writer destination, void const *instance)
 }
 
 MOA_USE_RESULT
-static bit_reader uint64_read(bit_reader source, void *instance)
+static bit_reader uint64_read(bit_reader source, void *instance, void const *state)
 {
+	(void)state;
 	byte buffer[sizeof(uint64_t)];
 	source = read_bytes(source, buffer, MOA_ARRAY_END(buffer));
 	*(uint64_t *)instance =
@@ -310,39 +323,44 @@ static bit_reader uint64_read(bit_reader source, void *instance)
 	return source;
 }
 
-static DataType const uint64 = {uint64_size_in_bits, uint64_write, uint64_read};
+static DataType const uint64 = {uint64_size_in_bits, uint64_write, uint64_read, NULL};
 
 MOA_USE_RESULT
-static bit_size bool_size_in_bits(void const *instance)
+static bit_size bool_size_in_bits(void const *instance, void const *state)
 {
+	(void)state;
 	(void)instance;
 	return 1;
 }
 
 MOA_USE_RESULT
-static bit_writer bool_write(bit_writer destination, void const *instance)
+static bit_writer bool_write(bit_writer destination, void const *instance, void const *state)
 {
+	(void)state;
 	return write_bit(destination, *(Bool const *)instance);
 }
 
 MOA_USE_RESULT
-static bit_reader bool_read(bit_reader source, void *instance)
+static bit_reader bool_read(bit_reader source, void *instance, void const *state)
 {
+	(void)state;
 	return read_bit(source, instance);
 }
 
-static DataType const bool_type = {bool_size_in_bits, bool_write, bool_read};
+static DataType const bool_type = {bool_size_in_bits, bool_write, bool_read, NULL};
 
 MOA_USE_RESULT
-static bit_size string_size_in_bits(void const *instance)
+static bit_size string_size_in_bits(void const *instance, void const *state)
 {
+	(void)state;
 	StringRef const * const str = instance;
 	return 64 + ((byte_size)(str->end - str->begin)) * 8;
 }
 
 MOA_USE_RESULT
-static bit_writer string_write(bit_writer destination, void const *instance)
+static bit_writer string_write(bit_writer destination, void const *instance, void const *state)
 {
+	(void)state;
 	StringRef const *value = instance;
 	size_t length = (size_t)(value->end - value->begin);
 	assert(length <= UINT64_MAX);
@@ -356,8 +374,9 @@ static bit_writer string_write(bit_writer destination, void const *instance)
 }
 
 MOA_USE_RESULT
-static bit_reader string_read(bit_reader source, void *instance)
+static bit_reader string_read(bit_reader source, void *instance, void const *state)
 {
+	(void)state;
 	uint64_t length;
 	source = data_type_deserialize(source, &length, uint64);
 	StringRef *destination = instance;
@@ -368,7 +387,7 @@ static bit_reader string_read(bit_reader source, void *instance)
 	return source;
 }
 
-static DataType const string_type = {string_size_in_bits, string_write, string_read};
+static DataType const string_type = {string_size_in_bits, string_write, string_read, NULL};
 
 typedef struct StructElement
 {
@@ -388,6 +407,17 @@ static inline StructDefinition StructDefinition_new(StructElement const *begin, 
 {
 	StructDefinition result = {begin, end};
 	return result;
+}
+
+MOA_USE_RESULT
+static inline StructDefinition StructDefinition_from_nullterminated_elements(StructElement const *elements)
+{
+	StructElement const *end = elements;
+	while (end->type)
+	{
+		++end;
+	}
+	return StructDefinition_new(elements, end);
 }
 
 #define MOA_STRUCT_DEFINITION_FROM_ARRAY(array) (StructDefinition_new((array) + 0, MOA_ARRAY_END((array))))
@@ -427,6 +457,33 @@ static inline bit_reader struct_deserialize(
 		source = data_type_deserialize(source, (char *)instance + type.begin->offset, *type.begin->type);
 	}
 	return source;
+}
+
+static bit_size struct_size_in_bits2(void const *instance, void const *state)
+{
+	StructElement const *null_terminated_elements = state;
+	return struct_size_in_bits(StructDefinition_from_nullterminated_elements(null_terminated_elements), instance);
+}
+
+MOA_USE_RESULT
+static bit_writer struct_write(bit_writer destination, void const *instance, void const *state)
+{
+	StructElement const *null_terminated_elements = state;
+	return struct_serialize(destination, instance, StructDefinition_from_nullterminated_elements(null_terminated_elements));
+}
+
+MOA_USE_RESULT
+static bit_reader struct_read(bit_reader source, void *instance, void const *state)
+{
+	StructElement const *null_terminated_elements = state;
+	return struct_deserialize(source, instance, StructDefinition_from_nullterminated_elements(null_terminated_elements));
+}
+
+MOA_USE_RESULT
+static inline DataType make_struct_data_type(StructElement const *null_terminated_elements)
+{
+	DataType type = {struct_size_in_bits2, struct_write, struct_read, null_terminated_elements};
+	return type;
 }
 
 #endif

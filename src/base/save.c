@@ -35,6 +35,43 @@ static StructElement const mover_v1_definition[] =
 	{&uint8, offsetof(Mover_v1, direction)}
 };
 
+typedef struct Vector2i_v1
+{
+	uint32_t x;
+	uint32_t y;
+}
+Vector2i_v1;
+
+static StructElement const vector2i_v1_elements[] =
+{
+	{&uint32, offsetof(Vector2i_v1, x)},
+	{&uint32, offsetof(Vector2i_v1, y)},
+	{NULL}
+};
+
+typedef struct NPCObjective_v1
+{
+	uint8_t objective;
+	union
+	{
+		uint64_t wait_until;
+		Vector2i_v1 move_destination;
+	}
+	state;
+}
+NPCObjective_v1;
+
+typedef struct VariantElement
+{
+	DataType const *type;
+}
+VariantElement;
+
+static VariantElement const npc_objective_v1_elements[] =
+{
+	{&uint64}
+};
+
 MOA_USE_RESULT
 static byte_size round_bits_up_to_bytes(bit_size bits)
 {
