@@ -53,6 +53,21 @@ static byte_size round_bits_up_to_bytes(bit_size bits)
 	return (bits + 7) / 8;
 }
 
+MOA_USE_RESULT
+static Bool write_struct_buffered(int file, Vector *initialized_buffer, void const *instance, StructDefinition structure, Allocator allocator)
+{
+	bit_size const instance_bit_size = struct_size_in_bits(structure.begin, structure.end, instance);
+	byte_size const instance_size = round_bits_up_to_bytes(instance_bit_size);
+	if (!Vector_resize(initialized_buffer, instance_size, allocator))
+	{
+		return False;
+	}
+	bit_writer writer = {(byte *)Vector_data(initialized_buffer), 0};
+	writer = struct_serialize(writer, instance, structure.begin, structure.end);
+	ssize_t const written = write(file, Vector_data(initialized_buffer), Vector_size(initialized_buffer));
+	return (written == (ssize_t)Vector_size(initialized_buffer));
+}
+
 Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *fauna, MemoryManager memory)
 {
 	int file = open(file_name, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
@@ -74,16 +89,8 @@ Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *
 	StructDefinition const mover_definition = mover_v1_definition();
 	Bool result = True;
 	{
-		if (!Vector_resize(&write_buffer, round_bits_up_to_bytes(struct_size_in_bits(mover_definition.begin, mover_definition.end, avatar)), memory.allocator))
-		{
-			result = False;
-			goto leave;
-		}
-		bit_writer writer = {(byte *)Vector_data(&write_buffer), 0};
 		Mover_v1 const avatar_description = describe_mover_v1(avatar);
-		writer = struct_serialize(writer, &avatar_description, mover_definition.begin, mover_definition.end);
-		ssize_t const written = write(file, Vector_data(&write_buffer), Vector_size(&write_buffer));
-		if ((written < 0) || ((size_t)written != Vector_size(&write_buffer)))
+		if (!write_struct_buffered(file, &write_buffer, &avatar_description, mover_definition, memory.allocator))
 		{
 			result = False;
 			goto leave;
@@ -107,16 +114,8 @@ Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *
 		for (size_t i = 0; i < npc_count; ++i)
 		{
 			NPC const * const npc = Vector_at(&fauna->npcs, i, sizeof(NPC));
-			if (!Vector_resize(&write_buffer, round_bits_up_to_bytes(struct_size_in_bits(mover_definition.begin, mover_definition.end, &npc->mover)), memory.allocator))
-			{
-				result = False;
-				goto leave;
-			}
-			bit_writer writer = {(byte *)Vector_data(&write_buffer), 0};
 			Mover_v1 const mover_description = describe_mover_v1(&npc->mover);
-			writer = struct_serialize(writer, &mover_description, mover_definition.begin, mover_definition.end);
-			ssize_t const written = write(file, Vector_data(&write_buffer), Vector_size(&write_buffer));
-			if ((written < 0) || ((size_t)written != Vector_size(&write_buffer)))
+			if (!write_struct_buffered(file, &write_buffer, &mover_description, mover_definition, memory.allocator))
 			{
 				result = False;
 				goto leave;
