@@ -390,6 +390,8 @@ static inline StructDefinition StructDefinition_new(StructElement const *begin, 
 	return result;
 }
 
+#define MOA_STRUCT_DEFINITION_FROM_ARRAY(array) (StructDefinition_new((array) + 0, MOA_ARRAY_END((array))))
+
 MOA_USE_RESULT
 static inline bit_size struct_size_in_bits(StructDefinition type, void const *instance)
 {

@@ -27,19 +27,13 @@ static Mover_v1 describe_mover_v1(Mover const *original)
 	return description;
 }
 
-MOA_USE_RESULT
-static StructDefinition mover_v1_definition(void)
+static StructElement const mover_v1_definition[] =
 {
-	static StructElement const elements[] =
-	{
-		{&uint32, offsetof(Mover_v1, x)},
-		{&uint32, offsetof(Mover_v1, y)},
-		{&uint64, offsetof(Mover_v1, appearance)},
-		{&uint8, offsetof(Mover_v1, direction)}
-	};
-	StructDefinition result = {&elements[0], MOA_ARRAY_END(elements)};
-	return result;
-}
+	{&uint32, offsetof(Mover_v1, x)},
+	{&uint32, offsetof(Mover_v1, y)},
+	{&uint64, offsetof(Mover_v1, appearance)},
+	{&uint8, offsetof(Mover_v1, direction)}
+};
 
 MOA_USE_RESULT
 static byte_size round_bits_up_to_bytes(bit_size bits)
@@ -80,11 +74,10 @@ Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *
 	Vector write_buffer;
 	Vector_init(&write_buffer);
 
-	StructDefinition const mover_definition = mover_v1_definition();
 	Bool result = True;
 	{
 		Mover_v1 const avatar_description = describe_mover_v1(avatar);
-		if (!write_struct_buffered(file, &write_buffer, &avatar_description, mover_definition, memory.allocator))
+		if (!write_struct_buffered(file, &write_buffer, &avatar_description, MOA_STRUCT_DEFINITION_FROM_ARRAY(mover_v1_definition), memory.allocator))
 		{
 			result = False;
 			goto leave;
@@ -109,7 +102,7 @@ Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *
 		{
 			NPC const * const npc = Vector_at(&fauna->npcs, i, sizeof(NPC));
 			Mover_v1 const mover_description = describe_mover_v1(&npc->mover);
-			if (!write_struct_buffered(file, &write_buffer, &mover_description, mover_definition, memory.allocator))
+			if (!write_struct_buffered(file, &write_buffer, &mover_description, MOA_STRUCT_DEFINITION_FROM_ARRAY(mover_v1_definition), memory.allocator))
 			{
 				result = False;
 				goto leave;
