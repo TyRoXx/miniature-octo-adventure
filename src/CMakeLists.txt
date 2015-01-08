@@ -23,6 +23,8 @@ else()
 		include_directories(${SDL_INCLUDE_DIR})
 		find_package(SDL_ttf REQUIRED)
 		include_directories(${SDLTTF_INCLUDE_DIR})
+		find_package(SDL_image REQUIRED)
+		include_directories(${SDLIMAGE_INCLUDE_DIR})
 	endif()
 endif()
 
