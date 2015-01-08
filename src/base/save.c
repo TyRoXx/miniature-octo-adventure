@@ -46,7 +46,7 @@ static StructElement const vector2i_v1_elements[] =
 {
 	{&uint32, offsetof(Vector2i_v1, x)},
 	{&uint32, offsetof(Vector2i_v1, y)},
-	{NULL}
+	{NULL, 0}
 };
 
 typedef struct NPCObjective_v1
@@ -83,7 +83,11 @@ static Bool write_struct_buffered(int file, Vector *initialized_buffer, void con
 {
 	bit_size const instance_bit_size = struct_size_in_bits(structure, instance);
 	byte_size const instance_size = round_bits_up_to_bytes(instance_bit_size);
-	if (!Vector_resize(initialized_buffer, instance_size, allocator))
+	if (instance_size > SIZE_MAX)
+	{
+		return False;
+	}
+	if (!Vector_resize(initialized_buffer, (size_t)instance_size, allocator))
 	{
 		return False;
 	}

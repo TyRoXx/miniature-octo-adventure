@@ -363,8 +363,7 @@ static bit_writer string_write(bit_writer destination, void const *instance, voi
 	(void)state;
 	StringRef const *value = instance;
 	size_t length = (size_t)(value->end - value->begin);
-	assert(length <= UINT64_MAX);
-	uint64_t writeable_length = (uint64_t)length;
+	uint64_t writeable_length = length;
 	destination = data_type_serialize(destination, &writeable_length, uint64);
 	for (char const *i = value->begin; i != value->end; ++i)
 	{

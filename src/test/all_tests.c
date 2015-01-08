@@ -243,7 +243,7 @@ static void test_serialization_1(void)
 	TEST(writer.used_bits_in_byte == 1);
 	TEST(memcmp(expected, serialized, sizeof(expected)) == 0);
 
-	SerializationStruct1 deserialized = {0};
+	SerializationStruct1 deserialized;
 	bit_reader reader = {&expected[0], 0};
 	reader = struct_deserialize(reader, &deserialized, StructDefinition_new(s_type, MOA_ARRAY_END(s_type)));
 	TEST(reader.current_byte == MOA_ARRAY_END(expected) - 1);
