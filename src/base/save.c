@@ -1,9 +1,11 @@
 #include "save.h"
 #include "base/serialization.h"
+#ifndef _WIN32
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#endif
 
 typedef struct Mover_v1
 {

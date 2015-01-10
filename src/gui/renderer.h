@@ -12,7 +12,7 @@ typedef struct Color
 Color;
 
 MOA_USE_RESULT
-static inline Color make_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+MOA_INLINE Color make_color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
 	Color result;
 	result.r = r;
@@ -39,7 +39,7 @@ typedef struct TextStyle
 TextStyle;
 
 MOA_USE_RESULT
-static inline TextStyle make_text_style(TextAlignment horizontal, TextAlignment vertical, Color color)
+MOA_INLINE TextStyle make_text_style(TextAlignment horizontal, TextAlignment vertical, Color color)
 {
 	TextStyle style;
 	style.horizontal = horizontal;
@@ -58,16 +58,16 @@ Renderer;
 
 typedef void const *ImageHandle;
 
-void Renderer_rect_outline(Renderer *r, Rectangle dimensions, Color color);
-void Renderer_rect_solid(Renderer *r, Rectangle dimensions, Color color);
-void Renderer_text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, TextStyle const *style);
+void Renderer_rect_outline(Renderer *r, moa_Rectangle dimensions, Color color);
+void Renderer_rect_solid(Renderer *r, moa_Rectangle dimensions, Color color);
+void Renderer_text(Renderer *r, moa_Rectangle dimensions, Vector2i offset, char const *text, TextStyle const *style);
 void Renderer_image(Renderer *r, ImageHandle image, Vector2i source, Vector2i destination, Vector2i size);
 
 typedef struct RendererClass
 {
-	void (*rect_outline)(Renderer *, Rectangle, Color);
-	void (*rect_solid)(Renderer *, Rectangle, Color);
-	void (*text)(Renderer *, Rectangle, Vector2i, char const *, TextStyle const *);
+	void (*rect_outline)(Renderer *, moa_Rectangle, Color);
+	void (*rect_solid)(Renderer *, moa_Rectangle, Color);
+	void (*text)(Renderer *, moa_Rectangle, Vector2i, char const *, TextStyle const *);
 	void (*image)(Renderer *, ImageHandle, Vector2i, Vector2i, Vector2i);
 }
 RendererClass;

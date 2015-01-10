@@ -1,7 +1,7 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
-#include "base/unused.h"
+#include "base/config.h"
 #include <stddef.h>
 
 typedef void *Allocation;
@@ -15,13 +15,13 @@ typedef struct Allocator
 Allocator;
 
 MOA_USE_RESULT
-static inline Allocation Allocator_alloc(Allocator allocator, size_t size)
+MOA_INLINE Allocation Allocator_alloc(Allocator allocator, size_t size)
 {
 	return allocator.realloc(NULL, size, allocator.state);
 }
 
 MOA_USE_RESULT
-static inline Allocation Allocator_realloc(Allocator allocator, Allocation allocation, size_t size)
+MOA_INLINE Allocation Allocator_realloc(Allocator allocator, Allocation allocation, size_t size)
 {
 	return allocator.realloc(allocation, size, allocator.state);
 }

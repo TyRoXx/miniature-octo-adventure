@@ -226,7 +226,7 @@ static Bool draw_entities(
 	assert(screen);
 	assert(appearances);
 
-	Rectangle displayed_area;
+	moa_Rectangle displayed_area;
 
 	PtrVector_init(&entities_in_z_order);
 	AddMoverArgs args = {&entities_in_z_order, True, memory.allocator, now};

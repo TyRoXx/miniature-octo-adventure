@@ -4,8 +4,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <unistd.h>
 #include <stdlib.h>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 Bool Game_init(Game *g)
 {

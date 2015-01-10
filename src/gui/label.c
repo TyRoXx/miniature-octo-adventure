@@ -8,7 +8,7 @@ static void Label_pack(Widget *this_)
 static void Label_render(Widget *this_, Renderer *renderer)
 {
 	Label * const instance = (Label *)this_;
-	Rectangle dimensions;
+	moa_Rectangle dimensions;
 	dimensions.top_left = instance->base.absolute_position;
 	dimensions.bottom_right = dimensions.top_left;
 	Vector2i_add(&dimensions.bottom_right, &instance->base.actual_size);

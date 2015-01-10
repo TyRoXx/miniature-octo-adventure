@@ -3,8 +3,7 @@
 #include "base/unreachable.h"
 #include <assert.h>
 
-
-static SDL_Rect to_SDL_rect(Rectangle rect)
+static SDL_Rect to_SDL_rect(moa_Rectangle rect)
 {
 	SDL_Rect result;
 	result.x = (Sint16)rect.top_left.x;
@@ -14,7 +13,7 @@ static SDL_Rect to_SDL_rect(Rectangle rect)
 	return result;
 }
 
-static void rect_outline(Renderer *r, Rectangle dimensions, Color color)
+static void rect_outline(Renderer *r, moa_Rectangle dimensions, Color color)
 {
 	SDL_GUI_Renderer * const renderer = (SDL_GUI_Renderer *)r;
 	(void)renderer;
@@ -22,7 +21,7 @@ static void rect_outline(Renderer *r, Rectangle dimensions, Color color)
 	(void)color;
 }
 
-static void rect_solid(Renderer *r, Rectangle dimensions, Color color)
+static void rect_solid(Renderer *r, moa_Rectangle dimensions, Color color)
 {
 	SDL_GUI_Renderer * const renderer = (SDL_GUI_Renderer *)r;
 	SDL_Rect rect = to_SDL_rect(dimensions);
@@ -31,14 +30,14 @@ static void rect_solid(Renderer *r, Rectangle dimensions, Color color)
 
 typedef struct TextPositioning
 {
-	Rectangle source;
-	Rectangle destination;
+	moa_Rectangle source;
+	moa_Rectangle destination;
 }
 TextPositioning;
 
-static Rectangle from_SDL_rect(SDL_Rect rect)
+static moa_Rectangle from_SDL_rect(SDL_Rect rect)
 {
-	Rectangle result;
+	moa_Rectangle result;
 	Vector2i const size = Vector2i_new(rect.w, rect.h);
 	result.top_left = Vector2i_new(rect.x, rect.y);
 	result.bottom_right = result.top_left;
@@ -108,7 +107,7 @@ static alignment_function get_alignment_function(TextAlignment alignment)
 	MOA_UNREACHABLE();
 }
 
-static void text(Renderer *r, Rectangle dimensions, Vector2i offset, char const *text, TextStyle const *style)
+static void text(Renderer *r, moa_Rectangle dimensions, Vector2i offset, char const *text, TextStyle const *style)
 {
 	SDL_GUI_Renderer * const renderer = (SDL_GUI_Renderer *)r;
 	SDL_Surface *rendered_text;

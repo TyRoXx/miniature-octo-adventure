@@ -1,9 +1,7 @@
 #ifndef VECTOR2I_H
 #define VECTOR2I_H
 
-#include "bool.h"
-#include "unused.h"
-#include "unreachable.h"
+#include "config.h"
 #include <stddef.h>
 
 typedef enum Direction2
@@ -20,7 +18,7 @@ typedef struct Vector2i
 Vector2i;
 
 MOA_USE_RESULT
-static inline Direction2 Direction2_opposite(Direction2 direction)
+MOA_INLINE Direction2 Direction2_opposite(Direction2 direction)
 {
 	switch (direction)
 	{
@@ -31,7 +29,7 @@ static inline Direction2 Direction2_opposite(Direction2 direction)
 }
 
 MOA_USE_RESULT
-static inline Vector2i Vector2i_new(int x, int y)
+MOA_INLINE Vector2i Vector2i_new(int x, int y)
 {
 	Vector2i result;
 	result.x = x;
@@ -39,26 +37,26 @@ static inline Vector2i Vector2i_new(int x, int y)
 	return result;
 }
 
-static inline void Vector2i_add(Vector2i *dest, Vector2i const *source)
+MOA_INLINE void Vector2i_add(Vector2i *dest, Vector2i const *source)
 {
 	dest->x += source->x;
 	dest->y += source->y;
 }
 
-static inline void Vector2i_sub(Vector2i *dest, Vector2i const *source)
+MOA_INLINE void Vector2i_sub(Vector2i *dest, Vector2i const *source)
 {
 	dest->x -= source->x;
 	dest->y -= source->y;
 }
 
-static inline void Vector2i_scale(Vector2i *dest, int scalar)
+MOA_INLINE void Vector2i_scale(Vector2i *dest, int scalar)
 {
 	dest->x *= scalar;
 	dest->y *= scalar;
 }
 
 MOA_USE_RESULT
-static inline Bool Vector2i_equal(Vector2i const *first, Vector2i const *second)
+MOA_INLINE Bool Vector2i_equal(Vector2i const *first, Vector2i const *second)
 {
 	return
 		(first->x == second->x) &&
@@ -66,7 +64,7 @@ static inline Bool Vector2i_equal(Vector2i const *first, Vector2i const *second)
 }
 
 MOA_USE_RESULT
-static inline int Vector2i_get_component(Vector2i const *from, Direction2 component)
+MOA_INLINE int Vector2i_get_component(Vector2i const *from, Direction2 component)
 {
 	switch (component)
 	{
@@ -76,7 +74,7 @@ static inline int Vector2i_get_component(Vector2i const *from, Direction2 compon
 	MOA_UNREACHABLE();
 }
 
-static inline void Vector2i_add_component(Vector2i *to, Direction2 component, int difference)
+MOA_INLINE void Vector2i_add_component(Vector2i *to, Direction2 component, int difference)
 {
 	switch (component)
 	{
@@ -86,7 +84,7 @@ static inline void Vector2i_add_component(Vector2i *to, Direction2 component, in
 	MOA_UNREACHABLE();
 }
 
-static inline void Vector2i_set_component(Vector2i *to, Direction2 component, int value)
+MOA_INLINE void Vector2i_set_component(Vector2i *to, Direction2 component, int value)
 {
 	switch (component)
 	{
@@ -96,7 +94,7 @@ static inline void Vector2i_set_component(Vector2i *to, Direction2 component, in
 	MOA_UNREACHABLE();
 }
 
-static inline void Vector2i_add_xy(Vector2i *to, int x, int y)
+MOA_INLINE void Vector2i_add_xy(Vector2i *to, int x, int y)
 {
 	to->x += x;
 	to->y += y;

@@ -1,5 +1,9 @@
 #include "number_generator.h"
+#ifdef _WIN32
+#include <Windows.h>
+#else
 #include <unistd.h>
+#endif
 #include <stdlib.h>
 #include <stddef.h>
 #include <assert.h>
@@ -26,13 +30,25 @@ uint32_t NumberGenerator_uniform_32(NumberGenerator generator, uint32_t min, uin
 
 static uint32_t generate_32_bit_from_device(void *state)
 {
-	int file = (int)(ptrdiff_t)state;
 	uint32_t result = 0;
+#ifdef _WIN32
+	DWORD generated = 0;
+	if (!ReadFile(state, &result, sizeof(result), &generated, NULL))
+	{
+		abort();
+	}
+	if (generated != sizeof(result))
+	{
+		abort();
+	}
+#else
+	int file = (int)(ptrdiff_t)state;
 	ssize_t generated = read(file, &result, sizeof(result));
 	if (generated != sizeof(result))
 	{
 		abort();
 	}
+#endif
 	return result;
 }
 

@@ -10,7 +10,7 @@ void SpacialFinder_free(SpacialFinder *finder, Deallocator deallocator)
 	PtrVector_free(&finder->all, deallocator);
 }
 
-void SpacialFinder_enumerate_area(SpacialFinder const *finder, Rectangle area, ContinueFlag (on_element)(void *, void *), void *user)
+void SpacialFinder_enumerate_area(SpacialFinder const *finder, moa_Rectangle area, ContinueFlag (on_element)(void *, void *), void *user)
 {
 	/*TODO: do not ignore area*/
 	(void)area;

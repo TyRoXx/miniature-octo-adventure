@@ -7,7 +7,13 @@
 #include "base/bool.h"
 #include <string.h>
 #include <stdint.h>
+
+/*htons etc.*/
+#ifdef _WIN32
+#include <Winsock2.h>
+#else
 #include <arpa/inet.h>
+#endif
 
 typedef struct StringRef
 {
@@ -16,14 +22,14 @@ typedef struct StringRef
 StringRef;
 
 MOA_USE_RESULT
-static inline StringRef StringRef_from_c_str(char const *str)
+MOA_INLINE StringRef StringRef_from_c_str(char const *str)
 {
 	StringRef ref = {str, str + strlen(str)};
 	return ref;
 }
 
 MOA_USE_RESULT
-static inline Bool StringRef_equal_content(StringRef first, StringRef second)
+MOA_INLINE Bool StringRef_equal_content(StringRef first, StringRef second)
 {
 	size_t first_length  = (size_t)(first.end - first.begin);
 	size_t second_length = (size_t)(second.end - second.begin);
@@ -402,14 +408,14 @@ typedef struct StructDefinition
 StructDefinition;
 
 MOA_USE_RESULT
-static inline StructDefinition StructDefinition_new(StructElement const *begin, StructElement const *end)
+MOA_INLINE StructDefinition StructDefinition_new(StructElement const *begin, StructElement const *end)
 {
 	StructDefinition result = {begin, end};
 	return result;
 }
 
 MOA_USE_RESULT
-static inline StructDefinition StructDefinition_from_nullterminated_elements(StructElement const *elements)
+MOA_INLINE StructDefinition StructDefinition_from_nullterminated_elements(StructElement const *elements)
 {
 	StructElement const *end = elements;
 	while (end->type)
@@ -422,7 +428,7 @@ static inline StructDefinition StructDefinition_from_nullterminated_elements(Str
 #define MOA_STRUCT_DEFINITION_FROM_ARRAY(array) (StructDefinition_new((array) + 0, MOA_ARRAY_END((array))))
 
 MOA_USE_RESULT
-static inline bit_size struct_size_in_bits(StructDefinition type, void const *instance)
+MOA_INLINE bit_size struct_size_in_bits(StructDefinition type, void const *instance)
 {
 	bit_size size = 0;
 	for (; type.begin != type.end; ++type.begin)
@@ -433,7 +439,7 @@ static inline bit_size struct_size_in_bits(StructDefinition type, void const *in
 }
 
 MOA_USE_RESULT
-static inline bit_writer struct_serialize(
+MOA_INLINE bit_writer struct_serialize(
 	bit_writer destination,
 	void const *instance,
 	StructDefinition type)
@@ -446,7 +452,7 @@ static inline bit_writer struct_serialize(
 }
 
 MOA_USE_RESULT
-static inline bit_reader struct_deserialize(
+MOA_INLINE bit_reader struct_deserialize(
 	bit_reader source,
 	void *instance,
 	StructDefinition type)
@@ -479,7 +485,7 @@ static bit_reader struct_read(bit_reader source, void *instance, void const *sta
 }
 
 MOA_USE_RESULT
-static inline DataType make_struct_data_type(StructElement const *null_terminated_elements)
+MOA_INLINE DataType make_struct_data_type(StructElement const *null_terminated_elements)
 {
 	DataType type = {struct_size_in_bits2, struct_write, struct_read, null_terminated_elements};
 	return type;

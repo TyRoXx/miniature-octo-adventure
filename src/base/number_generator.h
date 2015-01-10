@@ -1,7 +1,7 @@
 #ifndef NUMBER_GENERATOR_H
 #define NUMBER_GENERATOR_H
 
-#include "base/unused.h"
+#include "base/config.h"
 #include <stdint.h>
 
 typedef struct NumberGenerator
@@ -12,7 +12,7 @@ typedef struct NumberGenerator
 NumberGenerator;
 
 MOA_USE_RESULT
-static inline uint32_t NumberGenerator_generate_32_bit(NumberGenerator generator)
+MOA_INLINE uint32_t NumberGenerator_generate_32_bit(NumberGenerator generator)
 {
 	return generator.generate_32_bit(generator.state);
 }

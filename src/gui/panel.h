@@ -14,7 +14,7 @@ typedef struct WidgetPtrRange
 WidgetPtrRange;
 
 MOA_USE_RESULT
-static inline WidgetPtrRange WidgetPtrRange_new(Widget **begin, Widget **end)
+MOA_INLINE WidgetPtrRange WidgetPtrRange_new(Widget **begin, Widget **end)
 {
 	WidgetPtrRange result = {begin, end};
 	return result;

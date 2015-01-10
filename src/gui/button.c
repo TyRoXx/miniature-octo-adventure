@@ -16,7 +16,7 @@ static void Button_pack(Widget *this_)
 static void Button_render(Widget *this_, Renderer *renderer)
 {
 	Button * const button = (Button *)this_;
-	Rectangle dimensions;
+	moa_Rectangle dimensions;
 	assert(button->content);
 
 	dimensions.top_left = button->base.absolute_position;
@@ -29,7 +29,7 @@ static void Button_render(Widget *this_, Renderer *renderer)
 static void Button_handle_input(Widget *this_, GuiInput input)
 {
 	Button * const button = (Button *)this_;
-	Rectangle bounds;
+	moa_Rectangle bounds;
 	bounds.top_left = button->base.absolute_position;
 	bounds.bottom_right = bounds.top_left;
 	Vector2i_add(&bounds.bottom_right, &button->base.actual_size);

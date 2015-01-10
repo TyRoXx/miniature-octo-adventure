@@ -18,7 +18,7 @@ typedef struct PixelPosition
 PixelPosition;
 
 MOA_USE_RESULT
-static inline PixelPosition PixelPosition_new(Vector2i vector)
+MOA_INLINE PixelPosition PixelPosition_new(Vector2i vector)
 {
 	PixelPosition result = {vector};
 	return result;
@@ -37,7 +37,7 @@ Direction;
 #define DIR_COUNT 4
 
 MOA_USE_RESULT
-static inline Direction2 Direction_to_direction2(Direction dir)
+MOA_INLINE Direction2 Direction_to_direction2(Direction dir)
 {
 	switch (dir)
 	{
@@ -60,7 +60,7 @@ typedef enum AnimationType
 AnimationType;
 
 MOA_USE_RESULT
-static inline Vector2i direction_to_vector(Direction dir)
+MOA_INLINE Vector2i direction_to_vector(Direction dir)
 {
 	Vector2i v = {0, 0};
 	switch (dir)
