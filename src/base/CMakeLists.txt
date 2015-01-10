@@ -1,3 +1,6 @@
 file(GLOB sources "*.h" "*.c")
 add_library(base ${sources})
 target_link_libraries(base gui)
+if(WIN32)
+	target_link_libraries(base ws2_32)
+endif()

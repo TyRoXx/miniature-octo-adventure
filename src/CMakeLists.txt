@@ -40,6 +40,8 @@ if(MSVC)
 	add_definitions("/D_CRT_SECURE_NO_WARNINGS")
 	add_definitions("/MP")
 	add_definitions("/W4")
+	add_definitions("/wd4204")
+	add_definitions("/wd4221")
 endif()
 
 include_directories(".")

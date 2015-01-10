@@ -80,8 +80,40 @@ static byte_size round_bits_up_to_bytes(bit_size bits)
 	return (bits + 7) / 8;
 }
 
+#ifdef _WIN32
+typedef HANDLE file_handle;
+#else
+typedef int file_handle;
+#endif
+
 MOA_USE_RESULT
-static Bool write_struct_buffered(int file, Vector *initialized_buffer, void const *instance, StructDefinition structure, Allocator allocator)
+static Bool write_file(file_handle file, char const *data, size_t size)
+{
+#ifdef _WIN32
+	DWORD written = 0;
+	assert((DWORD)size == size); /*TODO larger writes*/
+	if (!WriteFile(file, data, (DWORD)size, &written, NULL))
+	{
+		return False;
+	}
+	return (written == size);
+#else
+	ssize_t const written = write(file, data, size);
+	return (written == (ssize_t)size);
+#endif
+}
+
+static void close_file(file_handle file)
+{
+#ifdef _WIN32
+	CloseHandle(file);
+#else
+	close(file);
+#endif
+}
+
+MOA_USE_RESULT
+static Bool write_struct_buffered(file_handle file, Vector *initialized_buffer, void const *instance, StructDefinition structure, Allocator allocator)
 {
 	bit_size const instance_bit_size = struct_size_in_bits(structure, instance);
 	byte_size const instance_size = round_bits_up_to_bytes(instance_bit_size);
@@ -95,22 +127,29 @@ static Bool write_struct_buffered(int file, Vector *initialized_buffer, void con
 	}
 	bit_writer writer = {(byte *)Vector_data(initialized_buffer), 0};
 	writer = struct_serialize(writer, instance, structure);
-	ssize_t const written = write(file, Vector_data(initialized_buffer), Vector_size(initialized_buffer));
-	return (written == (ssize_t)Vector_size(initialized_buffer));
+	return write_file(file, Vector_data(initialized_buffer), Vector_size(initialized_buffer));
 }
 
 Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *fauna, MemoryManager memory)
 {
-	int file = open(file_name, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+#ifdef _WIN32
+	file_handle file = CreateFileA(file_name, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (file == INVALID_HANDLE_VALUE)
+	{
+		return False;
+	}
+#else
+	file_handle file = open(file_name, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 	if (file < 0)
 	{
 		return False;
 	}
+#endif
 
 	char const * const version_tag = "MOAsav01";
-	if (write(file, version_tag, strlen(version_tag)) != (ssize_t)strlen(version_tag))
+	if (!write_file(file, version_tag, strlen(version_tag)))
 	{
-		close(file);
+		close_file(file);
 		return False;
 	}
 
@@ -132,8 +171,7 @@ Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *
 		byte npc_count_buffer[sizeof(npc_count)];
 		bit_writer writer = {&npc_count_buffer[0], 0};
 		writer = data_type_serialize(writer, &npc_count, uint64);
-		ssize_t const written = write(file, npc_count_buffer, sizeof(npc_count_buffer));
-		if ((written < 0) || ((size_t)written != sizeof(npc_count_buffer)))
+		if (!write_file(file, (char const *)&npc_count_buffer, sizeof(npc_count_buffer)))
 		{
 			result = False;
 			goto leave;
@@ -155,6 +193,6 @@ Bool save_game_to_file(char const *file_name, Mover const *avatar, Fauna const *
 
 leave:
 	Vector_free(&write_buffer, memory.deallocator);
-	close(file);
+	close_file(file);
 	return result;
 }

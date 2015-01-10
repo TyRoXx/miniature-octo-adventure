@@ -20,7 +20,9 @@ typedef struct Game
 	GameStateEnterCallback on_enter_state;
 	MemoryManager memory;
 	MemoryStatistics memory_statistics;
+#ifndef _WIN32
 	int random_file;
+#endif
 	NumberGenerator random;
 }
 Game;
