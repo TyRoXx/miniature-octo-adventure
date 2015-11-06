@@ -9,7 +9,7 @@ if(MINGW)
 	target_link_libraries(game ${SDLMAIN_LIBRARY})
 endif()
 
-if(MSVC)
+if(MSVC AND SDL_FOUND)
 	target_link_libraries(game ${SDLMAIN_LIBRARY})
 endif()
 

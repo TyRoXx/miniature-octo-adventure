@@ -1,2 +1,2 @@
 file(GLOB sources "*.h" "*.c")
-add_library(test ${sources})
+add_library(tests ${sources})
