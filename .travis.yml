@@ -20,10 +20,18 @@ addons:
     - libboost1.55-all-dev
     - libsdl2-image-dev
     - libsdl2-ttf-dev
-    
+
 env:
+ - MYCC=gcc-5   BUILD_TYPE=Release
+ - MYCC=gcc-5   BUILD_TYPE=Debug
  - MYCC=gcc-4.9 BUILD_TYPE=Release
  - MYCC=gcc-4.9 BUILD_TYPE=Debug
+ - MYCC=gcc-4.8 BUILD_TYPE=Release
+ - MYCC=gcc-4.8 BUILD_TYPE=Debug
+ - MYCC=gcc-4.7 BUILD_TYPE=Release
+ - MYCC=gcc-4.7 BUILD_TYPE=Debug
+ - MYCC=gcc-4.6 BUILD_TYPE=Release
+ - MYCC=gcc-4.6 BUILD_TYPE=Debug
 
 script:
  - mkdir build
