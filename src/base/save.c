@@ -44,13 +44,6 @@ typedef struct Vector2i_v1
 }
 Vector2i_v1;
 
-static StructElement const vector2i_v1_elements[] =
-{
-	{&uint32, offsetof(Vector2i_v1, x)},
-	{&uint32, offsetof(Vector2i_v1, y)},
-	{NULL, 0}
-};
-
 typedef struct NPCObjective_v1
 {
 	uint8_t objective;
@@ -68,11 +61,6 @@ typedef struct VariantElement
 	DataType const *type;
 }
 VariantElement;
-
-static VariantElement const npc_objective_v1_elements[] =
-{
-	{&uint64}
-};
 
 MOA_USE_RESULT
 static byte_size round_bits_up_to_bytes(bit_size bits)
