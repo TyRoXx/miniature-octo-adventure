@@ -28,7 +28,7 @@ env:
 script:
  - mkdir build
  - cd build
- - CC=$MYCC cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE || exit 1
+ - CC=$MYCC cmake ../src -DCMAKE_BUILD_TYPE=$BUILD_TYPE || exit 1
  - cmake --build . -- -j2 || exit 1
  - cd test_main
  - ./test_main || exit 1
