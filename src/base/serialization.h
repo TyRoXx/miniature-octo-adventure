@@ -75,7 +75,7 @@ static bit_writer write_byte(bit_writer destination, byte value)
 {
 	if (destination.used_bits_in_byte)
 	{
-		*destination.current_byte |= (byte)((value >> destination.used_bits_in_byte) << destination.used_bits_in_byte);
+		*destination.current_byte = (byte)(*destination.current_byte | ((value >> destination.used_bits_in_byte) << destination.used_bits_in_byte));
 		++destination.current_byte;
 		*destination.current_byte = (byte)(value & ((1U << destination.used_bits_in_byte) - 1U));
 	}
@@ -144,7 +144,7 @@ static bit_reader read_bytes(bit_reader source, byte *begin, byte *end)
 MOA_USE_RESULT
 static bit_writer write_bit(bit_writer destination, Bool value)
 {
-	*destination.current_byte |= (byte)(value << destination.used_bits_in_byte);
+	*destination.current_byte = (byte)(*destination.current_byte | (value << destination.used_bits_in_byte));
 	if (destination.used_bits_in_byte == 7)
 	{
 		destination.current_byte += 1;
