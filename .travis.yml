@@ -1,0 +1,34 @@
+language: cpp
+os:
+ - linux
+sudo: false
+notifications:
+ email:
+  on_success: change # [always|never|change] # default: change
+  on_failure: always # [always|never|change] # default: always
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-5
+    - gcc-4.9
+    - gcc-4.8
+    - gcc-4.7
+    - gcc-4.6
+    - libboost1.55-all-dev
+    - libsdl2-image-dev
+    - libsdl2-ttf-dev
+    
+env:
+ - MYCC=gcc-4.9 BUILD_TYPE=Release
+ - MYCC=gcc-4.9 BUILD_TYPE=Debug
+
+script:
+ - mkdir build
+ - cd build
+ - CC=$MYCC cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE || exit 1
+ - cmake --build . -- -j2 || exit 1
+ - cd test_main
+ - ./test_main || exit 1
