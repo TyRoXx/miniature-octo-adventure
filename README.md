@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/TyRoXx/miniature-octo-adventure.svg)](https://travis-ci.org/TyRoXx/miniature-octo-adventure)
+
 miniature octo adventure (MOA)
 ==============================
 
