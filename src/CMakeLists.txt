@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-find_package(Jansson REQUIRED)
-include_directories(${JANSSON_INCLUDE_DIR})
-
 if(EMSCRIPTEN)
 	SET(CMAKE_EXECUTABLE_SUFFIX ".js")
 else()
@@ -27,6 +24,9 @@ else()
 		include_directories(${SDLIMAGE_INCLUDE_DIR})
 	endif()
 endif()
+
+find_package(Jansson REQUIRED)
+include_directories(${JANSSON_INCLUDE_DIR})
 
 if(UNIX OR MINGW)
 	set(CMAKE_C_FLAGS "-Wall -Wextra -Wconversion -Werror -pedantic -Wconversion -Wunused -Wundef")

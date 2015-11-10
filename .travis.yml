@@ -14,7 +14,6 @@ addons:
     packages:
     - gcc
     - clang
-    - libboost1.55-all-dev
     - libsdl2-image-dev
     - libsdl2-ttf-dev
     - libjansson-dev
