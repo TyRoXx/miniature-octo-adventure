@@ -18,8 +18,8 @@ addons:
     - gcc-4.7
     - gcc-4.6
     - clang
-    - libsdl2-image-dev
-    - libsdl2-ttf-dev
+    - libsdl-image1.2-dev
+    - libsdl-ttf2.0-dev
     - libjansson-dev
 
 env:
