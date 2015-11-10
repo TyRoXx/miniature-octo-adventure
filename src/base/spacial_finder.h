@@ -21,7 +21,7 @@ typedef enum ContinueFlag
 }
 ContinueFlag;
 
-void SpacialFinder_enumerate_area(SpacialFinder const *finder, moa_Rectangle area, ContinueFlag(on_element)(void *, void *), void *user);
+void SpacialFinder_enumerate_area(SpacialFinder const *finder, ContinueFlag(on_element)(void *, void *), void *user);
 
 MOA_USE_RESULT
 Bool SpacialFinder_add(SpacialFinder *finder, void *element, Allocator allocator);

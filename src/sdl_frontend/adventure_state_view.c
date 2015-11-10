@@ -226,11 +226,9 @@ static Bool draw_entities(
 	assert(screen);
 	assert(appearances);
 
-	moa_Rectangle displayed_area = {0};
-
 	PtrVector_init(&entities_in_z_order);
 	AddMoverArgs args = {&entities_in_z_order, True, memory.allocator, now};
-	SpacialFinder_enumerate_area(movers, displayed_area, add_updated_mover, &args);
+	SpacialFinder_enumerate_area(movers, add_updated_mover, &args);
 	if (!args.success)
 	{
 		PtrVector_free(&entities_in_z_order, memory.deallocator);
