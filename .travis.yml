@@ -33,7 +33,7 @@ install:
 script:
  - mkdir build
  - pushd build
- - conan install --build SDL2_image -s compiler=gcc $CONAN .. || exit 1
+ - conan install --build freetype --build SDL2_image -s compiler=gcc $CONAN .. || exit 1
  - cmake ../src -DCMAKE_BUILD_TYPE=$BUILD_TYPE || exit 1
  - cmake --build . -- -j2 || exit 1
  - pushd bin
