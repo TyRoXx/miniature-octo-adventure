@@ -33,7 +33,7 @@ install:
 script:
  - mkdir build
  - pushd build
- - conan install -s compiler=gcc $CONAN .. || exit 1
+ - conan install -s compiler=gcc $CONAN ../src || exit 1
  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE || exit 1
  - cmake --build . -- -j2 || exit 1
  - pushd bin
