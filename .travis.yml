@@ -1,7 +1,7 @@
 language: c
 os:
  - linux
-sudo: false
+sudo: true
 notifications:
  email:
   on_success: change # [always|never|change] # default: change
@@ -12,34 +12,29 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - gcc-5
     - gcc-4.9
-    - gcc-4.8
-    - gcc-4.7
-    - gcc-4.6
-    - clang
-    - libsdl-image1.2-dev
-    - libsdl-ttf2.0-dev
-    - libjansson-dev
-
+    
 env:
- - MYCC=gcc-5   BUILD_TYPE=Release
- - MYCC=gcc-5   BUILD_TYPE=Debug
- - MYCC=gcc-4.9 BUILD_TYPE=Release
- - MYCC=gcc-4.9 BUILD_TYPE=Debug
- - MYCC=gcc-4.8 BUILD_TYPE=Release
- - MYCC=gcc-4.8 BUILD_TYPE=Debug
- - MYCC=gcc-4.7 BUILD_TYPE=Release
- - MYCC=gcc-4.7 BUILD_TYPE=Debug
- - MYCC=gcc-4.6 BUILD_TYPE=Release
- - MYCC=gcc-4.6 BUILD_TYPE=Debug
- - MYCC=clang   BUILD_TYPE=Release
- - MYCC=clang   BUILD_TYPE=Debug
+ - CC=gcc-4.9 BUILD_TYPE=Release CONAN="-s compiler.version=4.9 -s build_type=Release"
+ - CC=gcc-4.9 BUILD_TYPE=Debug   CONAN="-s compiler.version=4.9 -s build_type=Debug"
+
+install:
+ - wget https://s3-eu-west-1.amazonaws.com/conanio-production/downloads/conan-ubuntu-64_0_13_1.deb -O conan.deb || exit 1
+ - sudo dpkg -i conan.deb || exit 1
+ - rm conan.deb || exit 1
+ - conan --version
+
+ - wget https://s3.amazonaws.com/biibinaries/thirdparty/cmake-3.0.2-Linux-64.tar.gz
+ - tar -xzf cmake-3.0.2-Linux-64.tar.gz
+ - sudo cp -fR cmake-3.0.2-Linux-64/* /usr
+ - rm -rf cmake-3.0.2-Linux-64
+ - rm cmake-3.0.2-Linux-64.tar.gz
 
 script:
  - mkdir build
- - cd build
- - CC=$MYCC cmake ../src -DCMAKE_BUILD_TYPE=$BUILD_TYPE || exit 1
+ - pushd build
+ - conan install -s compiler=gcc $CONAN .. || exit 1
+ - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE || exit 1
  - cmake --build . -- -j2 || exit 1
- - cd test_main
+ - pushd bin
  - ./test_main || exit 1

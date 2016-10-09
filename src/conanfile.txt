@@ -1,0 +1,7 @@
+[requires]
+jansson/2.7@lasote/stable
+SDL2_ttf/2.0.14@lasote/stable
+SDL2_image/2.0.1@lasote/stable
+
+[generators]
+cmake
