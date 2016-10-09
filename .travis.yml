@@ -19,7 +19,7 @@ env:
  - CC=gcc-4.9 BUILD_TYPE=Debug   CONAN="-s compiler.version=4.9 -s build_type=Debug"
 
 install:
- - wget https://s3-eu-west-1.amazonaws.com/conanio-production/downloads/conan-ubuntu-64_0_13_1.deb -O conan.deb || exit 1
+ - wget https://s3-eu-west-1.amazonaws.com/conanio-production/downloads/conan-ubuntu-64_0_13_2.deb -O conan.deb || exit 1
  - sudo dpkg -i conan.deb || exit 1
  - rm conan.deb || exit 1
  - conan --version
@@ -33,7 +33,7 @@ install:
 script:
  - mkdir build
  - pushd build
- - conan install -s compiler=gcc $CONAN ../src || exit 1
+ - conan install -s compiler=gcc $CONAN --build SDL2_image ../src || exit 1
  - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE || exit 1
  - cmake --build . -- -j2 || exit 1
  - pushd bin
