@@ -1,7 +1,6 @@
 [requires]
-jansson/2.7@lasote/stable
-SDL2_ttf/2.0.14@lasote/stable
-SDL2_image/2.0.1@lasote/stable
+jansson/2.11@bincrafters/stable
+sdl2_image/2.0.3@bincrafters/stable
 
 [generators]
 cmake
